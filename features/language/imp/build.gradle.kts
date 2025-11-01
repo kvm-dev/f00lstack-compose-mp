@@ -59,8 +59,15 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                //api
+                implementation(projects.features.language.api)
+                //base libs
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                //base utils
+                implementation(projects.base.utils)
+                //di
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
             }
         }
 
@@ -72,9 +79,9 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                implementation(libs.androidx.activity.compose)
+                //di
+                implementation(libs.koin.android)
             }
         }
 

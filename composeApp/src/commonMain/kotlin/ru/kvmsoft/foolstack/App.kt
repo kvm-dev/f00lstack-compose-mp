@@ -1,49 +1,49 @@
 package ru.kvmsoft.foolstack
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import foolstack.composeapp.generated.resources.Res
-import foolstack.composeapp.generated.resources.compose_multiplatform
+import org.koin.compose.KoinApplication
+import org.koin.dsl.KoinAppDeclaration
+import ru.kvmsoft.base.navigation.NavigationApp
+import ru.kvmsoft.base.network.di.networkModule
+import ru.kvmsoft.base.storage.datastore.di.storageModule
+import ru.kvmsoft.base.utils.di.utilsModule
+import ru.kvmsoft.features.authorization.imp.di.authorizationModule
+import ru.kvmsoft.features.books.imp.di.booksModule
+import ru.kvmsoft.features.events.imp.di.eventsModule
+import ru.kvmsoft.features.interview.imp.di.interviewModule
+import ru.kvmsoft.features.language.imp.di.languageModule
+import ru.kvmsoft.features.language.imp.di.languagePlatformModule
+import ru.kvmsoft.features.main.imp.di.mainModule
+import ru.kvmsoft.features.networkconnection.imp.di.networkConnectionModule
+import ru.kvmsoft.features.news.imp.di.newsModule
+import ru.kvmsoft.features.professions.imp.di.professionsModule
+import ru.kvmsoft.features.profile.imp.di.profileModule
+import ru.kvmsoft.features.settings.imp.di.settingsModule
+import ru.kvmsoft.features.splash.imp.di.splashModule
+import ru.kvmsoft.features.tests.imp.di.testsModule
 
 @Composable
 @Preview
-fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
+//fun App(koinAppDeclaration: KoinAppDeclaration? = null, database: AppDatabase) {
+fun App(koinAppDeclaration: KoinAppDeclaration? = null) {
+    KoinApplication(application = {
+        koinAppDeclaration?.invoke(this)
+        modules(
+            utilsModule,
+            networkModule,
+            storageModule,
+            networkConnectionModule,
+            languagePlatformModule, languageModule,
+            splashModule,
+            mainModule, authorizationModule, booksModule, eventsModule,
+            interviewModule, splashModule,
+            newsModule, professionsModule, profileModule, settingsModule, testsModule
+        )
+    }) {
+        MaterialTheme{
+            NavigationApp()
         }
     }
 }

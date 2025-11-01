@@ -2,6 +2,17 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.build.config)
+    alias(libs.plugins.kotlinxSerialization)
+}
+
+buildConfig {
+    useKotlinOutput { topLevelConstants = true }
+    // common config
+    buildConfigField("String", "BASE_URL_PRODUCTION", "\"https://test.foolstack.ru/api/v1/\"")
+    buildConfigField("String", "BASE_URL_TEST", "\"https://test.foolstack.ru/api/v1/\"")
+    buildConfigField("String", "APP_VERSION", "\"${project.findProperty("versionName") ?: "1.0.0"}\"")
+    buildConfigField("String", "BUILD_TYPE", "\"${project.findProperty("buildType") ?: "debug"}\"")
 }
 
 kotlin {
@@ -60,7 +71,18 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                //network
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.encoding)
+                //coroutines
+                implementation(libs.kotlinx.coroutines.core)
+                //storage
+                implementation(projects.base.storage)
+                //di
+                implementation(libs.koin.core)
             }
         }
 
@@ -72,9 +94,8 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                //network
+                implementation(libs.ktor.client.okhttp)
             }
         }
 
@@ -88,13 +109,9 @@ kotlin {
 
         iosMain {
             dependencies {
-                // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
-                // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
-                // part of KMP’s default source set hierarchy. Note that this source set depends
-                // on common by default and will correctly pull the iOS artifacts of any
-                // KMP dependencies declared in commonMain.
+                //network
+                implementation(libs.ktor.client.darwin)
             }
         }
     }
-
 }

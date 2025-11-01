@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
@@ -13,6 +16,8 @@ kotlin {
         namespace = "ru.kvmsoft.features.interview.imp"
         compileSdk = 36
         minSdk = 26
+
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
 
         withHostTestBuilder {
         }
@@ -59,8 +64,30 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                //api
+                implementation(projects.features.splash.api)
+                //base libs
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                //utils
+                implementation(projects.base.utils)
+                //ui
+                implementation(projects.base.ui)
+                //lottie
+                implementation(libs.compottie)
+                //viewmodel
+                implementation(projects.base.viewmodel)
+                //di
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
             }
         }
 
@@ -72,9 +99,8 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                //di
+                implementation(libs.koin.android)
             }
         }
 
@@ -96,5 +122,10 @@ kotlin {
             }
         }
     }
+}
 
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "ru.kvmsoft.features.interview.imp.ComposeResources"
+    generateResClass = always
 }

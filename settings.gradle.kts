@@ -29,7 +29,6 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":base:di")
 include(":base:navigation")
 include(":base:network")
 include(":base:notifications")

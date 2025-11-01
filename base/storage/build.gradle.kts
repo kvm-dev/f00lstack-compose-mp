@@ -60,18 +60,30 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                //coroutines
+                implementation(libs.kotlinx.coroutines.core)
+                //di
+                implementation(libs.koin.core)
             }
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                //di
+                implementation(libs.koin.test)
             }
         }
 
         androidMain {
             dependencies {
+                //security
+                implementation(libs.security.crypto)
+                //data-store
+                implementation(libs.datastore.preferences)
+                //di
+                implementation(libs.koin.android)
+                implementation(libs.koin.compose)
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
@@ -88,6 +100,7 @@ kotlin {
 
         iosMain {
             dependencies {
+                //security
                 // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
                 // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
                 // part of KMP’s default source set hierarchy. Note that this source set depends

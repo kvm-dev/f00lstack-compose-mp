@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.spm)
+    alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.androidLibrary) apply false
 }
 
 kotlin {
@@ -60,7 +63,10 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                //base utils
+                implementation(projects.base.utils)
+                //coroutines
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 

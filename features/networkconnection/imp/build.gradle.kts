@@ -59,22 +59,41 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                //api
+                implementation(projects.features.networkconnection.api)
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                //utils
+                implementation(projects.base.utils)
+                //di
+                implementation(libs.koin.core)
+                //coroutines
+                implementation(libs.kotlinx.coroutines.core)
+                //network
+                implementation(projects.base.network)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.encoding)
             }
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                //di
+                implementation(libs.koin.test)
             }
         }
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                //di
+                implementation(libs.koin.android)
+                implementation(libs.koin.compose)
+                implementation(libs.androidx.annotation.jvm)
+                //network
+                implementation(libs.ktor.client.okhttp)
             }
         }
 
@@ -96,5 +115,4 @@ kotlin {
             }
         }
     }
-
 }

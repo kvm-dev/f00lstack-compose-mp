@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -60,7 +63,36 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                implementation(libs.navigation)
+                implementation(libs.backhandler)
+                //screens
+                implementation(projects.features.splash.imp)
+                implementation(projects.features.main.imp)
+                implementation(projects.features.authorization.imp)
+                implementation(projects.features.books.imp)
+                implementation(projects.features.events.imp)
+                implementation(projects.features.interview.imp)
+                implementation(projects.features.language.imp)
+                implementation(projects.features.news.imp)
+                implementation(projects.features.professions.imp)
+                implementation(projects.features.profile.imp)
+                implementation(projects.features.settings.imp)
+                implementation(projects.features.study.imp)
+                implementation(projects.features.tests.imp)
+                //ui
+                implementation(projects.base.ui)
+//                implementation(libs.coil.svg)
+//                implementation(libs.coil.compose)
+                //annotations
+                implementation(libs.annotation)
             }
         }
 
