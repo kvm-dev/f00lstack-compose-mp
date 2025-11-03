@@ -236,7 +236,13 @@ fun NavigationApp() {
                 isShowNavBar = true
             }
             composable(AppDestinations.Authorization().route) {
-                AuthorizationScreen()
+                AuthorizationScreen(onAuthorized = {
+                    navController.navigate(route = AppDestinations.Main().route)
+                    { popUpTo(AppDestinations.Authorization().route){
+                        inclusive = true
+                    }}
+                    isShowNavBar = true
+                })
                 isShowNavBar = false
             }
             composable(AppDestinations.Professions().route) {

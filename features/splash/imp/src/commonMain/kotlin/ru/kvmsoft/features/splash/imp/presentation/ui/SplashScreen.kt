@@ -59,10 +59,10 @@ fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateT
             val uiState by viewModel.uiState.collectAsState()
             when(uiState){
                 SplashScreenViewState.LoadingState -> {
-                    //nothing
+                    //todo loading
                 }
                 is SplashScreenViewState.ErrorState -> {
-                    //nothing
+                    //todo network error or something else
                 }
                 is SplashScreenViewState.SuccessState -> {
                     val infiniteTransition = rememberInfiniteTransition()

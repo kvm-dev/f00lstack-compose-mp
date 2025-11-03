@@ -6,7 +6,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import ru.kvmsoft.base.ui.theme.BottomSheetBackground
 
@@ -17,7 +16,6 @@ fun NonDismissibleBottomSheet(
     onDismissRequest: () -> Unit,
     contentBottomSheet: @Composable (ColumnScope.() -> Unit)
 ) {
-    val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newState ->

@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.build.config)
+    alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -64,6 +67,11 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 //di
                 implementation(libs.koin.core)
+                //database
+                implementation(libs.sqldelight.coroutines.extension)
+                //serialization
+                implementation(libs.ktor.serialization.kotlinx.json)
+
             }
         }
 
@@ -84,9 +92,8 @@ kotlin {
                 //di
                 implementation(libs.koin.android)
                 implementation(libs.koin.compose)
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                //database
+                implementation(libs.sqldelight.android.driver)
             }
         }
 
@@ -100,14 +107,17 @@ kotlin {
 
         iosMain {
             dependencies {
-                //security
-                // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
-                // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
-                // part of KMP’s default source set hierarchy. Note that this source set depends
-                // on common by default and will correctly pull the iOS artifacts of any
-                // KMP dependencies declared in commonMain.
+                //database
+                implementation(libs.sqldelight.native.driver)
             }
         }
     }
+}
 
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("ru.kvmsoft.base.storage")
+        }
+    }
 }

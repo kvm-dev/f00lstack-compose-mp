@@ -1,0 +1,12 @@
+package ru.kvmsoft.features.authorization.api.model
+
+enum class AuthorizationErrors {
+CONNECTION_NOT_FOUND,
+UNKNOWN_ERROR,
+CODE_IS_ALREADY_SENT,
+CODE_IS_INCORRECT,
+CODE_IS_EXPIRED,
+USER_IS_NOT_FOUND,
+USER_IS_UNCONFIRMED,
+USER_IS_ALREADY_CONFIRMED
+}

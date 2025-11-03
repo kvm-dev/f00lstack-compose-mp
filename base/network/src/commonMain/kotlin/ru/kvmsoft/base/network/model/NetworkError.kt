@@ -1,6 +1,6 @@
 package ru.kvmsoft.base.network.model
 
-sealed class NetworkError(val message: String) {
+sealed class NetworkError(override val message: String): Throwable(message) {
     class BadRequest : NetworkError("Request Incorrect")
     class Unauthorized : NetworkError("Unauthorized")
     class Forbidden : NetworkError("Access forbidden")

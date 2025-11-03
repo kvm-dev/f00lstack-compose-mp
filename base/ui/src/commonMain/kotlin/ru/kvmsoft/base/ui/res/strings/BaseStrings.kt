@@ -88,8 +88,48 @@ fun getExitDialogNoButton(lang: CurrentLanguageDomain): String {
     }
 }
 
-fun getOkButton() = "Ok"
+fun getUnknownErrorTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Похоже, что-то сломалось..."
+        CurrentLanguageDomain.EN -> "Something seems wrong..."
+    }
+}
 
+fun getUnknownErrorDescription(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Пам пам парам парам пам пам...\n\nПопробуй перезапустить приложение или переустановить.\n\nПерезагрузи роутер (шутка) или напиши нам в чат"
+        CurrentLanguageDomain.EN -> "Pam pam param param pam pam...\n\nTry restart or reinstall application.\n\nReboot your router (joke) or write to us in chat"
+    }
+}
+
+fun getUnknownErrorMainButton(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Ок, закрыть приложение"
+        CurrentLanguageDomain.EN -> "Ok, close app"
+    }
+}
+
+fun getUnknownErrorSecondButton(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Схожу в чат"
+        CurrentLanguageDomain.EN -> "Join to chat"
+    }
+}
+
+//errorTexts
+fun getErrorTextCodeIsAlreadySent() = "Code Is Already Sent"
+fun getErrorTextUserIsUnconfirmed() = "User Is Unconfirmed"
+fun getErrorTextUserIsNotFound() = "User Is Not Found"
+fun getErrorTextUserIsAlreadyConfirmed() = "Email Is Not Found, Invalid Verification Code Or User Is Already Confirmed"
+fun getErrorTextCodeIsIncorrect() = "Code Is Empty Or Incorrect"
+fun getErrorTextCodeIsWrongOrExpired() = "Code Is Wrong Or Expired"
+fun hardCreateUnknownError() = "Unknown"
+
+//links
+fun getChatLink() = "https://t.me/+r9DlqNi2Ymk0OGNi"
+
+//other
+fun getOkButton() = "Ok"
 
 
 

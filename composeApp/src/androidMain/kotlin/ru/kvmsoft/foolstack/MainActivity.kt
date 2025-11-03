@@ -11,9 +11,11 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import ru.kvmsoft.base.network.di.networkModule
-import ru.kvmsoft.base.storage.datastore.di.storageModule
+import ru.kvmsoft.base.storage.di.storageModule
+import ru.kvmsoft.base.storage.di.storagePlatformModule
 import ru.kvmsoft.base.utils.di.utilsModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationModule
+import ru.kvmsoft.features.authorization.imp.di.authorizationPlatformModule
 import ru.kvmsoft.features.books.imp.di.booksModule
 import ru.kvmsoft.features.events.imp.di.eventsModule
 import ru.kvmsoft.features.interview.imp.di.interviewModule
@@ -37,13 +39,24 @@ class MainActivity : ComponentActivity() {
             modules(
                 utilsModule,
                 networkModule,
+                storagePlatformModule,
                 storageModule,
                 networkConnectionModule,
-                languagePlatformModule, languageModule,
+                languagePlatformModule,
+                languageModule,
                 splashModule,
-                mainModule, authorizationModule, booksModule, eventsModule,
-                interviewModule, splashModule,
-                newsModule, professionsModule, profileModule, settingsModule, testsModule
+                mainModule,
+                authorizationPlatformModule,
+                authorizationModule,
+                booksModule,
+                eventsModule,
+                interviewModule,
+                splashModule,
+                newsModule,
+                professionsModule,
+                profileModule,
+                settingsModule,
+                testsModule
             )
         }
         enableEdgeToEdge()

@@ -9,6 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import ru.kvmsoft.base.ui.utils.EmailTextFieldValidation
@@ -21,38 +22,39 @@ import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
 
 class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenInteractor) : BaseViewModel() {
     private val _uiState = MutableStateFlow<AuthorizationScreenViewState>(
-        AuthorizationScreenViewState.LoadingState
+        AuthorizationScreenViewState.AuthorizationRegistrationState(lang = currentLangState.value, error = null)
     )
 
     var emailValue by mutableStateOf("")
         private set
-    var emailError by mutableStateOf("")
-        private set
+    var emailError = mutableStateOf("")
+
     var emailLoading by mutableStateOf(false)
         private set
 
     var otpValue by mutableStateOf("")
         private set
-    var otpError by mutableStateOf("Something Error")
-        private set
+    var otpError = mutableStateOf("")
     var otpLoading by mutableStateOf(false)
         private set
 
     val uiState: StateFlow<AuthorizationScreenViewState> = _uiState.asStateFlow()
 
     fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
-        if(progressState.value == ProgressState.LOADING){
             launch(Dispatchers.IO) {
-//                interactor.userState.collect { userState->
-//                    _uiState.update { interactor.getCurrentState(state = userState, currentPosition = currentPosition) }
+                checkState()
+                updateState(ProgressState.COMPLETED)
             }
-        }
-        getAccessToken()
-        saveAccessToken("something token")
-        getProfessionId()
-        saveProfessionId(23)
-        launch {
-            isConnectionAvailable()
+    }
+
+    fun checkState() = with(viewModelScope + coroutineExceptionHandler) {
+        launch(Dispatchers.IO) {
+            emailLoading = true
+            otpLoading = true
+            val state = interactor.checkState(lang = currentLangState.value, userEmail = emailValue, userOtp = otpValue, setOtpError = ::setOtpError, setEmailError = ::setEmail)
+            emailLoading = false
+            otpLoading = false
+            _uiState.update { state }
         }
     }
 
@@ -70,51 +72,47 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
                 getAuthorizationErrorEmailIncorrect(lang = lang)
             isValid = false
         }
-        emailError = errorMessage
+        emailError.value = errorMessage
         return isValid
     }
 
     fun setEmail(value: String) {
         emailValue = value
         emailLoading = false
-        emailError = ""
+        emailError.value = ""
         validateEmail()
     }
 
     fun setOtp(value: String) {
-        otpError = ""
+        otpError.value = ""
         otpLoading = false
         if (value.length <= 4) {
             otpValue = value
         }
     }
 
-    fun saveAccessToken(userToken: String) = with(viewModelScope){
-        launch(Dispatchers.IO) {
-            interactor.saveUserToken(userToken = userToken)
-        }
+    fun openChat(){
+        interactor.openChat()
     }
 
-    fun getAccessToken() = with(viewModelScope){
-        launch(Dispatchers.IO) {
-            interactor.accessToken.collect { userToken->
-                println("userToken is $userToken")
-            }
-        }
+    fun restartUIState(){
+        _uiState.update { AuthorizationScreenViewState.LoadingState }
+        initViewModel()
     }
 
-    fun saveProfessionId(professionId: Int) = with(viewModelScope){
-        launch { interactor.saveProfessionId(professionId) }
+    fun restartProgressState(){
+        updateState(ProgressState.LOADING)
     }
 
-    fun getProfessionId() = with(viewModelScope){
-        launch(Dispatchers.IO) {
-            interactor.professionId.collect { professionId->
-                println("professionId is $professionId")
-            }
-        }
+    fun setIdleProgressState(){
+        updateState(ProgressState.IDLE)
     }
-    private suspend fun isConnectionAvailable(){
-        val isConnected = interactor.isConnectionAvailable()
+
+    fun setEmailError(errorText: String){
+        emailError.value = errorText
     }
+    fun setOtpError(errorText: String){
+        otpError.value = errorText
+    }
+
 }
