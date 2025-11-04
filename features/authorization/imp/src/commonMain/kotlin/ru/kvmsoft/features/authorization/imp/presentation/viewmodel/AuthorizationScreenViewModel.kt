@@ -51,7 +51,7 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
         launch(Dispatchers.IO) {
             emailLoading = true
             otpLoading = true
-            val state = interactor.checkState(lang = currentLangState.value, userEmail = emailValue, userOtp = otpValue, setOtpError = ::setOtpError, setEmailError = ::setEmail)
+            val state = interactor.checkState(lang = currentLangState.value, userEmail = emailValue, userOtp = otpValue, setOtpError = ::setOtpError)
             emailLoading = false
             otpLoading = false
             _uiState.update { state }
