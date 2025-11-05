@@ -6,6 +6,6 @@ import ru.kvmsoft.features.main.imp.domain.MainScreenInteractor
 import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 
 val mainModule = module {
-    single<MainScreenInteractor> { MainScreenInteractor() }
+    single<MainScreenInteractor> { MainScreenInteractor(getProfileUseCase = get()) }
     viewModelOf(::MainScreenViewModel)
 }

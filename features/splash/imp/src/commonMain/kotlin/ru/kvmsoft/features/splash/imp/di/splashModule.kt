@@ -6,6 +6,12 @@ import ru.kvmsoft.features.splash.imp.domain.interactor.SplashScreenInteractor
 import ru.kvmsoft.features.splash.imp.presentation.viewmodel.SplashScreenViewModel
 
 val splashModule = module {
-    single<SplashScreenInteractor> { SplashScreenInteractor(getCurrentLanguageUseCase = get()) }
+    single<SplashScreenInteractor> { SplashScreenInteractor(
+        getCurrentLanguageUseCase = get(),
+        encryptedDataStore = get(),
+        getProfileUseCase = get(),
+        authByTokenUserCase = get(),
+        networkStateUseCase = get()
+    ) }
     viewModelOf(::SplashScreenViewModel)
 }

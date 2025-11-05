@@ -1,4 +1,7 @@
 package ru.kvmsoft.features.main.imp.domain
 
-class MainScreenInteractor {
+import ru.kvmsoft.features.profile.api.domain.usecase.GetProfileUseCase
+
+class MainScreenInteractor(private val getProfileUseCase: GetProfileUseCase) {
+    suspend fun getProfile() = getProfileUseCase.getProfile()
 }

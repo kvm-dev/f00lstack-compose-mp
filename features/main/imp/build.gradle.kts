@@ -65,7 +65,7 @@ kotlin {
         commonMain {
             dependencies {
                 //api
-                implementation(projects.features.splash.api)
+                implementation(projects.features.main.api)
                 //base libs
                 implementation(libs.kotlin.stdlib)
                 implementation(compose.runtime)
@@ -88,6 +88,10 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
+                //features
+                implementation(projects.features.profile.api)
+                implementation(projects.features.networkconnection.api)
+
             }
         }
 

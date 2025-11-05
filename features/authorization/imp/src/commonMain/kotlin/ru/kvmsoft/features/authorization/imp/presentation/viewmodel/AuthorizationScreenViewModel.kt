@@ -13,16 +13,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import ru.kvmsoft.base.ui.utils.EmailTextFieldValidation
+import ru.kvmsoft.base.utils.model.ResultState
 import ru.kvmsoft.base.viewmodel.BaseViewModel
 import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.authorization.imp.domain.AuthorizationScreenInteractor
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorEmailEmpty
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorEmailIncorrect
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenViewState
+import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenInteractor) : BaseViewModel() {
     private val _uiState = MutableStateFlow<AuthorizationScreenViewState>(
-        AuthorizationScreenViewState.AuthorizationRegistrationState(lang = currentLangState.value, error = null)
+        AuthorizationScreenViewState.AuthorizationRegistrationState(
+            lang = currentLangState.value,
+            error = null
+        )
     )
 
     var emailValue by mutableStateOf("")
@@ -41,17 +46,22 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
     val uiState: StateFlow<AuthorizationScreenViewState> = _uiState.asStateFlow()
 
     fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
-            launch(Dispatchers.IO) {
-                checkState()
-                updateState(ProgressState.COMPLETED)
-            }
+        launch(Dispatchers.IO) {
+            checkState()
+            updateState(ProgressState.COMPLETED)
+        }
     }
 
     fun checkState() = with(viewModelScope + coroutineExceptionHandler) {
         launch(Dispatchers.IO) {
             emailLoading = true
             otpLoading = true
-            val state = interactor.checkState(lang = currentLangState.value, userEmail = emailValue, userOtp = otpValue, setOtpError = ::setOtpError)
+            val state = interactor.checkState(
+                lang = currentLangState.value,
+                userEmail = emailValue,
+                userOtp = otpValue,
+                setOtpError = ::setOtpError
+            )
             emailLoading = false
             otpLoading = false
             _uiState.update { state }
@@ -91,28 +101,39 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
         }
     }
 
-    fun openChat(){
+    fun openChat() {
         interactor.openChat()
     }
 
-    fun restartUIState(){
+    fun restartUIState() {
         _uiState.update { AuthorizationScreenViewState.LoadingState }
         initViewModel()
     }
 
-    fun restartProgressState(){
+    fun restartProgressState() {
         updateState(ProgressState.LOADING)
     }
 
-    fun setIdleProgressState(){
+    fun setIdleProgressState() {
         updateState(ProgressState.IDLE)
     }
 
-    fun setEmailError(errorText: String){
+    fun setEmailError(errorText: String) {
         emailError.value = errorText
     }
-    fun setOtpError(errorText: String){
+
+    fun setOtpError(errorText: String) {
         otpError.value = errorText
     }
 
+    fun getCurrentLang() = with(viewModelScope + coroutineExceptionHandler) {
+        launch(Dispatchers.IO) {
+            interactor.getLang()
+            interactor.langState.collect { state ->
+                if (state is ResultState.Success) {
+                    updateLangState(state.data ?: CurrentLanguageDomain.EN)
+                }
+            }
+        }
+    }
 }

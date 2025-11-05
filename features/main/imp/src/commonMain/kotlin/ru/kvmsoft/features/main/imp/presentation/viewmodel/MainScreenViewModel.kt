@@ -21,11 +21,9 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
     val uiState: StateFlow<MainScreenViewState> = _uiState.asStateFlow()
 
     fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
-        if(progressState.value == ProgressState.LOADING){
             launch(Dispatchers.IO) {
-//                interactor.userState.collect { userState->
-//                    _uiState.update { interactor.getCurrentState(state = userState, currentPosition = currentPosition) }
+                //todo test
+                interactor.getProfile()
             }
         }
     }
-}

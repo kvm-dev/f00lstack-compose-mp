@@ -76,6 +76,8 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(libs.androidx.lifecycle.viewmodelCompose)
                 implementation(libs.androidx.lifecycle.runtimeCompose)
+                //encrypted storage
+                implementation(projects.base.storage)
                 //utils
                 implementation(projects.base.utils)
                 //ui
@@ -90,6 +92,9 @@ kotlin {
                 implementation(libs.koin.compose.viewmodel)
                 //features
                 implementation(projects.features.language.api)
+                implementation(projects.features.authorization.api)
+                implementation(projects.features.networkconnection.api)
+                implementation(projects.features.profile.api)
             }
         }
 

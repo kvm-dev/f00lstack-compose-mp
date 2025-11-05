@@ -9,6 +9,7 @@ sealed class SplashScreenViewState {
     data class ErrorState(val errorMsg: String): SplashScreenViewState()
 
     data class SuccessState(
-        val language: CurrentLanguageDomain
+        val language: CurrentLanguageDomain,
+        val isAuthorized: Boolean? = null
     ): SplashScreenViewState()
 }

@@ -63,6 +63,7 @@ import ru.kvmsoft.features.authorization.imp.presentation.viewmodel.Authorizatio
 @Composable
 fun AuthorizationScreen(onAuthorized:()->Unit, viewModel: AuthorizationScreenViewModel = koinViewModel()) {
     val viewModelState by viewModel.progressState.collectAsState()
+    viewModel.getCurrentLang()
 
     var showBottomSheet by remember { mutableStateOf(true) }
 

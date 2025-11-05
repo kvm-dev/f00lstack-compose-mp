@@ -1,11 +1,15 @@
 package ru.kvmsoft.features.splash.imp.presentation.viewmodel
 
+import androidx.compose.ui.graphics.vector.Path
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -20,56 +24,41 @@ class SplashScreenViewModel(private val interactor: SplashScreenInteractor) : Ba
     private val _uiState = MutableStateFlow<SplashScreenViewState>(
         SplashScreenViewState.LoadingState
     )
+    private val loadingTime = 5000L //not required, but can be used to see the animation a little bit.
 
     val uiState: StateFlow<SplashScreenViewState> = _uiState.asStateFlow()
 
     fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
-            launch(Dispatchers.IO) {
-                interactor.langState.collect { langState ->
-                    _uiState.update { interactor.getState(langState = langState) }
-                    if(langState is ResultState.Success){
-                        updateLangState(langState.data?: CurrentLanguageDomain.EN)
+        launch(Dispatchers.IO) {
+            interactor.getCurrentLang()
+            interactor.langState.collect { langState ->
+                if (langState is ResultState.Success) {
+                    updateLangState(langState.data?: CurrentLanguageDomain.EN)
+                    _uiState.update {
+                        SplashScreenViewState.SuccessState(language = currentLangState.value)
                     }
+                }
+            }
+        }
+        updateState(ProgressState.LOADING)
+    }
+
+        fun checkState() = with(viewModelScope + coroutineExceptionHandler) {
+            launch(Dispatchers.IO) {
+                delay(loadingTime)
+                interactor.langState.combine(interactor.userToken) { langState, userToken ->
+                    Pair(
+                        langState,
+                        userToken
+                    )
+                }.collect { data ->
+                    val state = interactor.getState(
+                        langState = data.first,
+                        withToken = data.second.isNotEmpty()
+                    )
+                    _uiState.update { state }
                     updateState(ProgressState.COMPLETED)
                 }
             }
-        if (progressState.value == ProgressState.IDLE) {
-            interactor.getCurrentLang()
         }
     }
-}
-
-//    fun updateUserPosition() = with(viewModelScope + coroutineExceptionHandler){
-//        launch(Dispatchers.IO) {
-//            val currentPosition = interactor.getCurrentUserLocation()
-//            _uiState.value.copy(currentStreetName = "Ул. Бела-Куна 9", currentPosition = currentPosition)
-//        }
-//    }
-
-//    fun updateUserPosition() = with(viewModelScope + coroutineExceptionHandler){
-//        val currentPosition = interactor.getCurrentUserLocation()
-//        _uiState.update { NewsViewState.LoadingState(lang = lang) }
-//        launch {
-//            if(interactor.isConnectionAvailable()){
-//                interactor.getNewsFromServer()
-//            }
-//            else{
-//                interactor.getNewsFromLocal()
-//            }
-//            updateState(ProgressState.LOADING)
-//            initViewModel()
-//        }
-//    }
-
-//    fun navigateToSingleNews(navController: NavController, newsId: Int, newsDestination: String){
-//        val route = "$newsDestination/{newsId}"
-//        navController.navigate(
-//            route.replace(
-//                oldValue = "{newsId}",
-//                newValue = newsId.toString()
-//            )
-//        )
-//    }
-
-//    fun isConnectionAvailable() = interactor.isConnectionAvailable()
-//}

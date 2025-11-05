@@ -18,17 +18,20 @@ import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthori
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpCodeIsEmptyOrIncorrect
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpCodeIsExpiredOrIncorrect
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenViewState
+import ru.kvmsoft.features.language.api.domain.usecase.GetCurrentLanguageUseCase
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.networkconnection.api.domain.usecase.GetNetworkStateUseCase
 
 class AuthorizationScreenInteractor(
     private val networkStateUseCase: GetNetworkStateUseCase,
+    private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val confirmAuthAndRegUseCase: ConfirmAuthAndRegUseCase,
     private val isUserExistUseCase: IsUserExistUseCase,
     private val registrationByEmailUseCase: RegistrationByEmailUseCase,
     private val authByEmailUseCase: AuthByEmailUseCase,
     private val browserUtils: BrowserUtils) {
 
+    val langState = getCurrentLanguageUseCase.langState
     suspend fun checkState(
         setOtpError:(String)-> Unit,
         lang: CurrentLanguageDomain,
@@ -180,4 +183,5 @@ class AuthorizationScreenInteractor(
         }
     }
 
+    fun getLang() = getCurrentLanguageUseCase.getLang()
 }
