@@ -1,15 +1,11 @@
 package ru.kvmsoft.features.splash.imp.presentation.ui
 
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
+import ru.kvmsoft.features.profile.api.model.ProfileDomain
 
-sealed class SplashScreenViewState {
-
-    data object LoadingState: SplashScreenViewState()
-
-    data class ErrorState(val errorMsg: String): SplashScreenViewState()
-
-    data class SuccessState(
-        val language: CurrentLanguageDomain,
-        val isAuthorized: Boolean? = null
-    ): SplashScreenViewState()
-}
+data class SplashScreenViewState(
+    val language: CurrentLanguageDomain,
+    val isConnectionAvailable: Boolean,
+    val profile: ProfileDomain? = null,
+    val userToken: String
+)

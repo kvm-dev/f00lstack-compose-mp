@@ -11,7 +11,9 @@ val splashModule = module {
         encryptedDataStore = get(),
         getProfileUseCase = get(),
         authByTokenUserCase = get(),
-        networkStateUseCase = get()
+        networkStateUseCase = get(),
+        authByTokenOfflineLogUseCase = get(),
+        checkOfflineAuthDataLogForIosUseCase = get()
     ) }
     viewModelOf(::SplashScreenViewModel)
 }

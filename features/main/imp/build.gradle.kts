@@ -91,6 +91,7 @@ kotlin {
                 //features
                 implementation(projects.features.profile.api)
                 implementation(projects.features.networkconnection.api)
+                implementation(projects.features.language.api)
 
             }
         }

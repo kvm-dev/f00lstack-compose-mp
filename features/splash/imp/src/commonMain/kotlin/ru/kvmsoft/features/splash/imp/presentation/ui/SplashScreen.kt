@@ -45,128 +45,117 @@ fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateT
     val viewModelState by viewModel.progressState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
-    val infiniteTransition = rememberInfiniteTransition()
-    val animatedColor1 by infiniteTransition.animateColor(
-        initialValue = MainOrangeLight,
-        targetValue = MainGreenLight,
-        animationSpec = infiniteRepeatable(tween(durationMillis = 2000), RepeatMode.Reverse)
-    )
-    val animatedColor2 by infiniteTransition.animateColor(
-        initialValue = Turquoise,
-        targetValue = MainOrangeLight,
-        animationSpec = infiniteRepeatable(tween(durationMillis = 2000), RepeatMode.Reverse)
-    )
-
-    val composition by rememberLottieComposition {
-        LottieCompositionSpec.JsonString(
-            Res.readBytes("files/fs-animation.json").decodeToString()
-        )
-    }
-
     when (viewModelState) {
         ProgressState.IDLE -> {
             viewModel.initViewModel()
-        }
-        ProgressState.LOADING -> {
-
-            when(uiState){
-                is SplashScreenViewState.ErrorState -> {
-                    //unreachable state
-                }
-                is SplashScreenViewState.LoadingState -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(animatedColor1, animatedColor2),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                                )
+            val composition by rememberLottieComposition {
+                LottieCompositionSpec.JsonString(
+                    Res.readBytes("files/fs-animation.json").decodeToString()
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MainOrangeLight,
+                                Turquoise
                             )
-                    ) {
-                        Text(getSplashTitle(), modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 80.dp),
-                            style = getFoolStackTypography().headlineLarge,
-                            textAlign  = TextAlign.Center
                         )
-                        LogoIcon(
-                            modifier = Modifier
-                                .size(128.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-
-                        Spacer(modifier = Modifier.weight(1f))
-                        Image(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.FillWidth,
-                            painter = rememberLottiePainter(
-                                composition = composition,
-                                iterations = Compottie.IterateForever
-                            ),
-                            contentDescription = ""
-                        )
-                    }
-                    viewModel.checkState()
-                }
-                is SplashScreenViewState.SuccessState -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(animatedColor1, animatedColor2),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                                )
-                            )
-                    ) {
-                        Text(getSplashTitle(), modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 80.dp),
-                            style = getFoolStackTypography().headlineLarge,
-                            textAlign  = TextAlign.Center
-                        )
-                        LogoIcon(
-                            modifier = Modifier
-                                .size(128.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                        Text(
-                            getSplashDescription(lang = (uiState as SplashScreenViewState.SuccessState).language), modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 40.dp),
-                            style = getFoolStackTypography().titleMedium,
-                            color = UnselectedNavigationColor,
-                            textAlign  = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.weight(1f))
-                        Image(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.FillWidth,
-                            painter = rememberLottiePainter(
-                                composition = composition,
-                                iterations = Compottie.IterateForever
-                            ),
-                            contentDescription = ""
-                        )
-                    }
-                    viewModel.checkState()
-                }
+                    )
+            ) {
+                Text(getSplashTitle(), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 80.dp),
+                    style = getFoolStackTypography().headlineLarge,
+                    textAlign  = TextAlign.Center
+                )
+                LogoIcon(
+                    modifier = Modifier
+                        .size(128.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    getSplashDescription(lang = (uiState.language)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 40.dp),
+                    style = getFoolStackTypography().titleMedium,
+                    color = UnselectedNavigationColor,
+                    textAlign  = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth,
+                    painter = rememberLottiePainter(
+                        composition = composition,
+                        iterations = Compottie.IterateForever),
+                    contentDescription = ""
+                )
             }
         }
+        ProgressState.LOADING -> {
+            viewModel.finishLoading()
+            val composition by rememberLottieComposition {
+                LottieCompositionSpec.JsonString(
+                    Res.readBytes("files/fs-animation.json").decodeToString()
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MainOrangeLight,
+                                Turquoise
+                            )
+                        )
+                    )
+            ) {
+                Text(getSplashTitle(), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 80.dp),
+                    style = getFoolStackTypography().headlineLarge,
+                    textAlign  = TextAlign.Center
+                )
+                LogoIcon(
+                    modifier = Modifier
+                        .size(128.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    getSplashDescription(lang = (uiState.language)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 40.dp),
+                    style = getFoolStackTypography().titleMedium,
+                    color = UnselectedNavigationColor,
+                    textAlign  = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.FillWidth,
+                    painter = rememberLottiePainter(
+                        composition = composition,
+                        iterations = Compottie.IterateForever),
+                    contentDescription = ""
+                )
+            }
+
+        }
         ProgressState.COMPLETED -> {
-            if(uiState is SplashScreenViewState.SuccessState){
-                if((uiState as SplashScreenViewState.SuccessState).isAuthorized == true){
-                    onNavigateToHome()
-                }
-                else{
-                    onNavigationAuthorization()
-                }
+            val profileId = uiState.profile?.userId?: 0
+            if(profileId>0){
+                onNavigateToHome()
+            }
+            else{
+                onNavigationAuthorization()
             }
         }
     }

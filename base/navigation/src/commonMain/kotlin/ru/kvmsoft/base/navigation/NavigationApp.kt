@@ -49,7 +49,7 @@ import ru.kvmsoft.features.tests.imp.presentation.ui.TestsListScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationApp() {
+fun NavigationApp(langIsRus: Boolean) {
     var isShowNavBar by remember { mutableStateOf(false) }
     val navController = rememberNavController() // Инициализация контроллера навигации
     val allNavigationItems = getDestinationsList()
@@ -89,7 +89,7 @@ fun NavigationApp() {
                                                 modifier = Modifier.size(32.dp),
                                             )
                                         },
-                                        label = { Text(item.label) },
+                                        label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
                                         selected = currentRoute == item.route,
                                         onClick = {
                                             navController.navigate(item.route) {
@@ -113,7 +113,7 @@ fun NavigationApp() {
                                                     modifier = Modifier.size(32.dp),
                                                 )
                                             },
-                                            label = { Text(item.label) },
+                                            label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
                                             selected = currentRoute == item.route,
                                             onClick = {
                                                 navController.navigate(item.route) {
@@ -133,11 +133,11 @@ fun NavigationApp() {
                                             icon = {
                                                 Icon(
                                                     imageVector = testsIcon, // Reference your ImageVector from the .kt file
-                                                    contentDescription = item.label,
+                                                    contentDescription = if(langIsRus)item.labelRus else item.labelEng,
                                                     modifier = Modifier.size(32.dp),
                                                 )
                                             },
-                                            label = { Text(item.label) },
+                                            label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
                                             selected = currentRoute == item.route,
                                             onClick = {
                                                 navController.navigate(item.route) {
@@ -161,7 +161,7 @@ fun NavigationApp() {
                                                     modifier = Modifier.size(32.dp),
                                                 )
                                             },
-                                            label = { Text(item.label) },
+                                            label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
                                             selected = currentRoute == item.route,
                                             onClick = {
                                                 navController.navigate(item.route) {

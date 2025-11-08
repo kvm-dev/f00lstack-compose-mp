@@ -59,6 +59,7 @@ kotlin {
             //features
             implementation(projects.features.language.imp)
             implementation(projects.features.networkconnection.imp)
+            implementation(projects.features.language.api)
             implementation(projects.features.language.imp)
             //ui
             implementation(projects.base.ui)

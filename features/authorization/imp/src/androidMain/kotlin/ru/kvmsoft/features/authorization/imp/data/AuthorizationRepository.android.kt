@@ -37,7 +37,6 @@ actual class AuthorizationRepository(private val localDataSource: LocalDataSourc
                 success = result.success,
                 errorMsg = result.errorMsg
             )
-
         }
     }
 
@@ -67,7 +66,9 @@ actual class AuthorizationRepository(private val localDataSource: LocalDataSourc
         return networkDataSource.registrationByEmail(email = email)
     }
 
-    actual suspend fun authByTokenOfflineLogClear() {
+    actual suspend fun checkAuthOfflineLogDataForIos() {
+        val offlineLogData = localDataSource.checkOfflineAuthData()
+        networkDataSource.sendOfflineAuthData(offlineLogData)
         localDataSource.clearOfflineAuthData()
     }
 }

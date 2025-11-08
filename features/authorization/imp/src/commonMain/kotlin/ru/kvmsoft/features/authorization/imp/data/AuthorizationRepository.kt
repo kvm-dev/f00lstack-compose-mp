@@ -20,7 +20,7 @@ expect class AuthorizationRepository{
 
     suspend fun authByTokenOfflineLog()
 
-    suspend fun authByTokenOfflineLogClear()
-
     suspend fun registrationByEmail(email: String): RegistrationByEmailDomain
+
+    suspend fun checkAuthOfflineLogDataForIos()
 }

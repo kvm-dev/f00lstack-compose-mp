@@ -13,7 +13,7 @@ class GetNetworkStateUseCaseImp: GetNetworkStateUseCase {
                 client.get("https://foolstack.ru") {
                     attributes.put(disableAuthKey, true)
                     timeout {
-                        requestTimeoutMillis = 15000 // 5 seconds
+                        requestTimeoutMillis = 10000 // 10 seconds
                     }
                 }.status.isSuccess()
             } catch (e: Exception) {

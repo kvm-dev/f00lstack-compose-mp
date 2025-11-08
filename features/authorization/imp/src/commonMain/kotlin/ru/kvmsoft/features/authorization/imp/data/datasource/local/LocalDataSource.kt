@@ -28,4 +28,6 @@ class LocalDataSource(private val encryptedDataStore: EncryptedDataStore, privat
 
     }
 
+    suspend fun checkOfflineAuthData() = dataBaseSDK.getOfflineAuthData()
+
 }

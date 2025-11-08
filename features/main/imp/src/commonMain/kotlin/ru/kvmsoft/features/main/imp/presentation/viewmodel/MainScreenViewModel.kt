@@ -23,7 +23,7 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
     fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
             launch(Dispatchers.IO) {
                 //todo test
-                interactor.getProfile()
+//                interactor.getProfile()
             }
         }
     }

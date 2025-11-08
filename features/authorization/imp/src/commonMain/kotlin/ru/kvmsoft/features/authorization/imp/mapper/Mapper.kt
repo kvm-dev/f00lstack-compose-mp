@@ -1,23 +1,26 @@
 package ru.kvmsoft.features.authorization.imp.mapper
 
+import ru.kvmsoft.base.storage.OfflineAuthData
 import ru.kvmsoft.features.authorization.api.model.AuthByEmailDomain
 import ru.kvmsoft.features.authorization.api.model.AuthByTokenDomain
 import ru.kvmsoft.features.authorization.api.model.ConfirmAuthAndRegDomain
 import ru.kvmsoft.features.authorization.api.model.IsUserExistDomain
 import ru.kvmsoft.features.authorization.api.model.RegistrationByEmailDomain
+import ru.kvmsoft.features.authorization.imp.model.request.AuthByTokenOfflineLogRequest
 import ru.kvmsoft.features.authorization.imp.model.response.AuthByEmailResponse
 import ru.kvmsoft.features.authorization.imp.model.response.AuthByTokenResponse
 import ru.kvmsoft.features.authorization.imp.model.response.ConfirmAuthAndRegResponse
 import ru.kvmsoft.features.authorization.imp.model.response.IsUserExistResponse
 import ru.kvmsoft.features.authorization.imp.model.response.RegistrationByEmailResponse
-
+import ru.kvmsoft.base.storage.model.OfflineAuthData as StorageAuthData
 object Mapper {
 
     fun map(response: AuthByEmailResponse): AuthByEmailDomain {
         return AuthByEmailDomain(
             userToken = response.userToken,
             userRefreshToken = response.userRefreshToken,
-            errorMsg = response.errorMsg)
+            errorMsg = response.errorMsg
+        )
     }
 
     fun map(response: AuthByTokenResponse): AuthByTokenDomain {
@@ -48,5 +51,9 @@ object Mapper {
             success = response.success,
             errorMsg = response.errorMsg
         )
+    }
+
+    fun map(response: StorageAuthData): AuthByTokenOfflineLogRequest {
+        return AuthByTokenOfflineLogRequest(timestamp = response.timeStamp)
     }
 }

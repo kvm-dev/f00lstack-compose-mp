@@ -1,5 +1,6 @@
 package ru.kvmsoft.features.authorization.imp.data.datasource.network
 
+import ru.kvmsoft.base.storage.OfflineAuthData
 import ru.kvmsoft.features.authorization.api.model.AuthByEmailDomain
 import ru.kvmsoft.features.authorization.api.model.AuthByTokenDomain
 import ru.kvmsoft.features.authorization.api.model.ConfirmAuthAndRegDomain
@@ -8,6 +9,7 @@ import ru.kvmsoft.features.authorization.api.model.RegistrationByEmailDomain
 import ru.kvmsoft.features.authorization.imp.mapper.Mapper
 import ru.kvmsoft.features.authorization.imp.model.request.AuthByTokenOfflineLogRequest
 import ru.kvmsoft.features.authorization.imp.model.response.AuthByTokenOfflineResponse
+import ru.kvmsoft.base.storage.model.OfflineAuthData as StorageAuthData
 
 class NetworkDataSource(private val api: AuthorizationApi){
 
@@ -33,6 +35,13 @@ class NetworkDataSource(private val api: AuthorizationApi){
 
     suspend fun registrationByEmail(email: String): RegistrationByEmailDomain {
         return Mapper.map(api.registrationByEmail(email = email))
+    }
+    suspend fun sendOfflineAuthData(authData: List<StorageAuthData>){
+        if(authData.isNotEmpty()){
+            authData.forEach { authLogData->
+                api.sendAuthByTokenOfflineLog(Mapper.map(authLogData))
+            }
+        }
     }
 
 }

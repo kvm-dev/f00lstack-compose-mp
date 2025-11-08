@@ -32,6 +32,7 @@ class AuthorizationScreenInteractor(
     private val browserUtils: BrowserUtils) {
 
     val langState = getCurrentLanguageUseCase.langState
+    @Suppress("SuspiciousIndentation")
     suspend fun checkState(
         setOtpError:(String)-> Unit,
         lang: CurrentLanguageDomain,
