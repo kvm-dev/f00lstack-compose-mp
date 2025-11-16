@@ -26,4 +26,10 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
 //                interactor.getProfile()
             }
         }
+
+    fun goToAuthorize() = with(viewModelScope){
+        launch {
+            interactor.clearUserData()
+        }
+    }
     }

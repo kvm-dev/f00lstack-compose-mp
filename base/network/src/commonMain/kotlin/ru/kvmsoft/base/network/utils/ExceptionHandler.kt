@@ -3,15 +3,15 @@ package ru.kvmsoft.base.network.utils
 import io.ktor.http.HttpStatusCode
 import ru.kvmsoft.base.network.model.NetworkError
 
-fun exceptionHandler(statusCode: HttpStatusCode):String{
+fun exceptionHandler(statusCode: HttpStatusCode): Throwable{
     return when (statusCode) {
-        HttpStatusCode.BadRequest -> NetworkError.BadRequest().message
-        HttpStatusCode.Unauthorized -> NetworkError.Unauthorized().message
-        HttpStatusCode.Forbidden -> NetworkError.Forbidden().message
-        HttpStatusCode.NotFound -> NetworkError.NotFound().message
-        HttpStatusCode.RequestTimeout -> NetworkError.RequestTimeOut().message
-        HttpStatusCode.InternalServerError -> NetworkError.InternalServerError().message
-        HttpStatusCode.ExpectationFailed -> NetworkError.ExpectationFailed().message
-        else->NetworkError.UnknownError().message
+        HttpStatusCode.BadRequest -> NetworkError.BadRequest()
+        HttpStatusCode.Unauthorized -> NetworkError.Unauthorized()
+        HttpStatusCode.Forbidden -> NetworkError.Forbidden()
+        HttpStatusCode.NotFound -> NetworkError.NotFound()
+        HttpStatusCode.RequestTimeout -> NetworkError.RequestTimeOut()
+        HttpStatusCode.InternalServerError -> NetworkError.InternalServerError()
+        HttpStatusCode.ExpectationFailed -> NetworkError.ExpectationFailed()
+        else->NetworkError.UnknownError()
     }
 }

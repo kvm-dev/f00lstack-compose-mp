@@ -53,4 +53,8 @@ class SplashScreenInteractor(
             profile = null
         )
     }
+
+    suspend fun clearUserData(){
+        encryptedDataStore.clearUserData()
+    }
 }

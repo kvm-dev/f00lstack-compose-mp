@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.news.imp.presentation.viewmodel.NewsInnerScreenViewModel
 
 @Composable
-fun NewsInnerScreen(viewModel: NewsInnerScreenViewModel = koinViewModel()) {
+fun NewsInnerScreen(viewModel: NewsInnerScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,9 @@ fun NewsInnerScreen(viewModel: NewsInnerScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
     }
 
     Column {

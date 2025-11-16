@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.settings.imp.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
-fun SettingsScreen(viewModel: SettingsScreenViewModel = koinViewModel()) {
+fun SettingsScreen(viewModel: SettingsScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,9 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
     }
 
     Column {

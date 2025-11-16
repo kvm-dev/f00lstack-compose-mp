@@ -158,6 +158,10 @@ fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateT
                 onNavigationAuthorization()
             }
         }
+        ProgressState.UNAUTHORIZED -> {
+            viewModel.goToAuthorize()
+            onNavigationAuthorization()
+        }
     }
 }
 

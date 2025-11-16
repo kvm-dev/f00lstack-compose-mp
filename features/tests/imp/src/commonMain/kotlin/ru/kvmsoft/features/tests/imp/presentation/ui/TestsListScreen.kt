@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.tests.imp.presentation.viewmodel.TestsListScreenViewModel
 
 @Composable
-fun TestsListScreen(viewModel: TestsListScreenViewModel = koinViewModel()) {
+fun TestsListScreen(viewModel: TestsListScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,9 @@ fun TestsListScreen(viewModel: TestsListScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
     }
 
     Column {

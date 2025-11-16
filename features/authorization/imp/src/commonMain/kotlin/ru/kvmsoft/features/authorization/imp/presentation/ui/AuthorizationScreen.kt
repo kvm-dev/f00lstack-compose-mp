@@ -379,5 +379,8 @@ fun AuthorizationScreen(onAuthorized:()->Unit, viewModel: AuthorizationScreenVie
                 }
             }
         }
+        ProgressState.UNAUTHORIZED -> {
+            viewModel.goToAuthorize()
+        }
     }
 }

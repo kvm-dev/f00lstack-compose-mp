@@ -68,4 +68,10 @@ class SplashScreenViewModel(private val interactor: SplashScreenInteractor) : Ba
                  updateState(ProgressState.COMPLETED)
              }
      }
+
+    fun goToAuthorize() = with(viewModelScope){
+        launch {
+            interactor.clearUserData()
+        }
+    }
 }

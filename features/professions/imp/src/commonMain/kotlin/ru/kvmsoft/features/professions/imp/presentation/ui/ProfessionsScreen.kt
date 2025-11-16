@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.professions.imp.presentation.viewmodel.ProfessionsScreenViewModel
 
 @Composable
-fun ProfessionsScreen(viewModel: ProfessionsScreenViewModel = koinViewModel()) {
+fun ProfessionsScreen(viewModel: ProfessionsScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,10 @@ fun ProfessionsScreen(viewModel: ProfessionsScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
+
     }
 
     Column {

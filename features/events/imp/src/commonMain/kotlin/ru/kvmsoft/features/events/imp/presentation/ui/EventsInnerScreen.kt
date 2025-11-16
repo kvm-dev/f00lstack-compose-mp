@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.events.imp.presentation.viewmodel.EventsInnerScreenViewModel
 
 @Composable
-fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel()) {
+fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,9 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
     }
 
     Column {

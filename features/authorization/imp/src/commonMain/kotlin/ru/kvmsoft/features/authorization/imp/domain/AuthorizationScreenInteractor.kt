@@ -1,5 +1,6 @@
 package ru.kvmsoft.features.authorization.imp.domain
 
+import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import ru.kvmsoft.base.ui.res.strings.getChatLink
 import ru.kvmsoft.base.ui.res.strings.getErrorTextCodeIsAlreadySent
 import ru.kvmsoft.base.ui.res.strings.getErrorTextCodeIsIncorrect
@@ -29,7 +30,8 @@ class AuthorizationScreenInteractor(
     private val isUserExistUseCase: IsUserExistUseCase,
     private val registrationByEmailUseCase: RegistrationByEmailUseCase,
     private val authByEmailUseCase: AuthByEmailUseCase,
-    private val browserUtils: BrowserUtils) {
+    private val browserUtils: BrowserUtils,
+    private val encryptedDataStore: EncryptedDataStore) {
 
     val langState = getCurrentLanguageUseCase.langState
     @Suppress("SuspiciousIndentation")
@@ -185,4 +187,8 @@ class AuthorizationScreenInteractor(
     }
 
     fun getLang() = getCurrentLanguageUseCase.getLang()
+
+    suspend fun clearUserData(){
+        encryptedDataStore.clearUserData()
+    }
 }

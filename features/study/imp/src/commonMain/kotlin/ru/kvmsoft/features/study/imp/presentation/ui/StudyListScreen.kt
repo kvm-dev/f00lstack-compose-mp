@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.study.imp.presentation.viewmodel.StudyListViewModel
 
 @Composable
-fun StudyListScreen(viewModel: StudyListViewModel = koinViewModel()) {
+fun StudyListScreen(viewModel: StudyListViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,10 @@ fun StudyListScreen(viewModel: StudyListViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
+
     }
 
     Column {

@@ -136,4 +136,10 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
             }
         }
     }
+
+    fun goToAuthorize() = with(viewModelScope){
+        launch {
+            interactor.clearUserData()
+        }
+    }
 }

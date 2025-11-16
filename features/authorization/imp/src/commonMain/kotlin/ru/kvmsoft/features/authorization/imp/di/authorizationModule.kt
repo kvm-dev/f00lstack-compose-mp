@@ -40,6 +40,7 @@ val authorizationModule = module {
         registrationByEmailUseCase = get(),
         browserUtils = get(),
         authByEmailUseCase = get(),
-        getCurrentLanguageUseCase = get()) }
+        getCurrentLanguageUseCase = get(),
+        encryptedDataStore = get()) }
     viewModelOf(::AuthorizationScreenViewModel)
 }

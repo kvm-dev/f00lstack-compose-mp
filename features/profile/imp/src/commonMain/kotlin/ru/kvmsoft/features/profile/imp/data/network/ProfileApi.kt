@@ -28,7 +28,7 @@ class ProfileApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<ProfileResponse>()
         } else{
-            ProfileResponse(errorMsg = exceptionHandler(result.status))
+            ProfileResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -41,7 +41,7 @@ class ProfileApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<UpdateEmailResponse>()
         } else{
-            UpdateEmailResponse(errorMsg = exceptionHandler(result.status))
+            UpdateEmailResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -54,7 +54,7 @@ class ProfileApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<UpdateNameResponse>()
         } else{
-            UpdateNameResponse(errorMsg = exceptionHandler(result.status))
+            UpdateNameResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -77,7 +77,7 @@ class ProfileApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<UpdatePhotoResponse>()
         } else{
-            UpdatePhotoResponse(errorMsg = exceptionHandler(result.status))
+            UpdatePhotoResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -89,7 +89,7 @@ class ProfileApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<DeleteProfileResponse>()
         } else{
-            DeleteProfileResponse(errorMsg = exceptionHandler(result.status))
+            DeleteProfileResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 }

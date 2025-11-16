@@ -220,19 +220,45 @@ fun NavigationApp(langIsRus: Boolean) {
         ) {
             // Определяем маршруты и их Composable-функции
             composable(AppDestinations.Main().route) {
-                MainScreen()
+                MainScreen(
+                    onNavigationAuthorization = {
+                        navController.navigate(route = AppDestinations.Authorization().route)
+                        { popUpTo(AppDestinations.Splash().route){
+                            inclusive = true
+                        }}
+                        isShowNavBar = false}
+                )
                 isShowNavBar = true
             }
             composable(AppDestinations.InterviewList().route) {
-                InterviewListScreen()
+                InterviewListScreen(
+                    onNavigationAuthorization = {
+                        navController.navigate(route = AppDestinations.Authorization().route)
+                        { popUpTo(AppDestinations.Splash().route){
+                            inclusive = true
+                        }}
+                        isShowNavBar = false}
+                )
                 isShowNavBar = true
             }
             composable(AppDestinations.TestsList().route) {
-                TestsListScreen()
+                TestsListScreen(
+                    onNavigationAuthorization = {
+                    navController.navigate(route = AppDestinations.Authorization().route)
+                    { popUpTo(AppDestinations.Splash().route){
+                        inclusive = true
+                    }}
+                    isShowNavBar = false})
                 isShowNavBar = true
             }
             composable(AppDestinations.NewsList().route) {
-                NewsListScreen()
+                NewsListScreen(
+                    onNavigationAuthorization = {
+                    navController.navigate(route = AppDestinations.Authorization().route)
+                    { popUpTo(AppDestinations.Splash().route){
+                        inclusive = true
+                    }}
+                    isShowNavBar = false})
                 isShowNavBar = true
             }
             composable(AppDestinations.Authorization().route) {
@@ -246,7 +272,13 @@ fun NavigationApp(langIsRus: Boolean) {
                 isShowNavBar = false
             }
             composable(AppDestinations.Professions().route) {
-                ProfileScreen()
+                ProfileScreen(
+                    onNavigationAuthorization = {
+                    navController.navigate(route = AppDestinations.Authorization().route)
+                    { popUpTo(AppDestinations.Splash().route){
+                        inclusive = true
+                    }}
+                    isShowNavBar = false})
                 isShowNavBar = false
             }
             composable(AppDestinations.Splash().route) {

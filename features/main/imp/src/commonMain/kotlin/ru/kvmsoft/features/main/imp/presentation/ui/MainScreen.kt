@@ -23,7 +23,7 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel = koinViewModel()) {
+fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -32,6 +32,10 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            viewModel.goToAuthorize()
+            onNavigationAuthorization()
+        }
     }
     Column(modifier = Modifier
         .padding(top = 50.dp, start = 24.dp, end = 24.dp)) {

@@ -9,7 +9,7 @@ import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.books.imp.presentation.viewmodel.BooksInnerScreenViewModel
 
 @Composable
-fun BooksInnerScreen(viewModel: BooksInnerScreenViewModel = koinViewModel()) {
+fun BooksInnerScreen(viewModel: BooksInnerScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
     val viewModelState by viewModel.progressState.collectAsState()
     when (viewModelState) {
         ProgressState.IDLE -> {
@@ -18,6 +18,9 @@ fun BooksInnerScreen(viewModel: BooksInnerScreenViewModel = koinViewModel()) {
         }
         ProgressState.LOADING -> {}
         ProgressState.COMPLETED -> {}
+        ProgressState.UNAUTHORIZED -> {
+            onNavigationAuthorization()
+        }
     }
 
     Column {

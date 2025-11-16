@@ -35,7 +35,7 @@ class AuthorizationApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<AuthByEmailResponse>()
         } else{
-            AuthByEmailResponse(errorMsg = exceptionHandler(result.status))
+            AuthByEmailResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -47,7 +47,7 @@ class AuthorizationApi(private val client: HttpClient) {
             if (result.status == HttpStatusCode.OK) {
                 result.body<AuthByTokenResponse>()
             } else {
-                AuthByTokenResponse(errorMsg = exceptionHandler(result.status))
+                AuthByTokenResponse(errorMsg = exceptionHandler(result.status).message?: "")
             }
         } catch (e: Throwable){
             AuthByTokenResponse(errorMsg = e.message?: "Unknown error")
@@ -65,7 +65,7 @@ class AuthorizationApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<ConfirmAuthAndRegResponse>()
         } else{
-            ConfirmAuthAndRegResponse(errorMsg = exceptionHandler(result.status))
+            ConfirmAuthAndRegResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -80,7 +80,7 @@ class AuthorizationApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<IsUserExistResponse>()
         } else{
-            IsUserExistResponse(errorMsg = exceptionHandler(result.status))
+            IsUserExistResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -93,7 +93,7 @@ class AuthorizationApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<AuthByTokenOfflineResponse>()
         } else{
-            AuthByTokenOfflineResponse(errorMsg = exceptionHandler(result.status))
+            AuthByTokenOfflineResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 
@@ -107,7 +107,7 @@ class AuthorizationApi(private val client: HttpClient) {
         return if(result.status == HttpStatusCode.OK) {
             result.body<RegistrationByEmailResponse>()
         } else{
-            RegistrationByEmailResponse(errorMsg = exceptionHandler(result.status))
+            RegistrationByEmailResponse(errorMsg = exceptionHandler(result.status).message?: "")
         }
     }
 }
