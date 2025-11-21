@@ -40,7 +40,7 @@ class DataBaseSDK(private val dataSource: LocalDataSource) {
 
     suspend fun getEventsVersion() =  dataSource.getEventsVersion()
 
-    suspend fun updateEventVersion(eventVersion: Int) = dataSource.updateEventsVersion(eventVersion)
+    suspend fun updateEventsVersion(eventVersion: Int) = dataSource.updateEventsVersion(eventVersion)
 
     suspend fun getNews(): News = dataSource.getNews()
 
@@ -49,6 +49,10 @@ class DataBaseSDK(private val dataSource: LocalDataSource) {
     suspend fun getBooks() = dataSource.getBooks()
 
     suspend fun saveBooks(books: Books) = dataSource.clearAndSaveBooks(books)
+
+    suspend fun getBooksVersion() =  dataSource.getBooksVersion()
+
+    suspend fun updateBooksVersion(eventVersion: Int) = dataSource.updateBooksVersion(eventVersion)
 
     suspend fun getStudies() = dataSource.getStudies()
 

@@ -327,8 +327,9 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
 
     internal fun updateEventsVersion(version: Int) {
         val versions = dbQuery.selectEventsVersions().executeAsList()
-        if (versions.isEmpty()){
+        if (versions.isNotEmpty()){
             dbQuery.clearAllEventsVersions()
+            dbQuery.insertEventsVersions(version.toLong())
         }
         else{
             dbQuery.insertEventsVersions(version.toLong())
@@ -409,6 +410,26 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
                     professionName = profession.professionName
                 )
             }
+        }
+    }
+
+    internal fun getBooksVersion(): Int {
+        val versions = dbQuery.selectBooksVersions().executeAsList()
+        return if(versions.isNotEmpty()){
+            versions.first().toInt()
+        } else{
+            0
+        }
+    }
+
+    internal fun updateBooksVersion(version: Int) {
+        val versions = dbQuery.selectBooksVersions().executeAsList()
+        if (versions.isNotEmpty()){
+            dbQuery.clearAllBooksVersions()
+            dbQuery.insertBooksVersions(version.toLong())
+        }
+        else{
+            dbQuery.insertBooksVersions(version.toLong())
         }
     }
 

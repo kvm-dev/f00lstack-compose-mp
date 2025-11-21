@@ -60,7 +60,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.androidx.lifecycle.viewmodelCompose)
                 //utils
                 implementation(projects.base.utils)
             }

@@ -124,6 +124,10 @@ CREATE TABLE BookProfessions(
    professionName TEXT NOT NULL
 );
 
+CREATE TABLE BooksVersions (
+    booksVersion INTEGER NOT NULL
+);
+
 CREATE TABLE Professions(
    professionId INTEGER NOT NULL,
    professionName TEXT NOT NULL,
@@ -174,7 +178,6 @@ CREATE TABLE OfflineTestResult(
     testResult INTEGER NOT NULL,
     timeStamp INTEGER NOT NULL
 );
-
 
 
 insertProfile:
@@ -383,9 +386,20 @@ selectBooksPr:
 SELECT BooksPR.*
 FROM BooksPR;
 
-
 clearAllBookPr:
 DELETE FROM BooksPR;
+
+
+insertBooksVersions:
+INSERT INTO BooksVersions(booksVersion)
+VALUES(?);
+
+selectBooksVersions:
+SELECT BooksVersions.*
+FROM BooksVersions;
+
+clearAllBooksVersions:
+DELETE FROM EventsVersions;
 
 
 insertNews:
@@ -440,7 +454,6 @@ FROM EventsVersions;
 
 clearAllEventsVersions:
 DELETE FROM EventsVersions;
-
 
 
 insertProfession:

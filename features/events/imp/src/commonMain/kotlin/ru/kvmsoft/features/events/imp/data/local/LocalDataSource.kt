@@ -17,5 +17,5 @@ class LocalDataSource(private val databaseSdk: DataBaseSDK) {
 
     suspend fun getEventsVersion():Int = databaseSdk.getEventsVersion()
 
-    suspend fun updateEventsVersion(version: Int) = databaseSdk.updateEventVersion(version)
+    suspend fun updateEventsVersion(version: Int) = databaseSdk.updateEventsVersion(version)
 }
