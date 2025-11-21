@@ -86,6 +86,10 @@ CREATE TABLE EventSubs(
    eventSubName TEXT NOT NULL
 );
 
+CREATE TABLE EventsVersions (
+    eventsVersion INTEGER NOT NULL
+);
+
 CREATE TABLE News(
    newsId INTEGER NOT NULL,
    newsName TEXT NOT NULL,
@@ -424,6 +428,19 @@ FROM EventSubs;
 
 clearAllEventSubs:
 DELETE FROM EventSubs;
+
+
+insertEventsVersions:
+INSERT INTO EventsVersions(eventsVersion)
+VALUES(?);
+
+selectEventsVersions:
+SELECT EventsVersions.*
+FROM EventsVersions;
+
+clearAllEventsVersions:
+DELETE FROM EventsVersions;
+
 
 
 insertProfession:

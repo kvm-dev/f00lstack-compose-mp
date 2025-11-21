@@ -14,6 +14,7 @@ import ru.kvmsoft.base.network.di.networkModule
 import ru.kvmsoft.base.storage.di.storageModule
 import ru.kvmsoft.base.storage.di.storagePlatformModule
 import ru.kvmsoft.base.utils.di.utilsModule
+import ru.kvmsoft.features.asmode.imp.di.asModeModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationPlatformModule
 import ru.kvmsoft.features.books.imp.di.booksModule
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
                 languagePlatformModule,
                 languageModule,
                 splashModule,
+                asModeModule,
                 mainModule,
                 authorizationPlatformModule,
                 authorizationModule,

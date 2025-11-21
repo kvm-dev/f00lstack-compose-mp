@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.build.config)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -59,8 +64,24 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                //api
+                implementation(projects.features.asmode.api)
+                //base libs
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(libs.backhandler)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                //utils
+                implementation(projects.base.utils)
+                //storage
+                implementation(projects.base.storage)
+                //di
+                implementation(libs.koin.core)
+                //network
+                implementation(projects.base.network)
+                implementation(libs.ktor.client.core)
+                //network
+                implementation(projects.features.networkconnection.api)
             }
         }
 

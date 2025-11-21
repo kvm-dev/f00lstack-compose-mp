@@ -43,6 +43,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             //navigation
             implementation(projects.base.navigation)
+            //asmode
+            implementation(projects.features.asmode.imp)
             //screens
             implementation(projects.features.splash.imp)
             implementation(projects.features.main.imp)

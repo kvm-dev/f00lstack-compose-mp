@@ -65,7 +65,7 @@ kotlin {
         commonMain {
             dependencies {
                 //api
-                implementation(projects.features.splash.api)
+                implementation(projects.features.events.api)
                 //base libs
                 implementation(libs.kotlin.stdlib)
                 implementation(compose.runtime)
@@ -76,6 +76,8 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(libs.androidx.lifecycle.viewmodelCompose)
                 implementation(libs.androidx.lifecycle.runtimeCompose)
+                //storage
+                implementation(projects.base.storage)
                 //utils
                 implementation(projects.base.utils)
                 //ui

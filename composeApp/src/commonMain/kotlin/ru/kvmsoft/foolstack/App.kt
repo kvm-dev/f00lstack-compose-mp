@@ -12,6 +12,7 @@ import ru.kvmsoft.base.storage.di.storageModule
 import ru.kvmsoft.base.storage.di.storagePlatformModule
 import ru.kvmsoft.base.utils.di.utilsModule
 import ru.kvmsoft.base.utils.model.ResultState
+import ru.kvmsoft.features.asmode.imp.di.asModeModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationPlatformModule
 import ru.kvmsoft.features.books.imp.di.booksModule
@@ -44,6 +45,7 @@ fun App(koinAppDeclaration: KoinAppDeclaration? = null) {
             networkConnectionModule,
             languagePlatformModule, languageModule,
             splashModule,
+            asModeModule,
             mainModule,
             authorizationPlatformModule,
             authorizationModule,

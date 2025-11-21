@@ -1,5 +1,6 @@
 package ru.kvmsoft.base.storage.data.local
 
+import io.ktor.http.content.MultiPartData
 import ru.kvmsoft.base.storage.AppDatabase
 import ru.kvmsoft.base.storage.data.drivers.DatabaseDriverFactory
 import ru.kvmsoft.base.storage.mapper.Mapper
@@ -312,6 +313,25 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
                     eventSubId = eventSub.subId.toLong(),
                     eventSubName = eventSub.subName)
             }
+        }
+    }
+
+    internal fun getEventsVersion(): Int {
+        val versions = dbQuery.selectEventsVersions().executeAsList()
+        return if(versions.isNotEmpty()){
+            versions.first().toInt()
+        } else{
+            0
+        }
+    }
+
+    internal fun updateEventsVersion(version: Int) {
+        val versions = dbQuery.selectEventsVersions().executeAsList()
+        if (versions.isEmpty()){
+            dbQuery.clearAllEventsVersions()
+        }
+        else{
+            dbQuery.insertEventsVersions(version.toLong())
         }
     }
 
