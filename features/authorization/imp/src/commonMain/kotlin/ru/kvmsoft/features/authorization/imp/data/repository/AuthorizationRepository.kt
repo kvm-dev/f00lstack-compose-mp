@@ -1,12 +1,10 @@
-package ru.kvmsoft.features.authorization.imp.data
+package ru.kvmsoft.features.authorization.imp.data.repository
 
 import ru.kvmsoft.features.authorization.api.model.AuthByEmailDomain
 import ru.kvmsoft.features.authorization.api.model.AuthByTokenDomain
 import ru.kvmsoft.features.authorization.api.model.ConfirmAuthAndRegDomain
 import ru.kvmsoft.features.authorization.api.model.IsUserExistDomain
 import ru.kvmsoft.features.authorization.api.model.RegistrationByEmailDomain
-import ru.kvmsoft.features.authorization.imp.data.datasource.local.LocalDataSource
-import ru.kvmsoft.features.authorization.imp.data.datasource.network.NetworkDataSource
 
 expect class AuthorizationRepository{
 

@@ -1,15 +1,18 @@
-package ru.kvmsoft.features.authorization.imp.data
+package ru.kvmsoft.features.authorization.imp.data.repository
 
 import ru.kvmsoft.features.authorization.api.model.AuthByEmailDomain
 import ru.kvmsoft.features.authorization.api.model.AuthByTokenDomain
 import ru.kvmsoft.features.authorization.api.model.ConfirmAuthAndRegDomain
 import ru.kvmsoft.features.authorization.api.model.IsUserExistDomain
 import ru.kvmsoft.features.authorization.api.model.RegistrationByEmailDomain
-import ru.kvmsoft.features.authorization.imp.data.datasource.local.LocalDataSource
-import ru.kvmsoft.features.authorization.imp.data.datasource.network.NetworkDataSource
+import ru.kvmsoft.features.authorization.imp.data.local.LocalDataSource
+import ru.kvmsoft.features.authorization.imp.data.network.DelayedAuthByTokenLogger
+import ru.kvmsoft.features.authorization.imp.data.network.NetworkDataSource
 
 actual class AuthorizationRepository(private val localDataSource: LocalDataSource,
-                                           private val networkDataSource: NetworkDataSource) {
+                                     private val networkDataSource: NetworkDataSource,
+                                     private val delayedAuthByTokenLogger: DelayedAuthByTokenLogger
+) {
 
     actual suspend fun authByEmail(email: String, code:String): AuthByEmailDomain {
         val result = networkDataSource.authByEmail(email = email, code = code)
@@ -56,7 +59,7 @@ actual class AuthorizationRepository(private val localDataSource: LocalDataSourc
     }
 
     actual suspend fun authByTokenOfflineLog(){
-        localDataSource.saveOfflineAuthData()
+        delayedAuthByTokenLogger.sendLog()
     }
 
     actual suspend fun registrationByEmail(email: String): RegistrationByEmailDomain {

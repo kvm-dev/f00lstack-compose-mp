@@ -9,9 +9,9 @@ import ru.kvmsoft.features.authorization.api.domain.usecase.CheckOfflineAuthData
 import ru.kvmsoft.features.authorization.api.domain.usecase.ConfirmAuthAndRegUseCase
 import ru.kvmsoft.features.authorization.api.domain.usecase.IsUserExistUseCase
 import ru.kvmsoft.features.authorization.api.domain.usecase.RegistrationByEmailUseCase
-import ru.kvmsoft.features.authorization.imp.data.datasource.local.LocalDataSource
-import ru.kvmsoft.features.authorization.imp.data.datasource.network.AuthorizationApi
-import ru.kvmsoft.features.authorization.imp.data.datasource.network.NetworkDataSource
+import ru.kvmsoft.features.authorization.imp.data.local.LocalDataSource
+import ru.kvmsoft.features.authorization.imp.data.network.AuthorizationApi
+import ru.kvmsoft.features.authorization.imp.data.network.NetworkDataSource
 import ru.kvmsoft.features.authorization.imp.domain.AuthorizationScreenInteractor
 import ru.kvmsoft.features.authorization.imp.domain.usecase.AuthByEmailUseCaseImp
 import ru.kvmsoft.features.authorization.imp.domain.usecase.AuthByTokenOfflineLogUseCaseImp

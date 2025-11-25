@@ -16,6 +16,8 @@ import ru.kvmsoft.features.asmode.imp.di.asModeModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationModule
 import ru.kvmsoft.features.authorization.imp.di.authorizationPlatformModule
 import ru.kvmsoft.features.books.imp.di.booksModule
+import ru.kvmsoft.features.comments.imp.di.commentsModule
+import ru.kvmsoft.features.comments.imp.di.commentsPlatformModule
 import ru.kvmsoft.features.events.imp.di.eventsModule
 import ru.kvmsoft.features.interview.imp.di.interviewModule
 import ru.kvmsoft.features.language.api.domain.usecase.GetCurrentLanguageUseCase
@@ -49,6 +51,8 @@ fun App(koinAppDeclaration: KoinAppDeclaration? = null) {
             mainModule,
             authorizationPlatformModule,
             authorizationModule,
+            commentsPlatformModule,
+            commentsModule,
             booksModule,
             eventsModule,
             interviewModule,

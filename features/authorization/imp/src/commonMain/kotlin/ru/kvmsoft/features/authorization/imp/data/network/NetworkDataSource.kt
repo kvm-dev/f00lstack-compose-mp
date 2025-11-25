@@ -1,6 +1,5 @@
-package ru.kvmsoft.features.authorization.imp.data.datasource.network
+package ru.kvmsoft.features.authorization.imp.data.network
 
-import ru.kvmsoft.base.storage.OfflineAuthData
 import ru.kvmsoft.features.authorization.api.model.AuthByEmailDomain
 import ru.kvmsoft.features.authorization.api.model.AuthByTokenDomain
 import ru.kvmsoft.features.authorization.api.model.ConfirmAuthAndRegDomain

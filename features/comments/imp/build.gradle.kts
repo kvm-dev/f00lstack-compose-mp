@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.build.config)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -59,8 +64,40 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                //api
+                implementation(projects.features.comments.api)
+                //base libs
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.backhandler)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                //utils
+                implementation(projects.base.utils)
+                //ui
+                implementation(projects.base.ui)
+                //viewModel
+                implementation(projects.base.viewmodel)
+                //lottie
+                implementation(libs.compottie)
+                //storage
+                implementation(projects.base.storage)
+                //di
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+                //network
+                implementation(projects.base.network)
+                implementation(libs.ktor.client.core)
+                //features
+                implementation(projects.features.language.api)
+                //network
+                implementation(projects.features.networkconnection.api)
             }
         }
 
@@ -72,9 +109,11 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                //di
+                implementation(libs.koin.android)
+                implementation(libs.koin.compose)
+                //workmanager
+                implementation(libs.work.manager)
             }
         }
 

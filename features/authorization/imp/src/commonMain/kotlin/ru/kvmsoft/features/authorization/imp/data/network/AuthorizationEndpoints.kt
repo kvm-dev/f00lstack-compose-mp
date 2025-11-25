@@ -1,4 +1,4 @@
-package ru.kvmsoft.features.authorization.imp.data.datasource.network
+package ru.kvmsoft.features.authorization.imp.data.network
 
 object AuthorizationEndpoints {
     val isUserExist: String

@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.kvmsoft.features.authorization.imp.data.datasource.network.NetworkDataSource
+import ru.kvmsoft.features.authorization.imp.data.network.NetworkDataSource
 import kotlin.getValue
 import kotlin.time.ExperimentalTime
 
