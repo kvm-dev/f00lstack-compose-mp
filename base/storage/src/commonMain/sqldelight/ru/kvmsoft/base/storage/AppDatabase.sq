@@ -99,6 +99,10 @@ CREATE TABLE News(
    newsLink TEXT NOT NULL
 );
 
+CREATE TABLE NewsVersions (
+    newsVersion INTEGER NOT NULL
+);
+
 CREATE TABLE Books(
    bookId INTEGER NOT NULL,
    bookName TEXT NOT NULL,
@@ -412,6 +416,18 @@ FROM News;
 
 clearAllNews:
 DELETE FROM News;
+
+
+insertNewsVersions:
+INSERT INTO NewsVersions(newsVersion)
+VALUES(?);
+
+selectNewsVersions:
+SELECT NewsVersions.*
+FROM NewsVersions;
+
+clearAllNewsVersions:
+DELETE FROM NewsVersions;
 
 
 insertEvents:

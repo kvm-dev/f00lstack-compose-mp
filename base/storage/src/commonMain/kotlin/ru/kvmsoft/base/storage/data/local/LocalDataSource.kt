@@ -354,6 +354,26 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    internal fun getNewsVersion(): Int {
+        val versions = dbQuery.selectNewsVersions().executeAsList()
+        return if(versions.isNotEmpty()){
+            versions.first().toInt()
+        } else{
+            0
+        }
+    }
+
+    internal fun updateNewsVersion(version: Int) {
+        val versions = dbQuery.selectNewsVersions().executeAsList()
+        if (versions.isNotEmpty()){
+            dbQuery.clearAllNewsVersions()
+            dbQuery.insertNewsVersions(version.toLong())
+        }
+        else{
+            dbQuery.insertNewsVersions(version.toLong())
+        }
+    }
+
     internal fun getBooks(): Books {
         val booksPr = dbQuery.selectBooksPr().executeAsList().first()
         val booksLocal = dbQuery.selectBooks().executeAsList()

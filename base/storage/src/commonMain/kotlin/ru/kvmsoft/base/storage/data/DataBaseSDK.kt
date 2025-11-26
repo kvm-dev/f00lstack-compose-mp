@@ -46,6 +46,10 @@ class DataBaseSDK(private val dataSource: LocalDataSource) {
 
     suspend fun saveNews(news: News) =  dataSource.clearAndSaveNews(news)
 
+    suspend fun getNewsVersion() =  dataSource.getNewsVersion()
+
+    suspend fun updateNewsVersion(newsVersion: Int) = dataSource.updateNewsVersion(newsVersion)
+
     suspend fun getBooks() = dataSource.getBooks()
 
     suspend fun saveBooks(books: Books) = dataSource.clearAndSaveBooks(books)
