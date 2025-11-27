@@ -66,6 +66,10 @@ class DataBaseSDK(private val dataSource: LocalDataSource) {
 
     suspend fun saveProfessions(professions: Professions) = dataSource.clearAndSaveProfessions(professions)
 
+    suspend fun getCurrentProfession() = dataSource.getCurrentProfession()
+
+    suspend fun updateCurrentProfession(professionId: Int) = dataSource.updateCurrentProfession(professionId)
+
     suspend fun clearProfileAndPassedTests() = dataSource.clearProfileAndPassedTests()
 
     suspend fun getOfflineAuthData() = dataSource.getOfflineAuthData()

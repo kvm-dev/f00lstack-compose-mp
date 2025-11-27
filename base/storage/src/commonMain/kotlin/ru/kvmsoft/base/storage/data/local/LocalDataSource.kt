@@ -288,6 +288,29 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    internal fun getCurrentProfession(): Int {
+        val profession = dbQuery.selectCurrentProfession().executeAsList()
+        if (profession.isNotEmpty()){
+            return profession.first().toInt()
+        }
+        else{
+            return 0
+        }
+    }
+
+    internal fun updateCurrentProfession(professionId: Int) {
+        val profession = dbQuery.selectCurrentProfession().executeAsList()
+        if (profession.isNotEmpty()){
+            dbQuery.clearCurrentProfession()
+            dbQuery.insertCurrentProfession(professionId.toLong())
+        }
+        else{
+            dbQuery.insertCurrentProfession(professionId.toLong())
+        }
+    }
+
+
+
     internal fun getEvents(): Events {
         val events = dbQuery.selectEvents().executeAsList()
         val eventsSubs = dbQuery.selectAllEventSubs().executeAsList()

@@ -20,6 +20,10 @@ CREATE TABLE UserPurchasedProfessions(
    professionId INTEGER NOT NULL
 );
 
+CREATE TABLE UserProfession(
+   professionId INTEGER NOT NULL
+);
+
 CREATE TABLE Materials(
    materialId INTEGER NOT NULL,
    materialName TEXT NOT NULL,
@@ -257,6 +261,17 @@ FROM UserPurchasedProfessions;
 
 clearAllPurchasedProfessions:
 DELETE FROM UserPurchasedProfessions;
+
+insertCurrentProfession:
+INSERT INTO UserProfession(professionId)
+VALUES(?);
+
+selectCurrentProfession:
+SELECT UserProfession.*
+FROM UserProfession;
+
+clearCurrentProfession:
+DELETE FROM UserProfession;
 
 
 insertMaterial:
