@@ -560,7 +560,7 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
         dbQuery.insertOfflineTestResult(
             testId = testResult.testId.toLong(),
             testResult = testResult.testResult.toLong(),
-            timeStamp = testResult.timeStamp)
+            finishTestTime = testResult.timeStamp)
     }
 
     internal fun clearOfflineTestResult() {

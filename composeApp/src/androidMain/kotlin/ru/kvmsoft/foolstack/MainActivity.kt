@@ -32,6 +32,7 @@ import ru.kvmsoft.features.profile.imp.di.profileModule
 import ru.kvmsoft.features.settings.imp.di.settingsModule
 import ru.kvmsoft.features.splash.imp.di.splashModule
 import ru.kvmsoft.features.tests.imp.di.testsModule
+import ru.kvmsoft.features.tests.imp.di.testsPlatformModule
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 professionsModule,
                 profileModule,
                 settingsModule,
+                testsPlatformModule,
                 testsModule
             )
         }

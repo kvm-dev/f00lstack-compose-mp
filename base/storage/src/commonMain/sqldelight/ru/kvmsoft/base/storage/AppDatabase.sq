@@ -74,6 +74,13 @@ CREATE TABLE PassedTests(
    finishTestTime INTEGER NOT NULL
 );
 
+CREATE TABLE OfflineTestResult(
+   uniqId INTEGER PRIMARY KEY AUTOINCREMENT,
+   testId INTEGER NOT NULL,
+   testResult INTEGER NOT NULL,
+   finishTestTime INTEGER NOT NULL
+);
+
 CREATE TABLE Events(
    eventId INTEGER NOT NULL,
    eventName TEXT NOT NULL,
@@ -178,13 +185,6 @@ CREATE TABLE OfflineComment(
    uniqId INTEGER PRIMARY KEY AUTOINCREMENT,
    materialId INTEGER NOT NULL,
    commentText TEXT NOT NULL
-);
-
-CREATE TABLE OfflineTestResult(
-    uniqId INTEGER PRIMARY KEY AUTOINCREMENT,
-    testId INTEGER NOT NULL,
-    testResult INTEGER NOT NULL,
-    timeStamp INTEGER NOT NULL
 );
 
 
@@ -565,7 +565,7 @@ DELETE FROM OfflineComment;
 
 
 insertOfflineTestResult:
-INSERT INTO OfflineTestResult(testId, testResult, timeStamp)
+INSERT INTO OfflineTestResult(testId, testResult, finishTestTime)
 VALUES(?, ?, ?);
 
 selectOfflineTestResult:

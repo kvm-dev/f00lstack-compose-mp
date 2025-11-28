@@ -6,6 +6,6 @@ import ru.kvmsoft.features.authorization.imp.data.repository.AuthorizationReposi
 import ru.kvmsoft.features.authorization.imp.data.network.DelayedAuthByTokenLogger
 
 actual val authorizationPlatformModule = module{
-    single<DelayedAuthByTokenLogger> { DelayedAuthByTokenLogger(platformContext = androidContext())}
+    single<DelayedAuthByTokenLogger> { DelayedAuthByTokenLogger(platformContext = androidContext()) }
     single<AuthorizationRepository> { AuthorizationRepository(localDataSource = get(), networkDataSource = get(), delayedAuthByTokenLogger = get()) }
 }

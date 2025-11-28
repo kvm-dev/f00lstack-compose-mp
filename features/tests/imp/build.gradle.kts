@@ -63,7 +63,7 @@ kotlin {
         commonMain {
             dependencies {
                 //api
-                implementation(projects.features.splash.api)
+                implementation(projects.features.tests.api)
                 //base libs
                 implementation(libs.kotlin.stdlib)
                 implementation(compose.runtime)
@@ -80,6 +80,8 @@ kotlin {
                 implementation(projects.base.ui)
                 //lottie
                 implementation(libs.compottie)
+                //storage
+                implementation(projects.base.storage)
                 //viewmodel
                 implementation(projects.base.viewmodel)
                 //di
@@ -99,6 +101,8 @@ kotlin {
             dependencies {
                 //di
                 implementation(libs.koin.android)
+                //workmanager
+                implementation(libs.work.manager)
             }
         }
 
