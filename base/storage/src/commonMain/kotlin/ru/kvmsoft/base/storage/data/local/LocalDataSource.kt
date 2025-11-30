@@ -1,6 +1,5 @@
 package ru.kvmsoft.base.storage.data.local
 
-import io.ktor.http.content.MultiPartData
 import ru.kvmsoft.base.storage.AppDatabase
 import ru.kvmsoft.base.storage.data.drivers.DatabaseDriverFactory
 import ru.kvmsoft.base.storage.mapper.Mapper
@@ -527,6 +526,26 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
                     studyId = study.studyId.toLong()
                 )
             }
+        }
+    }
+
+    internal fun getStudiesVersion(): Int {
+        val versions = dbQuery.selectStudiesVersions().executeAsList()
+        return if(versions.isNotEmpty()){
+            versions.first().toInt()
+        } else{
+            0
+        }
+    }
+
+    internal fun updateStudiesVersion(version: Int) {
+        val versions = dbQuery.selectStudiesVersions().executeAsList()
+        if (versions.isNotEmpty()){
+            dbQuery.clearAllStudiesVersions()
+            dbQuery.insertStudiesVersions(version.toLong())
+        }
+        else{
+            dbQuery.insertStudiesVersions(version.toLong())
         }
     }
 

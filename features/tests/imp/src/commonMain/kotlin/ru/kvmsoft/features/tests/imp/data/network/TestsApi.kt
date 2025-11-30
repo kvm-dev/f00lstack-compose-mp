@@ -6,6 +6,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpStatusCode
+import ru.kvmsoft.base.network.utils.disableAuthKey
 import ru.kvmsoft.base.network.utils.exceptionHandler
 import ru.kvmsoft.base.network.utils.getBaseUrl
 import ru.kvmsoft.features.tests.imp.model.request.TestResultRequest
@@ -16,6 +17,7 @@ import ru.kvmsoft.features.tests.imp.model.response.TestsResponse
 class TestsApi(private val client: HttpClient) {
     suspend fun getTests(): TestsResponse {
         val result = with(client) {
+            attributes.put(disableAuthKey, true)
             get("${getBaseUrl()}${TestsEndpoints.getTests}")
         }
         return if(result.status == HttpStatusCode.OK) {
@@ -27,6 +29,7 @@ class TestsApi(private val client: HttpClient) {
 
     suspend fun getTestsByProfession(professionId: Int): TestsResponse{
         val result = with(client) {
+            attributes.put(disableAuthKey, true)
             get("${getBaseUrl()}${TestsEndpoints.getTestsByProfession}"){
                 url {
                     parameters.append("selectedProfession", "$professionId")

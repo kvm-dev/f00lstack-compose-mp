@@ -176,6 +176,10 @@ CREATE TABLE StudiesPR(
    prText TEXT NOT NULL
 );
 
+CREATE TABLE StudiesVersions (
+    studiesVersion INTEGER NOT NULL
+);
+
 CREATE TABLE OfflineAuthData(
    uniqId INTEGER PRIMARY KEY AUTOINCREMENT,
    timeStamp INTEGER NOT NULL
@@ -538,6 +542,17 @@ FROM StudiesPR;
 
 clearAllStudiesPR:
 DELETE FROM StudiesPR;
+
+insertStudiesVersions:
+INSERT INTO StudiesVersions(studiesVersion)
+VALUES(?);
+
+selectStudiesVersions:
+SELECT StudiesVersions.*
+FROM StudiesVersions;
+
+clearAllStudiesVersions:
+DELETE FROM StudiesVersions;
 
 
 insertAuthOfflineData:

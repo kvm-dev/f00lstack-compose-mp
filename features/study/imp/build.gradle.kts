@@ -63,7 +63,7 @@ kotlin {
         commonMain {
             dependencies {
                 //api
-                implementation(projects.features.splash.api)
+                implementation(projects.features.study.api)
                 //base libs
                 implementation(libs.kotlin.stdlib)
                 implementation(compose.runtime)

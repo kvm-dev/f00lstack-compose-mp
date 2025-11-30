@@ -31,6 +31,7 @@ import ru.kvmsoft.features.professions.imp.di.professionsModule
 import ru.kvmsoft.features.profile.imp.di.profileModule
 import ru.kvmsoft.features.settings.imp.di.settingsModule
 import ru.kvmsoft.features.splash.imp.di.splashModule
+import ru.kvmsoft.features.study.imp.di.studyModule
 import ru.kvmsoft.features.tests.imp.di.testsModule
 import ru.kvmsoft.features.tests.imp.di.testsPlatformModule
 
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
                 professionsModule,
                 profileModule,
                 settingsModule,
+                studyModule,
                 testsPlatformModule,
                 testsModule
             )

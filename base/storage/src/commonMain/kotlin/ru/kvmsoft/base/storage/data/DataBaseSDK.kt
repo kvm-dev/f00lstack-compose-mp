@@ -62,6 +62,10 @@ class DataBaseSDK(private val dataSource: LocalDataSource) {
 
     suspend fun saveStudies(studies: Studies) = dataSource.clearAndSavStudies(studies)
 
+    suspend fun getStudiesVersion() =  dataSource.getStudiesVersion()
+
+    suspend fun updateStudiesVersion(studiesVersion: Int) = dataSource.updateStudiesVersion(studiesVersion)
+
     suspend fun getProfessions() = dataSource.getProfessions()
 
     suspend fun saveProfessions(professions: Professions) = dataSource.clearAndSaveProfessions(professions)
