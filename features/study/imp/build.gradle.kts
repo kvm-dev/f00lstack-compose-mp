@@ -86,6 +86,11 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
+                //storage
+                implementation(projects.base.storage)
+                //network
+                implementation(libs.ktor.client.core)
+                implementation(projects.base.network)
             }
         }
 

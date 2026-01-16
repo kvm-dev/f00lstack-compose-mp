@@ -317,7 +317,7 @@ object Mapper {
         return OfflineTestResult(
             testId = offlineTest.testId.toInt(),
             testResult = offlineTest.testResult.toInt(),
-            timeStamp = offlineTest.timeStamp
+            timeStamp = offlineTest.finishTestTime
         )
     }
 

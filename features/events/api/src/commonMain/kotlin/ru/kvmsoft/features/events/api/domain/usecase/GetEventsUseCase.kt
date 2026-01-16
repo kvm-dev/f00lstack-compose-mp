@@ -1,7 +1,5 @@
 package ru.kvmsoft.features.events.api.domain.usecase
 
-import kotlinx.coroutines.flow.StateFlow
-import ru.kvmsoft.base.utils.model.ResultState
 import ru.kvmsoft.features.events.api.model.EventsDomain
 
 interface GetEventsUseCase {

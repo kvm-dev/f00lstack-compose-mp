@@ -67,6 +67,7 @@ kotlin {
                 //api
                 implementation(projects.features.news.api)
                 //base libs
+                implementation(libs.ktor.client.core)
                 implementation(libs.kotlin.stdlib)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -88,6 +89,10 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
+                //storage
+                implementation(projects.base.storage)
+                //network
+                implementation(projects.base.network)
             }
         }
 
