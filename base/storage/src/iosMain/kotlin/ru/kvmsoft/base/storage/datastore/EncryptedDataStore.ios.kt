@@ -10,6 +10,9 @@ actual class EncryptedDataStore {
     val REFRESH_TOKEN_KEY = "REFRESH_TOKEN"
     val PROFESSION_ID_KEY = "PROFESSION_ID"
 
+    val MAIN_EVENTS_SLIDER_KEY = "MAIN_EVENTS_SLIDER"
+
+
     private val userDefaults = NSUserDefaults.standardUserDefaults()
 
     actual val accessToken: Flow<String>
@@ -32,6 +35,13 @@ actual class EncryptedDataStore {
             }
         }
 
+    actual val mainEventsSlider: Flow<Boolean>
+        get() {
+            return flow {
+                emit(userDefaults.boolForKey(MAIN_EVENTS_SLIDER_KEY))
+            }
+        }
+
     actual suspend fun saveToken(userToken: String) {
         userDefaults.setObject(userToken, forKey = ACCESS_TOKEN_KEY)
     }
@@ -49,6 +59,10 @@ actual class EncryptedDataStore {
         userDefaults.removeObjectForKey(REFRESH_TOKEN_KEY)
         userDefaults.removeObjectForKey(PROFESSION_ID_KEY)
         userDefaults.synchronize()
+    }
+
+    actual suspend fun iKnowHowToUseMainEventsSlider() {
+        userDefaults.setObject(true, forKey = MAIN_EVENTS_SLIDER_KEY)
     }
 
 }

@@ -16,9 +16,10 @@ class GetCurrentLanguageUseCaseImp(private val repository: LanguageRepository):
     )
     override val langState = _langState.asStateFlow()
 
-    override fun getLang() {
+    override fun getLang(): CurrentLanguageDomain {
         _langState.tryEmit(ResultState.Loading)
         val state = Mapper.mapStringToCurrentLanguage(repository.getLanguage())
         _langState.tryEmit(ResultState.Success(state))
+        return state
     }
 }

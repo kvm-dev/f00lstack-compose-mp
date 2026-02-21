@@ -25,6 +25,7 @@ import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.theme.BottomSheetBackground
 import ru.kvmsoft.base.ui.theme.GreenLight
 import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.theme.TextStyles
 import ru.kvmsoft.base.ui.theme.getFoolStackTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +53,7 @@ fun BaseErrorBottomSheet(title: String, description: String, mainButtonText: Str
                 Text(
                     title, modifier = Modifier
                         .fillMaxWidth(),
-                    style = getFoolStackTypography().displayLarge,
+                    style = TextStyles.getTitlesStyle().displayLarge,
                     color = SimplyWhite,
                     textAlign  = TextAlign.Center
                 )
@@ -72,7 +73,7 @@ fun BaseErrorBottomSheet(title: String, description: String, mainButtonText: Str
                     modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 10.dp),
-                    style = getFoolStackTypography().bodyMedium,
+                    style = TextStyles.getTitlesStyle().bodyMedium,
                     color = GreenLight,
                     textAlign  = TextAlign.Center
                 )

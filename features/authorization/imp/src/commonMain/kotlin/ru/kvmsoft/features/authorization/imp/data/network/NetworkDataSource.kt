@@ -1,5 +1,6 @@
 package ru.kvmsoft.features.authorization.imp.data.network
 
+import ru.kvmsoft.base.utils.annotations.Mockable
 import ru.kvmsoft.features.authorization.api.model.AuthByEmailDomain
 import ru.kvmsoft.features.authorization.api.model.AuthByTokenDomain
 import ru.kvmsoft.features.authorization.api.model.ConfirmAuthAndRegDomain
@@ -10,6 +11,7 @@ import ru.kvmsoft.features.authorization.imp.model.request.AuthByTokenOfflineLog
 import ru.kvmsoft.features.authorization.imp.model.response.AuthByTokenOfflineResponse
 import ru.kvmsoft.base.storage.model.OfflineAuthData as StorageAuthData
 
+@Mockable
 class NetworkDataSource(private val api: AuthorizationApi){
 
     suspend fun authByEmail(email: String, code: String): AuthByEmailDomain {

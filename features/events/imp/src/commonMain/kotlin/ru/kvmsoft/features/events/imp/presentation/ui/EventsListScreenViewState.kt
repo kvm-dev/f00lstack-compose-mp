@@ -1,13 +1,22 @@
 package ru.kvmsoft.features.events.imp.presentation.ui
 
+import ru.kvmsoft.base.ui.model.AchievementsItemState
+import ru.kvmsoft.base.ui.model.EventsItemState
+import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.utils.model.BaseErrors
+import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
+
 sealed class EventsListScreenViewState {
 
-    data object LoadingState: EventsListScreenViewState()
+    data class LoadingState(val lang: CurrentLanguageDomain,): EventsListScreenViewState()
 
-    data class ErrorState(val errorMsg: String): EventsListScreenViewState()
+    data class ErrorState(val error: BaseErrors): EventsListScreenViewState()
 
     data class SuccessState(
-        val userData: String,
-        val currentPosition: String
+        val isNetworkAvailable: Boolean,
+        val isAsModeEnabled: Boolean,
+        val lang: CurrentLanguageDomain,
+        val eventsState: UiState<EventsItemState>,
+        val selectedFilters: List<String>
     ): EventsListScreenViewState()
 }

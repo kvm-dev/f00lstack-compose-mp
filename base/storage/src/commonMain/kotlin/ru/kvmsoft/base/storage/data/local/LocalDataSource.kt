@@ -29,7 +29,7 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
 
     internal fun getProfile(): Profile {
         val profile = dbQuery.selectProfile().executeAsOne()
-        val achievements = dbQuery.selectAchievments().executeAsList()
+        val achievements = dbQuery.selectAchievements().executeAsList()
         val purchasedProfessions = dbQuery.selectPurchasedProfessions().executeAsList()
         return Profile(
             userId = profile.userId.toInt(),
@@ -45,7 +45,7 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
 
     internal fun clearAndSaveProfile(profile: Profile){
         dbQuery.clearAllProfiles()
-        dbQuery.clearAllAchievments()
+        dbQuery.clearAllAchievements()
         dbQuery.clearAllPurchasedProfessions()
         dbQuery.insertProfile(
             userId = profile.userId.toLong(),
@@ -56,7 +56,7 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
             userPhotoBase64 = profile.userPhotoBase64
         )
         profile.userAchievements.forEach { achievement->
-            dbQuery.insertAchievment(
+            dbQuery.insertAchievement(
                 achievementId = achievement.achievementId.toLong(),
                 userId = achievement.userId.toLong(),
                 achievementName = achievement.achievementName,
@@ -74,7 +74,7 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
 
     internal fun clearProfileAndPassedTests(){
         dbQuery.clearAllProfiles()
-        dbQuery.clearAllAchievments()
+        dbQuery.clearAllAchievements()
         dbQuery.clearAllPurchasedProfessions()
         dbQuery.clearAllPassedTests()
     }

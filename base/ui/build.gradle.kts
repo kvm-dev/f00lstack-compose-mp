@@ -79,6 +79,8 @@ kotlin {
                 implementation(libs.backhandler)
                 //lottie
                 implementation(libs.compottie)
+                //ui - liquid glass
+                implementation(libs.backdrop)
                 //utils
                 implementation(projects.base.utils)
                 //features

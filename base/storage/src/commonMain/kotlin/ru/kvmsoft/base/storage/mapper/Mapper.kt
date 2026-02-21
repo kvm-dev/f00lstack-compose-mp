@@ -5,7 +5,7 @@ import ru.kvmsoft.base.storage.MaterialsKnowledgeAreas
 import ru.kvmsoft.base.storage.MaterialsSubProfessions
 import ru.kvmsoft.base.storage.TestProfessions
 import ru.kvmsoft.base.storage.TestQuestionVariant
-import ru.kvmsoft.base.storage.UserAchievments
+import ru.kvmsoft.base.storage.UserAchievements
 import ru.kvmsoft.base.storage.UserPurchasedProfessions
 import ru.kvmsoft.base.storage.model.Book
 import ru.kvmsoft.base.storage.model.Event
@@ -38,7 +38,7 @@ import ru.kvmsoft.base.storage.OfflineComment as OfflineCommentLocal
 import ru.kvmsoft.base.storage.OfflineTestResult as OfflineTestLocal
 
 object Mapper {
-    fun mapAchievement(response: List<UserAchievments>):List<UserAchievement>{
+    fun mapAchievement(response: List<UserAchievements>):List<UserAchievement>{
         val userAchievements = ArrayList<UserAchievement>()
         response.forEach { achievement->
             userAchievements.add(

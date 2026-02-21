@@ -7,5 +7,5 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 interface GetCurrentLanguageUseCase {
 
     val langState: StateFlow<ResultState<CurrentLanguageDomain>>
-    fun getLang()
+    fun getLang(): CurrentLanguageDomain
 }

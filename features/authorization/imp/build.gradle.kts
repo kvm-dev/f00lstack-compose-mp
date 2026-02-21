@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.build.config)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.mokkery.plugin)
+    kotlin("plugin.allopen") version "2.3.0"
 }
 
 kotlin {
@@ -105,7 +107,12 @@ kotlin {
 
         commonTest {
             dependencies {
+                implementation(libs.koin.test)
                 implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.ktor.client.mock)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.content.negotiation)
             }
         }
 
@@ -136,6 +143,13 @@ kotlin {
                 // KMP dependencies declared in commonMain.
             }
         }
+    }
+    allOpen {
+        annotation("ru.kvmsoft.base.utils.annotations.Mockable")
+    }
+
+    mokkery {
+        stubs.allowConcreteClassInstantiation.set(true)
     }
 }
 

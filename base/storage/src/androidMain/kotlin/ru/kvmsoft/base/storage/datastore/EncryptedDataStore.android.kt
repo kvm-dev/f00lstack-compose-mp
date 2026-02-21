@@ -14,6 +14,8 @@ actual class EncryptedDataStore(private val context: Context, private val secure
     val refreshTokenKey = stringPreferencesKey("refresh_token")
     val professionIdKey = stringPreferencesKey("profession_id")
 
+    val mainEventsSliderKey = stringPreferencesKey("main_events_slider")
+
     val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "encryptedData")
 
     actual val accessToken: Flow<String> =
@@ -46,6 +48,16 @@ actual class EncryptedDataStore(private val context: Context, private val secure
             }
         }
 
+    actual val mainEventsSlider: Flow<Boolean>  =
+        context.dataStore.data.map { preferences ->
+            val encryptedData = preferences[mainEventsSliderKey] ?: false
+            if(encryptedData!=false){
+                secureEncryptor.decrypt(encryptedData.toString()).toBoolean()
+            }else{
+                false
+            }
+        }
+
     actual suspend fun saveToken(userToken: String) {
         context.dataStore.edit { preferences ->
             preferences[accessTokenKey] = secureEncryptor.encrypt(userToken)
@@ -69,4 +81,11 @@ actual class EncryptedDataStore(private val context: Context, private val secure
             it.clear()
         }
     }
+
+    actual suspend fun iKnowHowToUseMainEventsSlider() {
+        context.dataStore.edit { preferences ->
+            preferences[mainEventsSliderKey] = secureEncryptor.encrypt(true.toString())
+        }
+    }
+
 }

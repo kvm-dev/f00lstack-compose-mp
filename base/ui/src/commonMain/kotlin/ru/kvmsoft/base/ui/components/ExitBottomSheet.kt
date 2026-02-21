@@ -28,6 +28,7 @@ import ru.kvmsoft.base.ui.res.strings.getExitDialogTitle
 import ru.kvmsoft.base.ui.res.strings.getExitDialogYesButton
 import ru.kvmsoft.base.ui.theme.BottomSheetBackground
 import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.theme.TextStyles
 import ru.kvmsoft.base.ui.theme.getFoolStackTypography
 import ru.kvmsoft.base.utils.closeApp
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
@@ -66,7 +67,7 @@ fun ExitBottomSheet(
                 Text(
                     getExitDialogTitle(lang), modifier = Modifier
                         .fillMaxWidth(),
-                    style = getFoolStackTypography().displayLarge,
+                    style = TextStyles.getTitlesStyle().displayLarge,
                     color = SimplyWhite,
                     textAlign  = TextAlign.Center
                 )

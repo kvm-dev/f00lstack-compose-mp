@@ -7,7 +7,7 @@ CREATE TABLE Profile (
     userPhotoBase64 TEXT NOT NULL
 );
 
-CREATE TABLE UserAchievments (
+CREATE TABLE UserAchievements (
     achievementId INTEGER NOT NULL,
     userId INTEGER NOT NULL,
     achievementName TEXT NOT NULL,
@@ -36,6 +36,7 @@ CREATE TABLE MaterialsKnowledgeAreas(
    knowledgeAreaId INTEGER NOT NULL,
    knowledgeAreaName TEXT NOT NULL
 );
+
 CREATE TABLE MaterialsSubProfessions(
    materialId INTEGER NOT NULL,
    materialSubProfessionId INTEGER NOT NULL,
@@ -224,33 +225,33 @@ SET userEmail = :userEmail
 WHERE userId IS :userId;
 
 
-insertAchievment:
-INSERT INTO UserAchievments(achievementId, userId, achievementName, achievementDescription, achievementLevel)
+insertAchievement:
+INSERT INTO UserAchievements(achievementId, userId, achievementName, achievementDescription, achievementLevel)
 VALUES(?, ?, ?, ?, ?);
 
-selectAchievments:
-SELECT UserAchievments.*
-FROM UserAchievments;
+selectAchievements:
+SELECT UserAchievements.*
+FROM UserAchievements;
 
-clearAllAchievments:
-DELETE FROM UserAchievments;
+clearAllAchievements:
+DELETE FROM UserAchievements;
 
-deleteAchievment:
-DELETE FROM UserAchievments
+deleteAchievement:
+DELETE FROM UserAchievements
 WHERE achievementId IS :achievementId;
 
 updateAchievementName:
-UPDATE UserAchievments
+UPDATE UserAchievements
 SET achievementName = :achievementName
 WHERE userId IS :userId;
 
 updateAchievementDescription:
-UPDATE UserAchievments
+UPDATE UserAchievements
 SET achievementDescription = :achievementDescription
 WHERE userId IS :userId;
 
 updateAchievementLevel:
-UPDATE UserAchievments
+UPDATE UserAchievements
 SET achievementLevel = :achievementLevel
 WHERE userId IS :userId;
 
@@ -565,7 +566,6 @@ FROM OfflineAuthData;
 
 clearAuthOfflineData:
 DELETE FROM OfflineAuthData;
-
 
 insertOfflineComment:
 INSERT INTO OfflineComment(materialId, commentText )

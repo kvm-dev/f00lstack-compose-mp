@@ -116,6 +116,97 @@ fun getUnknownErrorSecondButton(lang: CurrentLanguageDomain): String {
     }
 }
 
+fun getEventsMainScreenTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Ближайшие мероприятия"
+        CurrentLanguageDomain.EN -> "Upcoming events"
+    }
+}
+
+fun getNotFoundEventsText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "В ближайшее время\nмероприятий не планируется"
+        CurrentLanguageDomain.EN -> "There are no events\nin the near future"
+    }
+}
+
+fun getAchievementsMainScreenTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Твои достижения"
+        CurrentLanguageDomain.EN -> "Your achievements"
+    }
+}
+
+fun getFreeCost(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "бесплатно"
+        CurrentLanguageDomain.EN -> "free"
+    }
+}
+
+fun getCurrencySymbol(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "₽"
+        CurrentLanguageDomain.EN -> "$"
+    }
+}
+
+fun getFreePay(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "бесплатно"
+        CurrentLanguageDomain.EN -> "free"
+    }
+}
+
+fun getEmptyName(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Ноунейм"
+        CurrentLanguageDomain.EN -> "Noname"
+    }
+}
+
+fun getAchievementsNotFound(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "У тебя пока нет достижений"
+        CurrentLanguageDomain.EN -> "you don't have any achievements yet"
+    }
+}
+
+fun getSubMenuEvents(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "События"
+        CurrentLanguageDomain.EN -> "Events"
+    }
+}
+
+fun getSubMenuBooks(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Литература"
+        CurrentLanguageDomain.EN -> "Books"
+    }
+}
+
+fun getSubMenuStudy(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Обучение"
+        CurrentLanguageDomain.EN -> "Study"
+    }
+}
+
+fun getEventsListScreenTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "События"
+        CurrentLanguageDomain.EN -> "Events"
+    }
+}
+
+fun getLoadingText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Загрузка..."
+        CurrentLanguageDomain.EN -> "Loading..."
+    }
+}
+
 //errorTexts
 fun getErrorTextCodeIsAlreadySent() = "Code Is Already Sent"
 fun getErrorTextUserIsUnconfirmed() = "User Is Unconfirmed"

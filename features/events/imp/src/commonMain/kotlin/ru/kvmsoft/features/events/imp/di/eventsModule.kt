@@ -19,7 +19,13 @@ val eventsModule = module {
     single<NetworkDataSource> { NetworkDataSource(api = get()) }
     single<EventsRepository> { EventsRepository(localDataSource = get(), networkDataSource = get()) }
     single<GetEventsUseCase> { GetEventsUseCaseImp(repository = get()) }
-    single<EventsListScreenInteractor> { EventsListScreenInteractor() }
+    single<EventsListScreenInteractor> {
+        EventsListScreenInteractor(
+            getEventsUseCase = get(),
+            getCurrentLanguageUseCase = get(),
+            networkStateUseCase = get(),
+            encryptedDataStore = get(),
+            getAsModeUseCase = get()) }
     single<EventsInnerScreenInteractor> { EventsInnerScreenInteractor() }
     viewModelOf(::EventsListScreenViewModel)
     viewModelOf(::EventsInnerScreenViewModel)

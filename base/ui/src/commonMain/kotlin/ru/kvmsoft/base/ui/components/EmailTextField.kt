@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import ru.kvmsoft.base.ui.theme.MainDark
 import ru.kvmsoft.base.ui.theme.MainError
 import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.theme.TextStyles
 import ru.kvmsoft.base.ui.theme.Unfocused
 import ru.kvmsoft.base.ui.theme.getFoolStackTypography
 
@@ -48,7 +49,7 @@ fun EmailTextField(
             },
             placeholder = {
                 Text(text = placeholder,
-                    style = getFoolStackTypography().bodyMedium,
+                    style = TextStyles.getTitlesStyle().bodyMedium,
                     color = Unfocused)
             },
             singleLine = true,
@@ -59,12 +60,13 @@ fun EmailTextField(
                 imeAction = imeAction
             ),
             colors = OutlinedTextFieldDefaults.colors(
+                focusedSupportingTextColor = SimplyWhite,
                 unfocusedTextColor = SimplyWhite,
                 unfocusedBorderColor = Unfocused,
-                focusedTextColor = MainDark,
+                focusedTextColor = SimplyWhite,
                 focusedBorderColor = Unfocused,
                 errorBorderColor = MainError,
-                cursorColor = MainDark
+                cursorColor = SimplyWhite
             ),
             shape = RoundedCornerShape(8.dp),
             isError = isError
@@ -72,7 +74,7 @@ fun EmailTextField(
         if (isError){
             Text(
                 text = errorMessage,
-                style = getFoolStackTypography().bodySmall,
+                style = TextStyles.getTitlesStyle().bodySmall,
                 fontSize = 16.sp,
                 color = MainError,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),

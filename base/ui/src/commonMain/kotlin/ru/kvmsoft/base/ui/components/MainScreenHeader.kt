@@ -21,6 +21,7 @@ import ru.kvmsoft.base.ui.theme.getFoolStackTypography
 import ru.kvmsoft.base.ui.utils.decodeBase64ToBitmap
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -41,6 +42,7 @@ import ru.kvmsoft.base.ui.icons.notFoundConnectionIcon
 import ru.kvmsoft.base.ui.icons.settingsIcon
 import ru.kvmsoft.base.ui.theme.MainGreenLight
 import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.theme.TextStyles
 
 
 @Composable
@@ -54,6 +56,8 @@ fun MainScreenHeader(onClickUser: () -> Unit, onClickSettings: ()->Unit, onClick
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(36.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Box(
             modifier = Modifier
@@ -104,7 +108,7 @@ fun MainScreenHeader(onClickUser: () -> Unit, onClickSettings: ()->Unit, onClick
                     ),
                     onClick = { onClickUser() }
                 ),
-            style = getFoolStackTypography().headlineSmall,
+            style = TextStyles.getTitlesStyle().headlineSmall,
             color = SimplyWhite,
             textAlign = TextAlign.Start,
         )

@@ -13,6 +13,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.kvmsoft.base.ui.theme.DisabledButtonBackground
 import ru.kvmsoft.base.ui.theme.MainOrangeLight
 import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.theme.TextStyles.bottomSheetButtonStyle
 import ru.kvmsoft.base.ui.theme.Unfocused
 
 @Composable
@@ -36,7 +37,7 @@ fun MainOrangeButton(onClick: () -> Unit, text: String, isEnabled: Boolean = tru
             modifier = modifier,
             shape = RoundedCornerShape(10.dp)
         ) {
-            Text(text = text)
+            Text(style = bottomSheetButtonStyle(), text = text)
         }
     }
     else{

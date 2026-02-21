@@ -31,7 +31,8 @@ class AuthorizationScreenInteractor(
     private val registrationByEmailUseCase: RegistrationByEmailUseCase,
     private val authByEmailUseCase: AuthByEmailUseCase,
     private val browserUtils: BrowserUtils,
-    private val encryptedDataStore: EncryptedDataStore) {
+    private val encryptedDataStore: EncryptedDataStore
+    ) {
 
     val langState = getCurrentLanguageUseCase.langState
     @Suppress("SuspiciousIndentation")

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.theme.TextStyles.bottomSheetButtonStyle
 import ru.kvmsoft.base.ui.theme.Unfocused
 
 @Composable
@@ -35,7 +36,7 @@ fun SecondWhiteButton(onClick: () -> Unit, text: String, isEnabled: Boolean = tr
             modifier = modifier,
             shape = RoundedCornerShape(10.dp)
         ) {
-            Text(text = text)
+            Text(style = bottomSheetButtonStyle(), text = text)
         }
     }
     else{

@@ -77,10 +77,13 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodelCompose)
                 implementation(libs.androidx.lifecycle.runtimeCompose)
                 implementation(projects.base.storage)
+                implementation(libs.navigation)
                 //utils
                 implementation(projects.base.utils)
                 //ui
                 implementation(projects.base.ui)
+                //pullToRefresh
+//                implementation(libs.pullToRefresh)
                 //lottie
                 implementation(libs.compottie)
                 //viewmodel
@@ -93,6 +96,8 @@ kotlin {
                 implementation(projects.features.profile.api)
                 implementation(projects.features.networkconnection.api)
                 implementation(projects.features.language.api)
+                implementation(projects.features.events.api)
+                implementation(projects.features.asmode.api)
 
             }
         }

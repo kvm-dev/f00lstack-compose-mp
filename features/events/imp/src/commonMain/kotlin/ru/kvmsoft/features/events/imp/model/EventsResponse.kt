@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EventsResponse(
     @SerialName("events") val events: List<EventResponse> = listOf(),
-    @SerialName("errorMsg") val errorMsg: String
+    @SerialName("errorMsg") val errorMsg: String = ""
 )
 
 @Serializable

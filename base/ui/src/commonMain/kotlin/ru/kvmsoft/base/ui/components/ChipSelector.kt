@@ -1,0 +1,37 @@
+package ru.kvmsoft.base.ui.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import ru.kvmsoft.base.ui.model.Chip
+
+@Composable
+fun ChipSelector(chips: List<Chip>,
+                 selectedChips: List<String>,
+                 selectedChip: MutableState<String>,
+                 onclickChip: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, bottom = 8.dp)
+    ) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            itemsIndexed(chips) { index, chip ->
+                Chip(id = chip.id, label = chip.name, isSelected = selectedChips.contains(chip.name),
+                    onClick = {
+                        selectedChip.value = chip.name
+                        onclickChip()})
+            }
+        }
+    }
+}

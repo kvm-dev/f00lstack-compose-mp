@@ -7,8 +7,15 @@ expect class EncryptedDataStore {
     val accessToken: Flow<String>
     val refreshToken: Flow<String>
     val professionId: Flow<Int>
+
+    //first run events
+    val mainEventsSlider: Flow<Boolean>
+
     suspend fun saveToken(userToken: String)
     suspend fun saveRefreshToken(refreshToken: String)
     suspend fun saveProfessionId(professionId:Int)
     suspend fun clearUserData()
+
+    //first events methods
+    suspend fun iKnowHowToUseMainEventsSlider()
 }

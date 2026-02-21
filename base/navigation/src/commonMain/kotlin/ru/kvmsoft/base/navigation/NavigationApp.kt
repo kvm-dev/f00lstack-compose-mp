@@ -40,6 +40,7 @@ import ru.kvmsoft.base.ui.theme.SelectedNavigationColor
 import ru.kvmsoft.base.ui.theme.UnselectedNavigationColor
 import ru.kvmsoft.base.ui.utils.NoRippleConfiguration
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
+import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreen
 import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewListScreen
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreen
 import ru.kvmsoft.features.news.imp.presentation.ui.NewsListScreen
@@ -79,7 +80,7 @@ fun NavigationApp(langIsRus: Boolean) {
                         allNavigationItems.forEach { item ->
                             CompositionLocalProvider(LocalRippleConfiguration provides NoRippleConfiguration) {
                                 when(item.route){
-                                    "main"->{
+                                    AppDestinations.Main.getRoute()->{
                                         NavigationBarItem(
                                         colors = navigationBarItemColors,
                                         icon = {
@@ -103,7 +104,7 @@ fun NavigationApp(langIsRus: Boolean) {
                                         }
                                     )
                                     }
-                                    "interviewList"->{
+                                    AppDestinations.InterviewList.getRoute()->{
                                         NavigationBarItem(
                                             colors = navigationBarItemColors,
                                             icon = {
@@ -127,7 +128,7 @@ fun NavigationApp(langIsRus: Boolean) {
                                             }
                                         )
                                     }
-                                    "testsList"->{
+                                    AppDestinations.TestsList.getRoute()->{
                                         NavigationBarItem(
                                             colors = navigationBarItemColors,
                                             icon = {
@@ -151,7 +152,7 @@ fun NavigationApp(langIsRus: Boolean) {
                                             }
                                         )
                                     }
-                                    "newsList"->{
+                                    AppDestinations.NewsList.getRoute()->{
                                         NavigationBarItem(
                                             colors = navigationBarItemColors,
                                             icon = {
@@ -226,7 +227,13 @@ fun NavigationApp(langIsRus: Boolean) {
                         { popUpTo(AppDestinations.Splash().route){
                             inclusive = true
                         }}
-                        isShowNavBar = false}
+                        isShowNavBar = false},
+                    navController = navController,
+                    eventDestination = AppDestinations.EventsInner().route,
+                    onclickEvents =  {
+                        isShowNavBar = false
+                        navController.navigate(route = AppDestinations.EventsList.getRoute())
+                    }
                 )
                 isShowNavBar = true
             }
@@ -295,6 +302,22 @@ fun NavigationApp(langIsRus: Boolean) {
                         }}
                         isShowNavBar = false})
             }
+            composable(AppDestinations.EventsList().route) {
+                EventsListScreen(onNavigationAuthorization = {
+                    navController.navigate(route = AppDestinations.Authorization().route)
+                    {popUpTo(AppDestinations.Splash().route){
+                        inclusive = true
+                    }}
+                    isShowNavBar = false},
+                    navController = navController,
+                    eventDestination = AppDestinations.EventsInner().route,
+                    onClickBack = {
+                        isShowNavBar = true
+                        navController.popBackStack()
+                    })
+                isShowNavBar = false
+            }
+
         }
     }
 }

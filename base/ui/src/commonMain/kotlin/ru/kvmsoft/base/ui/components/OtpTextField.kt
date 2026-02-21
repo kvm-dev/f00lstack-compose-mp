@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.kvmsoft.base.ui.theme.MainDark
 import ru.kvmsoft.base.ui.theme.MainError
+import ru.kvmsoft.base.ui.theme.TextStyles
 import ru.kvmsoft.base.ui.theme.Unfocused
 import ru.kvmsoft.base.ui.theme.getFoolStackTypography
 
@@ -70,7 +71,7 @@ fun OtpTextField(
     if (isError){
         Text(
             text = errorMessage,
-            style = getFoolStackTypography().bodySmall,
+            style = TextStyles.getTitlesStyle().bodySmall,
             fontSize = 16.sp,
             color = MainError,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
@@ -121,7 +122,7 @@ private fun CharView(
     Text(
         modifier = modifier,
         text = char,
-        style = getFoolStackTypography().bodyLarge,
+        style = TextStyles.getTitlesStyle().bodyLarge,
         color = if (isFocused) {
             MainDark
         } else {

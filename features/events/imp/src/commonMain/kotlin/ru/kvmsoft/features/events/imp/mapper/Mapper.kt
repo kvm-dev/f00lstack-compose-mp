@@ -5,6 +5,8 @@ import ru.kvmsoft.base.storage.model.EventSub
 import ru.kvmsoft.base.storage.model.Events
 import ru.kvmsoft.base.ui.model.Chip
 import ru.kvmsoft.base.ui.model.EventItem
+import ru.kvmsoft.base.ui.model.EventsItemState
+import ru.kvmsoft.base.ui.model.UiState
 import ru.kvmsoft.base.ui.utils.timestampToDateString
 import ru.kvmsoft.features.events.api.model.EventDomain
 import ru.kvmsoft.features.events.api.model.EventSubDomain
@@ -94,12 +96,33 @@ object Mapper {
         )
     }
 
-    fun mapToChips(eventList: List<EventDomain>): List<Chip>{
+//    fun mapToChips(eventList: List<EventDomain>): List<Chip>{
+//        val list = HashSet<Chip>()
+//        eventList.forEach { event->
+//            event.eventSubs.forEach {sub->
+//                list.add(mapToEventChip(sub))
+//            }
+//        }
+//        return list.toList()
+//    }
+
+    fun mapToChips(eventsState: UiState<EventsItemState>, isAsMode: Boolean): List<Chip>{
         val list = HashSet<Chip>()
-        eventList.forEach { event->
-            event.eventSubs.forEach {sub->
-                list.add(mapToEventChip(sub))
-            }
+        if (eventsState is UiState.Success){
+                if(isAsMode){
+                    eventsState.data?.events?.filter { it.eventCost == 0 }?.forEach { event->
+                        event.eventTags.forEach { sub->
+                            list.add(sub)
+                        }
+                    }
+                }
+                else{
+                    eventsState.data?.events?.forEach { event->
+                        event.eventTags.forEach { sub->
+                            list.add(sub)
+                        }
+                    }
+                }
         }
         return list.toList()
     }
@@ -107,9 +130,9 @@ object Mapper {
     fun mapToEventItems(eventsDomain: EventsDomain?): List<EventItem>{
         val eventList = ArrayList<EventItem>()
         eventsDomain?.events?.forEach {event->
-            val tags = ArrayList<String>()
+            val tags = ArrayList<Chip>()
             event.eventSubs.forEach {
-                tags.add(it.subName)
+                tags.add(Chip(it.subId, it.subName))
             }
             eventList.add(
                 EventItem(
@@ -124,5 +147,27 @@ object Mapper {
             )
         }
         return eventList
+    }
+
+    fun List<EventDomain>.mapToEventsItems(): List<EventItem>{
+        val list = ArrayList<EventItem>()
+        if(this.isNotEmpty()){
+            this.forEach {  event->
+                val tags = ArrayList<Chip>()
+                event.eventSubs.forEach { sub->
+                    tags.add(Chip(id = sub.subId, name = sub.subName))
+                }
+                list.add(EventItem(
+                    eventId = event.eventId,
+                    eventName = event.eventName,
+                    eventStartDate = event.eventDateStart.timestampToDateString(),
+                    eventImageBase64 = event.eventImageBase64,
+                    eventCost = event.eventCost,
+                    eventDescription = event.eventDescription,
+                    eventTags = tags
+                ))
+            }
+        }
+        return list
     }
 }
