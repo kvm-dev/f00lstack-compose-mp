@@ -42,6 +42,7 @@ datastore = "1.0.0"
 pullrefresh = "1.0.0"
 mokkeryPlugin =  "3.1.1"
 liquidGlass = "0.0.1-alpha02"
+orbit = "10.0.0"
 
 
 [libraries]
@@ -104,7 +105,11 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences", v
 #work-manager(android)
 work-manager = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManagerVersion" }
 pullToRefresh = { group = "androidx.compose.material3", name = "material3-pull-to-refresh", version.ref = "pullrefresh"}
-
+#mvi orbit
+orbit-compose = { module = "org.orbit-mvi:orbit-compose", version.ref = "orbit" }
+orbit-viewModel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orbit" }
+orbit-test = { module = "org.orbit-mvi:orbit-test", version.ref = "orbit" }
+orbit-core = { module = "org.orbit-mvi:orbit-core", version.ref = "orbit" }
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

@@ -76,12 +76,18 @@ kotlin {
                 implementation(projects.base.utils)
                 //features
                 implementation(projects.features.language.api)
+                implementation(projects.features.profile.api)
+                //mvi
+                implementation(libs.orbit.core)
+                implementation(libs.orbit.compose)
+                implementation(libs.orbit.viewModel)
             }
         }
 
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.orbit.test)
             }
         }
 

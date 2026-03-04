@@ -29,6 +29,8 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.koin.compose.viewmodel.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.base.ui.icons.LogoIcon
 import ru.kvmsoft.base.ui.theme.MainGreenLight
 import ru.kvmsoft.base.ui.theme.MainOrangeLight
@@ -42,12 +44,21 @@ import ru.kvmsoft.features.splash.imp.presentation.res.strings.getSplashTitle
 import ru.kvmsoft.features.splash.imp.presentation.viewmodel.SplashScreenViewModel
 @Composable
 fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateToHome: () -> Unit, onNavigationAuthorization: () -> Unit) {
-    val viewModelState by viewModel.progressState.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.collectAsState()
 
-    when (viewModelState) {
-        ProgressState.IDLE -> {
-            viewModel.initViewModel()
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            SplashScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE -> { onNavigateToHome() }
+            SplashScreenSideEffects.NAVIGATE_TO_AUTHORIZATION_ZONE -> { onNavigationAuthorization() }
+        }
+    }
+
+    when(state){
+        SplashScreenViewState.Idle -> {
+            viewModel.intentHandler(SplashScreenIntents.InitViewModelIntent)
+        }
+
+        SplashScreenViewState.Loading-> {
             val composition by rememberLottieComposition {
                 LottieCompositionSpec.JsonString(
                     Res.readBytes("files/fs-animation.json").decodeToString()
@@ -77,7 +88,7 @@ fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateT
                         .align(Alignment.CenterHorizontally)
                 )
                 Text(
-                    getSplashDescription(lang = (uiState.language)),
+                    getSplashDescription(lang = (viewModel.currentLangState.value)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 40.dp),
@@ -96,71 +107,6 @@ fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateT
                     contentDescription = ""
                 )
             }
-        }
-        ProgressState.LOADING -> {
-            viewModel.finishLoading()
-            val composition by rememberLottieComposition {
-                LottieCompositionSpec.JsonString(
-                    Res.readBytes("files/fs-animation.json").decodeToString()
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MainOrangeLight,
-                                Turquoise
-                            )
-                        )
-                    )
-            ) {
-                Text(getSplashTitle(), modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 80.dp),
-                    style = getFoolStackTypography().headlineLarge,
-                    textAlign  = TextAlign.Center
-                )
-                LogoIcon(
-                    modifier = Modifier
-                        .size(128.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-                Text(
-                    getSplashDescription(lang = (uiState.language)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 40.dp),
-                    style = getFoolStackTypography().titleMedium,
-                    color = UnselectedNavigationColor,
-                    textAlign  = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentScale = ContentScale.FillWidth,
-                    painter = rememberLottiePainter(
-                        composition = composition,
-                        iterations = Compottie.IterateForever),
-                    contentDescription = ""
-                )
-            }
-
-        }
-        ProgressState.COMPLETED -> {
-            val profileId = uiState.profile?.userId?: 0
-            if(profileId>0){
-                onNavigateToHome()
-            }
-            else{
-                onNavigationAuthorization()
-            }
-        }
-        ProgressState.UNAUTHORIZED -> {
-            viewModel.goToAuthorize()
-            onNavigationAuthorization()
         }
     }
 }

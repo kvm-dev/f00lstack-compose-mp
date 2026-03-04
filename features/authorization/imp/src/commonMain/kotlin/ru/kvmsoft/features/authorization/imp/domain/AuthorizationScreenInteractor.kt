@@ -9,12 +9,15 @@ import ru.kvmsoft.base.ui.res.strings.getErrorTextUserIsAlreadyConfirmed
 import ru.kvmsoft.base.ui.res.strings.getErrorTextUserIsNotFound
 import ru.kvmsoft.base.ui.res.strings.getErrorTextUserIsUnconfirmed
 import ru.kvmsoft.base.ui.res.strings.hardCreateUnknownError
+import ru.kvmsoft.base.ui.utils.EmailTextFieldValidation
 import ru.kvmsoft.base.utils.BrowserUtils
 import ru.kvmsoft.features.authorization.api.domain.usecase.AuthByEmailUseCase
 import ru.kvmsoft.features.authorization.api.domain.usecase.ConfirmAuthAndRegUseCase
 import ru.kvmsoft.features.authorization.api.domain.usecase.IsUserExistUseCase
 import ru.kvmsoft.features.authorization.api.domain.usecase.RegistrationByEmailUseCase
 import ru.kvmsoft.features.authorization.api.model.AuthorizationErrors
+import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorEmailEmpty
+import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorEmailIncorrect
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpAlreadySent
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpCodeIsEmptyOrIncorrect
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpCodeIsExpiredOrIncorrect
@@ -187,7 +190,21 @@ class AuthorizationScreenInteractor(
         }
     }
 
-    fun getLang() = getCurrentLanguageUseCase.getLang()
+    fun validateEmail(email: String, lang: CurrentLanguageDomain): Pair<String, Boolean> {
+        val email = email.trim()
+        var isValid = true
+        var errorMessage = ""
+        if (email.isBlank() || email.isEmpty()) {
+            errorMessage =
+                getAuthorizationErrorEmailEmpty(lang = lang)
+            isValid = false
+        } else if (!EmailTextFieldValidation.validateEmail(email)) {
+            errorMessage =
+                getAuthorizationErrorEmailIncorrect(lang = lang)
+            isValid = false
+        }
+        return Pair(first = errorMessage, second = isValid)
+    }
 
     suspend fun clearUserData(){
         encryptedDataStore.clearUserData()
