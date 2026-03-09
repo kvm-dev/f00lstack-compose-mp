@@ -7,6 +7,8 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.base.utils.model.BaseErrors
 
 sealed class MainScreenViewState {
+
+    data object LoadingState: MainScreenViewState()
     data class ErrorState(val error: BaseErrors): MainScreenViewState()
 
     data class SuccessState(

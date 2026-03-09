@@ -11,5 +11,4 @@ sealed class AuthorizationScreenViewState {
     data class AuthorizationRegistrationState(val lang: CurrentLanguageDomain, val error: AuthorizationErrors?): AuthorizationScreenViewState()
 
     data class OtpState(val lang: CurrentLanguageDomain, val error: AuthorizationErrors?): AuthorizationScreenViewState()
-    data object AuthorizedState: AuthorizationScreenViewState()
 }

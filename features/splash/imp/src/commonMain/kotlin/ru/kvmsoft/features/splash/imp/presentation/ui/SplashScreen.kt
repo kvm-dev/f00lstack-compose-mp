@@ -32,18 +32,17 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.base.ui.icons.LogoIcon
-import ru.kvmsoft.base.ui.theme.MainGreenLight
 import ru.kvmsoft.base.ui.theme.MainOrangeLight
 import ru.kvmsoft.base.ui.theme.Turquoise
 import ru.kvmsoft.base.ui.theme.UnselectedNavigationColor
 import ru.kvmsoft.base.ui.theme.getFoolStackTypography
-import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.splash.imp.ComposeResources.Res
 import ru.kvmsoft.features.splash.imp.presentation.res.strings.getSplashDescription
 import ru.kvmsoft.features.splash.imp.presentation.res.strings.getSplashTitle
 import ru.kvmsoft.features.splash.imp.presentation.viewmodel.SplashScreenViewModel
 @Composable
 fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateToHome: () -> Unit, onNavigationAuthorization: () -> Unit) {
+
     val state by viewModel.collectAsState()
 
     viewModel.collectSideEffect { sideEffect ->

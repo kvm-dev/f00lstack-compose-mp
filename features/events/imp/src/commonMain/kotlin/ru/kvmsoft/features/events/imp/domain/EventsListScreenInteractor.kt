@@ -38,43 +38,35 @@ class EventsListScreenInteractor(
         val isAsModeEnabled = isAsModeIsEnabled(connectionState).isAsModeActive
         if(isNetworkAvailable()){
                 val eventsResult = getEvents()
-                return if(eventsResult.errorMsg.isEmpty()){
                     val filtersList = HashSet<String>()
                     eventsResult.events.forEach { event->
                         event.eventSubs.forEach { sub->
                             filtersList.add(sub.subName)
                         }
                     }
-                    EventsListScreenViewState.SuccessState(
+                   return EventsListScreenViewState.SuccessState(
                         isNetworkAvailable = true,
                         lang = lang,
                         eventsState = UiState.Success(data = EventsItemState(events = eventsResult.events.mapToEventsItems())),
                         isAsModeEnabled = isAsModeEnabled,
                         selectedFilters = filtersList.toList()
                     )
-                } else{
-                    EventsListScreenViewState.ErrorState(error = errorsMsgHandler(eventsResult.errorMsg))
-                }
             }
         else{
             val eventsResult = getEvents(fromLocal = true)
-            return if(eventsResult.errorMsg.isEmpty()){
                 val filtersList = HashSet<String>()
                 eventsResult.events.forEach { event->
                     event.eventSubs.forEach { sub->
                         filtersList.add(sub.subName)
                     }
                 }
-                EventsListScreenViewState.SuccessState(
+               return EventsListScreenViewState.SuccessState(
                     isNetworkAvailable = false,
                     lang = lang,
                     eventsState = UiState.Success(data = EventsItemState(events = eventsResult.events.mapToEventsItems())),
                     isAsModeEnabled = isAsModeEnabled,
                     selectedFilters = filtersList.toList()
                     )
-            } else{
-                EventsListScreenViewState.ErrorState(error = errorsMsgHandler(errorMsg = eventsResult.errorMsg))
-            }
         }
     }
 }

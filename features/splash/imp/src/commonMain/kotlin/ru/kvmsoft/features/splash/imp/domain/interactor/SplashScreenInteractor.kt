@@ -45,15 +45,6 @@ class SplashScreenInteractor(
     suspend fun authByToken() = authByTokenUserCase.auth()
     suspend fun authByTokenOffline() = authByTokenOfflineLogUseCase.logOfflineAuthBytToken()
 
-     fun defaultViewState(): SplashScreenViewState{
-        return SplashScreenViewState(
-            language = CurrentLanguageDomain.EN,
-            isConnectionAvailable = false,
-            userToken = "",
-            profile = null
-        )
-    }
-
     suspend fun clearUserData(){
         encryptedDataStore.clearUserData()
     }

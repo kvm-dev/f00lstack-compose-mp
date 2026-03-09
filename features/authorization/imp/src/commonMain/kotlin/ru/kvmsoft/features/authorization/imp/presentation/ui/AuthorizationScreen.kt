@@ -24,6 +24,7 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.components.BaseErrorBottomSheet
 import ru.kvmsoft.base.ui.components.EmailTextField
@@ -68,6 +69,12 @@ fun AuthorizationScreen(
     var showBottomSheet by remember { mutableStateOf(true) }
 
     var showExitBottomSheet by remember { mutableStateOf(false) }
+
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE -> { onAuthorized() }
+        }
+    }
 
     when (state) {
         AuthorizationScreenViewState.IdleState -> {
@@ -129,10 +136,6 @@ fun AuthorizationScreen(
                         })
                 }
             }
-        }
-
-        AuthorizationScreenViewState.AuthorizedState -> {
-            onAuthorized()
         }
 
         is AuthorizationScreenViewState.AuthorizationRegistrationState -> {

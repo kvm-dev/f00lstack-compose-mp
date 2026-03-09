@@ -90,10 +90,6 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
-                //mvi
-//                implementation(libs.orbit.core)
-//                implementation(libs.orbit.compose)
-//                implementation(libs.orbit.viewModel)
                 //features
                 implementation(projects.features.language.api)
                 implementation(projects.features.authorization.api)
@@ -105,7 +101,6 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
-                implementation(libs.orbit.test)
             }
         }
 

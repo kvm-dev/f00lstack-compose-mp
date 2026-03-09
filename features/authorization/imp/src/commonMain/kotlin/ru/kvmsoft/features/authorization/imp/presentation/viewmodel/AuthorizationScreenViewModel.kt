@@ -36,7 +36,7 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
         scope.launch(Dispatchers.IO + coroutineExceptionHandler){
             emailLoading = true
             otpLoading = true
-            val state = interactor.checkState(
+            val stateOrSideEffect = interactor.getStateOrSideEffect(
                 lang = currentLangState.value,
                 userEmail = emailValue,
                 userOtp = otpValue,
@@ -44,7 +44,12 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
             )
             emailLoading = false
             otpLoading = false
-            reduce { state }
+            if(stateOrSideEffect is AuthorizationScreenSideEffects){
+                postSideEffect(AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE)
+            }
+            else{
+                reduce { state }
+            }
         }
     }
 

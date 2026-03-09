@@ -1,30 +1,35 @@
 package ru.kvmsoft.features.profile.imp.presentation.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
-import ru.kvmsoft.base.viewmodel.model.ProgressState
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.features.profile.imp.presentation.viewmodel.ProfileScreenViewModel
 
 @Composable
 fun ProfileScreen(viewModel: ProfileScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
-    val viewModelState by viewModel.progressState.collectAsState()
-    when (viewModelState) {
-        ProgressState.IDLE -> {
+
+    val state by viewModel.collectAsState()
+
+    viewModel.collectSideEffect { sideEffect ->
+//        when (sideEffect) {
+//
+//        }
+    }
+    when (state) {
+        ProfileScreenViewState.LoadingState -> {
 
             viewModel.initViewModel()
         }
-        ProgressState.LOADING -> {}
-        ProgressState.COMPLETED -> {}
-        ProgressState.UNAUTHORIZED -> {
-            onNavigationAuthorization()
+        is ProfileScreenViewState.ErrorState -> {
+
+        }
+
+        is ProfileScreenViewState.SuccessState -> {
+
         }
     }
-
-    Column {
-
-    }
 }
+
 

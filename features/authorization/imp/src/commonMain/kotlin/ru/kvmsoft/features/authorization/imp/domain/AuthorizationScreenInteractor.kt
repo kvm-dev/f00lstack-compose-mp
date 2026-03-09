@@ -21,6 +21,7 @@ import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthori
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpAlreadySent
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpCodeIsEmptyOrIncorrect
 import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorOtpCodeIsExpiredOrIncorrect
+import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenSideEffects
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenViewState
 import ru.kvmsoft.features.language.api.domain.usecase.GetCurrentLanguageUseCase
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
@@ -28,7 +29,7 @@ import ru.kvmsoft.features.networkconnection.api.domain.usecase.GetNetworkStateU
 
 class AuthorizationScreenInteractor(
     private val networkStateUseCase: GetNetworkStateUseCase,
-    private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
+    getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val confirmAuthAndRegUseCase: ConfirmAuthAndRegUseCase,
     private val isUserExistUseCase: IsUserExistUseCase,
     private val registrationByEmailUseCase: RegistrationByEmailUseCase,
@@ -39,11 +40,11 @@ class AuthorizationScreenInteractor(
 
     val langState = getCurrentLanguageUseCase.langState
     @Suppress("SuspiciousIndentation")
-    suspend fun checkState(
+    suspend fun getStateOrSideEffect(
         setOtpError:(String)-> Unit,
         lang: CurrentLanguageDomain,
         userEmail: String? = null,
-        userOtp: String? = null): AuthorizationScreenViewState{
+        userOtp: String? = null): Any{
         val isNetworkAvailable = networkStateUseCase.isNetworkAvailable()
         if(!isNetworkAvailable){
             setOtpError("")
@@ -117,7 +118,7 @@ class AuthorizationScreenInteractor(
                                     }
                                     else{
                                         setOtpError("")
-                                        return AuthorizationScreenViewState.AuthorizedState
+                                        return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                                     }
                                 }
                                 if(errorAuthorization == AuthorizationErrors.CODE_IS_EXPIRED){
@@ -129,12 +130,12 @@ class AuthorizationScreenInteractor(
                                     }
                                     else{
                                         setOtpError("")
-                                        return AuthorizationScreenViewState.AuthorizedState
+                                        return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                                     }
                                 }
                             }
                             else{
-                                return AuthorizationScreenViewState.AuthorizedState
+                                return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                             }
                         }
                         if(error == AuthorizationErrors.CODE_IS_INCORRECT){
@@ -149,7 +150,7 @@ class AuthorizationScreenInteractor(
                             AuthorizationScreenViewState.ErrorState(lang = lang, error = errorsMsgHandler(hardCreateUnknownError()))
                         } else{
                             setOtpError("")
-                            AuthorizationScreenViewState.AuthorizedState
+                            return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                         }
                     }
                 }
@@ -163,7 +164,7 @@ class AuthorizationScreenInteractor(
                 return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(currentAuthorizationResult.errorMsg))
             }
             else{
-                return AuthorizationScreenViewState.AuthorizedState
+                return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
             }
         }
         else{
