@@ -44,6 +44,7 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                             profileDomain = profile,
                             isKnowHowToUseSlider = isKnowHowToUseSlider
                         )
+                        println("вмстейт $currentState")
                         reduce { currentState }
                     }
                     if (it.lang is ResultState.Idle || it.profile is ResultState.Idle) {
@@ -53,9 +54,11 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                         } else {
                             interactor.getProfile(true)
                         }
+                        println("вмстейт фром идл")
                         reduce { MainScreenViewState.LoadingState }
                     }
                     if (it.lang is ResultState.Loading || it.profile is ResultState.Loading) {
+                        println("вмстейт фром лоадинг")
                         reduce { MainScreenViewState.LoadingState }
                     }
             }

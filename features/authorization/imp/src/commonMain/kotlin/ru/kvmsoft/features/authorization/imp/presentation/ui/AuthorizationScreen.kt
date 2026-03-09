@@ -70,6 +70,8 @@ fun AuthorizationScreen(
 
     var showExitBottomSheet by remember { mutableStateOf(false) }
 
+
+
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE -> { onAuthorized() }
@@ -77,6 +79,9 @@ fun AuthorizationScreen(
     }
 
     when (state) {
+        AuthorizationScreenViewState.IntermediateState -> {
+        //intermediate state, for exit bottom sheet restart flow
+        }
         AuthorizationScreenViewState.IdleState -> {
             showBottomSheet = true
             Column(

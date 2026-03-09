@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import ru.kvmsoft.base.viewmodel.BaseViewModel
 import ru.kvmsoft.features.authorization.imp.domain.AuthorizationScreenInteractor
+import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenIntents
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenSideEffects
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenViewState
@@ -48,7 +50,7 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
                 postSideEffect(AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE)
             }
             else{
-                reduce { state }
+                reduce { stateOrSideEffect as AuthorizationScreenViewState }
             }
         }
     }
@@ -57,7 +59,11 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
         when(intent){
             AuthorizationScreenIntents.InitViewModelIntent -> loadData()
             AuthorizationScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
-            AuthorizationScreenIntents.RestartUiIntent -> orbitIntent { reduce { AuthorizationScreenViewState.IdleState } }
+            AuthorizationScreenIntents.RestartUiIntent -> orbitIntent {
+                reduce { AuthorizationScreenViewState.IntermediateState }
+                delay(500L)
+                reduce { AuthorizationScreenViewState.IdleState }
+            }
             AuthorizationScreenIntents.GoToAuthorizationIntent -> orbitIntent {
                 scope.launch(Dispatchers.IO + coroutineExceptionHandler){
                         interactor.clearUserData()

@@ -1,5 +1,6 @@
 package ru.kvmsoft.base.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
@@ -36,7 +38,9 @@ import ru.kvmsoft.base.ui.icons.interviewIcon
 import ru.kvmsoft.base.ui.icons.mainIcon
 import ru.kvmsoft.base.ui.icons.newsIcon
 import ru.kvmsoft.base.ui.icons.testsIcon
+import ru.kvmsoft.base.ui.theme.MainOrangeLight
 import ru.kvmsoft.base.ui.theme.SelectedNavigationColor
+import ru.kvmsoft.base.ui.theme.Turquoise
 import ru.kvmsoft.base.ui.theme.UnselectedNavigationColor
 import ru.kvmsoft.base.ui.utils.NoRippleConfiguration
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
@@ -61,7 +65,9 @@ fun NavigationApp(langIsRus: Boolean) {
         selectedTextColor = SelectedNavigationColor, // Color of the text when selected
         unselectedTextColor = UnselectedNavigationColor // Color of the text when unselected
     )
+    var withSplashBackground by remember { mutableStateOf( true) }
     val background = rememberVectorPainter(image = baseBackground)
+
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
@@ -211,14 +217,32 @@ fun NavigationApp(langIsRus: Boolean) {
             }
         }
     ) { paddingValues ->
-        NavHost(modifier = Modifier.fillMaxSize()
-            .paint(painter = background,
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                sizeToIntrinsics = true),
+        var modifier: Modifier
+            if(withSplashBackground){
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MainOrangeLight,
+                                Turquoise
+                            )
+                        )
+                    )
+            }
+            else{
+               modifier = Modifier
+                   .fillMaxSize()
+                   .paint(painter = background,
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center,
+                    sizeToIntrinsics = true)
+            }
+
+        NavHost(modifier = modifier,
             navController = navController,
             startDestination = AppDestinations.Splash().route // Splash экран
-        ) {
+        ){
             // Определяем маршруты и их Composable-функции
             composable(AppDestinations.Main().route) {
                 MainScreen(
@@ -236,6 +260,7 @@ fun NavigationApp(langIsRus: Boolean) {
                     }
                 )
                 isShowNavBar = true
+                withSplashBackground = false
             }
             composable(AppDestinations.InterviewList().route) {
                 InterviewListScreen(
@@ -277,6 +302,7 @@ fun NavigationApp(langIsRus: Boolean) {
                     isShowNavBar = true
                 })
                 isShowNavBar = false
+                withSplashBackground = false
             }
             composable(AppDestinations.Professions().route) {
                 ProfileScreen(

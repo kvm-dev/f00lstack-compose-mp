@@ -133,6 +133,7 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                 }
             }
             isRefreshing = false
+            viewModel.intentHandler(MainScreenIntents.InitViewModelIntent)
         }
         is MainScreenViewState.SuccessState-> {
             val successState = state as MainScreenViewState.SuccessState
