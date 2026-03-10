@@ -3,6 +3,7 @@ package ru.kvmsoft.features.main.imp.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
@@ -25,9 +26,13 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
     private val _isKnowHowToUseSlider = MutableStateFlow(false)
 
     fun initViewModel() = orbitIntent {
-            scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+        val job = scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
                 reduce { MainScreenViewState.LoadingState }
-                combine(interactor.langState, interactor.profile, interactor.isKnowHowToUseEventSlider) { lang, profile, isKnowHowToUseEventsSlider ->
+                combine(
+                    interactor.langState,
+                    interactor.profile,
+                    interactor.isKnowHowToUseEventSlider
+                ) { lang, profile, isKnowHowToUseEventsSlider ->
                     _isKnowHowToUseSlider.update { isKnowHowToUseEventsSlider }
                     MainScreenData(
                         lang = lang,
@@ -46,6 +51,7 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                         )
                         println("вмстейт $currentState")
                         reduce { currentState }
+                        this.cancel()
                     }
                     if (it.lang is ResultState.Idle || it.profile is ResultState.Idle) {
                         interactor.getCurrentLang()
@@ -61,8 +67,9 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                         println("вмстейт фром лоадинг")
                         reduce { MainScreenViewState.LoadingState }
                     }
+                }
             }
-        }
+            if(!job.isActive) job.join()
 }
 
     override fun intentHandler(intent: Any) {
