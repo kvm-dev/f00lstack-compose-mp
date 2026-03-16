@@ -89,6 +89,7 @@ kotlin {
                 implementation(projects.features.tests.imp)
                 //ui
                 implementation(projects.base.ui)
+                implementation(projects.base.utils)
 //                implementation(libs.coil.svg)
 //                implementation(libs.coil.compose)
                 //annotations

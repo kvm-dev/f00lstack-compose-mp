@@ -26,7 +26,10 @@ val eventsModule = module {
             networkStateUseCase = get(),
             encryptedDataStore = get(),
             getAsModeUseCase = get()) }
-    single<EventsInnerScreenInteractor> { EventsInnerScreenInteractor() }
+    single<EventsInnerScreenInteractor> { EventsInnerScreenInteractor(
+        getEventsUseCase = get(),
+        browserUtils = get()
+    ) }
     viewModelOf(::EventsListScreenViewModel)
     viewModelOf(::EventsInnerScreenViewModel)
 }

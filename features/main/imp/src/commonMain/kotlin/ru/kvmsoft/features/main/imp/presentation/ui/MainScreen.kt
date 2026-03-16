@@ -45,12 +45,13 @@ import ru.kvmsoft.base.ui.res.strings.getAchievementsMainScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getEventsMainScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getLoadingText
 import ru.kvmsoft.base.utils.model.BaseErrors
+import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, navController: NavController, eventDestination: String) {
+fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, navController: NavController, eventDestination: AppDestinations.EventsInner) {
 
     val state by viewModel.collectAsState()
 
@@ -77,13 +78,8 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
             }
 
             MainScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN -> {
-                val route = "$eventDestination/{eventId}"
-                navController.navigate(
-                    route.replace(
-                        oldValue = "{eventId}",
-                        newValue =  eventId.intValue.toString()
-                    )
-                )
+                val route = eventDestination.copy(eventId = eventId.intValue)
+                navController.navigate(route)
             }
         }
     }

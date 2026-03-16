@@ -43,6 +43,7 @@ pullrefresh = "1.0.0"
 mokkeryPlugin =  "3.1.1"
 liquidGlass = "0.0.1-alpha02"
 orbit = "10.0.0"
+serialization = "1.10.0"
 
 
 [libraries]
@@ -110,6 +111,8 @@ orbit-compose = { module = "org.orbit-mvi:orbit-compose", version.ref = "orbit" 
 orbit-viewModel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orbit" }
 orbit-test = { module = "org.orbit-mvi:orbit-test", version.ref = "orbit" }
 orbit-core = { module = "org.orbit-mvi:orbit-core", version.ref = "orbit" }
+#serialization
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -123,6 +126,7 @@ spm = { id = "io.github.frankois944.spmForKmp", version.ref =  "spmVersion" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 #serialization
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 #buildconfig multiplatform
 build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfigVersion"}

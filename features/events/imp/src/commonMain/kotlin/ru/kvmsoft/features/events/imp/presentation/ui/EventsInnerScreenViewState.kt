@@ -1,13 +1,17 @@
 package ru.kvmsoft.features.events.imp.presentation.ui
 
+import ru.kvmsoft.base.utils.model.BaseErrors
+import ru.kvmsoft.features.events.api.model.EventDomain
+import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
+
 sealed class EventsInnerScreenViewState {
 
-    data object LoadingState: EventsInnerScreenViewState()
+    data object IdleState: EventsInnerScreenViewState()
 
-    data class ErrorState(val errorMsg: String): EventsInnerScreenViewState()
+    data class ErrorState(val lang: CurrentLanguageDomain, val error: BaseErrors?): EventsInnerScreenViewState()
 
     data class SuccessState(
-        val userData: String,
-        val currentPosition: String
+        val lang: CurrentLanguageDomain,
+        val event: EventDomain
     ): EventsInnerScreenViewState()
 }

@@ -17,14 +17,24 @@ import ru.kvmsoft.base.ui.theme.MainGreenLight
 import ru.kvmsoft.base.ui.theme.SimplyWhite
 
 @Composable
-fun ShowNotFoundImageHorizontal() {
-    Image(
-        imageVector = notFoundImageHorizontal,
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp) // Example size
-            .clip(RoundedCornerShape(percent = 10)),
-    )
+fun ShowNotFoundImageHorizontal(modifier: Modifier? = null) {
+    if(modifier == null){
+        Image(
+            imageVector = notFoundImageHorizontal,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp) // Example size
+                .clip(RoundedCornerShape(percent = 10)),
+        )
+    }
+    else{
+        Image(
+            imageVector = notFoundImageHorizontal,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier,
+        )
+    }
 }
