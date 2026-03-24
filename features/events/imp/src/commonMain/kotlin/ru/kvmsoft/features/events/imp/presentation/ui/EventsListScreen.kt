@@ -77,7 +77,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                         )
                     )
                 },
-                onclickBackToHomeScreen = onClickBack,
+                onClickBack = onClickBack,
                 onClickEvent = {
                     viewModel.intentHandler(EventsListScreenIntents.NavigateToEventDetailsIntent)
                 },
@@ -106,7 +106,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 ),
                 selectedChips = successState.selectedFilters,
                 onclickChip = { viewModel.intentHandler(EventsListScreenIntents.UpdateFiltersIntent(selectedFilter.value)) },
-                onclickBackToHomeScreen = onClickBack,
+                onClickBack = onClickBack,
                 onClickEvent = {
                     viewModel.intentHandler(EventsListScreenIntents.NavigateToEventDetailsIntent)
                 },

@@ -20,26 +20,28 @@ import ru.kvmsoft.base.ui.theme.MainGreenLight
 import ru.kvmsoft.base.ui.theme.TextStyles.screenTitleStyle
 
 @Composable
-fun ScreenHeader(text: String, modifier: Modifier, onBackClicked: () -> Unit){
+fun ScreenHeader(text: String, modifier: Modifier, onBackClicked: () -> Unit, withArrow: Boolean = true){
     val interaction = remember { MutableInteractionSource() }
     Box(modifier = modifier.
     padding(horizontal = 16.dp)) {
-        Icon(
-            tint = Color.Unspecified,
-            imageVector = BackArrowIcon,
-            contentDescription = "backButton",
-            modifier = Modifier
-                .size(width = 6.dp, height = 12.dp)
-                .clickable(
-                    interactionSource = interaction,
-                    indication = ripple(
-                        bounded = true,
-                        radius = 24.dp,
-                        color = MainGreenLight
-                    ),
-                    onClick = { onBackClicked() }
-                )
-        )
+        if(withArrow){
+            Icon(
+                tint = Color.Unspecified,
+                imageVector = BackArrowIcon,
+                contentDescription = "backButton",
+                modifier = Modifier
+                    .size(width = 6.dp, height = 12.dp)
+                    .clickable(
+                        interactionSource = interaction,
+                        indication = ripple(
+                            bounded = true,
+                            radius = 24.dp,
+                            color = MainGreenLight
+                        ),
+                        onClick = { onBackClicked() }
+                    )
+            )
+        }
         Text(modifier = modifier
             .fillMaxWidth(),
             text = text,
