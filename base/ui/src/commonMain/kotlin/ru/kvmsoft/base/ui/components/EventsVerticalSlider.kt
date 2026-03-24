@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -29,6 +31,7 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kashif_e.backdrop.backdrops.rememberLayerBackdrop
@@ -143,8 +147,12 @@ fun EventsVerticalSlider(
             }
         }
         UiState.Loading -> {
-            LazyColumn(modifier = modifier
-                .padding(top = 60.dp, bottom = 10.dp)
+            LazyColumn(
+                contentPadding = PaddingValues(
+                    top = 60.dp,
+                    bottom = 10.dp
+                ),
+                modifier = modifier
                 .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                 .pullToRefresh(
                     state = if(isConnectionAvailable) { state } else {
@@ -161,9 +169,9 @@ fun EventsVerticalSlider(
                     Column(modifier = Modifier
                         .background(HeaderMainColorWithTransparent)) {
                         ScreenHeader(
+                            modifier = Modifier,
                             text = getEventsListScreenTitle(lang = lang),
-                            onBackClicked = onclickBackToHomeScreen,
-                            modifier = Modifier
+                            onBackClicked = onclickBackToHomeScreen
                         )
                         LazyRow(Modifier.padding(top = 24.dp, bottom = 10.dp)) {
                             items(10) {
@@ -265,6 +273,7 @@ fun EventsVerticalSlider(
                     }
                 }
             }
+
             PullToRefreshBox(
                 modifier = Modifier
                     .padding(top = 40.dp)
@@ -290,102 +299,212 @@ fun EventsVerticalSlider(
                 state = state,
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh) {
-            LazyColumn(
-                modifier = modifier
-                    .padding(top = 20.dp, bottom = 10.dp)
-            ) {
-                stickyHeader {
-                    Column(
-                        modifier = Modifier
-                            .background(HeaderMainColorWithTransparent)
-                    ) {
-                        ScreenHeader(
-                            text = getEventsListScreenTitle(lang = lang),
-                            onBackClicked = onclickBackToHomeScreen,
+                LazyColumn(
+                    contentPadding = PaddingValues(
+                        top = 20.dp,
+                        bottom = 10.dp
+                    )
+                ) {
+                    stickyHeader() {
+                        Column(
                             modifier = Modifier
-                        )
-                        ChipSelector(
-                            chips = chips,
-                            selectedChips = selectedChips,
-                            selectedChip = selectedChip,
-                            onclickChip = onclickChip
-                        )
+                                .background(HeaderMainColorWithTransparent)
+                                .clickable(enabled = false) { }
+                        ) {
+                            ScreenHeader(
+                                modifier = Modifier,
+                                text = getEventsListScreenTitle(lang = lang),
+                                onBackClicked = onclickBackToHomeScreen
+                            )
+                            ChipSelector(
+                                chips = chips,
+                                selectedChips = selectedChips,
+                                selectedChip = selectedChip,
+                                onclickChip = onclickChip
+                            )
+                        }
                     }
-                }
-                itemsIndexed(filteredEvents.toList().sortedBy { it.eventId }) { _, event ->
-                    val cost: String
-                    val symbol = getCurrencySymbol(lang)
-                    cost = if (event.eventCost > 0) {
-                        "${event.eventCost} $symbol"
-                    } else {
-                        getFreePay(lang)
-                    }
-                    var subTags = ""
-                    event.eventTags.forEach { tag ->
-                        subTags += "${tag.name}/"
-                    }
-                    if (subTags.isNotEmpty()) {
-                        subTags = subTags.dropLast(1)
-                    }
-                    Card(
-                        modifier = Modifier
-                            .clickable(enabled = clickEnabled) {
-                                clickEnabled = false
-                                selectId.value = event.eventId
-                                onClickEvent()
-                            }
-                            .padding(horizontal = 20.dp, vertical = 18.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Transparent,
-                        ),
-                    ) {
-                        Column {
-                            if (event.eventImageBase64.isNotEmpty()) {
-                                if (event.eventImageBase64.decodeBase64ToBitmap() != null) {
-                                    event.eventImageBase64.decodeBase64ToBitmap()?.let {
-                                        Image(
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(180.dp)
-                                                .clip(RoundedCornerShape(10.dp)),
-                                            bitmap = it,
-                                            contentDescription = event.eventName
-                                        )
+                    
+                    itemsIndexed(filteredEvents.toList().sortedBy { it.eventId }) { index, event ->
+                        val cost: String
+                        val symbol = getCurrencySymbol(lang)
+                        cost = if (event.eventCost > 0) {
+                            "${event.eventCost} $symbol"
+                        } else {
+                            getFreePay(lang)
+                        }
+                        var subTags = ""
+                        event.eventTags.forEach { tag ->
+                            subTags += "${tag.name}/"
+                        }
+                        if (subTags.isNotEmpty()) {
+                            subTags = subTags.dropLast(1)
+                        }
+                        Card(
+                            modifier = Modifier
+                                .clickable(enabled = clickEnabled) {
+                                    clickEnabled = false
+                                    selectId.value = event.eventId
+                                    onClickEvent()
+                                }
+                                .padding(horizontal = 20.dp, vertical = 18.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.Transparent,
+                            ),
+                        ) {
+                            Column {
+                                if (event.eventImageBase64.isNotEmpty()) {
+                                    if (event.eventImageBase64.decodeBase64ToBitmap() != null) {
+                                        event.eventImageBase64.decodeBase64ToBitmap()?.let {
+                                            Image(
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(180.dp)
+                                                    .clip(RoundedCornerShape(10.dp)),
+                                                bitmap = it,
+                                                contentDescription = event.eventName
+                                            )
+                                        }
+                                    } else {
+                                        ShowNotFoundImageHorizontal()
                                     }
                                 } else {
                                     ShowNotFoundImageHorizontal()
                                 }
-                            } else {
-                                ShowNotFoundImageHorizontal()
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp)
-                                    .align(Alignment.End)
-                            ) {
-                                Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                    ServiceTag(subTags)
-                                    ServiceTitle(modifier = Modifier, text = event.eventName)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp)
+                                        .align(Alignment.End)
+                                ) {
+                                    Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
+                                        ServiceTag(subTags)
+                                        ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
+                                    }
+                                    Column {
+                                        ServiceSubLabel(
+                                            isYellow = false,
+                                            text = event.eventStartDate, modifier = Modifier
+                                                .align(Alignment.End)
+                                        )
+                                        ServiceText(
+                                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                                            text = cost
+                                        )
+                                    }
                                 }
-                                Column {
-                                    ServiceSubLabel(
-                                        isYellow = false,
-                                        text = event.eventStartDate, modifier = Modifier
-                                            .align(Alignment.End)
-                                    )
-                                    ServiceText(
-                                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                                        text = cost
-                                    )
-                                }
-                            }
 
+                            }
                         }
                     }
                 }
-            }
+//            LazyColumn(
+//                state = lazyListState,
+//                contentPadding = PaddingValues(
+//                    top = 20.dp,
+//                    bottom = 10.dp
+//                )
+//            ) {
+//                stickyHeader(key = "header") {
+//                    Column(
+//                        modifier = Modifier
+//                            .zIndex(1f)
+//                            .background(HeaderMainColorWithTransparent)
+//                    ) {
+//                        ScreenHeader(
+//                            modifier = Modifier.zIndex(2f),
+//                            text = getEventsListScreenTitle(lang = lang),
+//                            onBackClicked = onclickBackToHomeScreen
+//                        )
+//                        ChipSelector(
+//                            chips = chips,
+//                            selectedChips = selectedChips,
+//                            selectedChip = selectedChip,
+//                            onclickChip = onclickChip
+//                        )
+//                    }
+//                }
+//                itemsIndexed(filteredEvents.toList().sortedBy { it.eventId }) { index, event ->
+//                    val cost: String
+//                    val symbol = getCurrencySymbol(lang)
+//                    cost = if (event.eventCost > 0) {
+//                        "${event.eventCost} $symbol"
+//                    } else {
+//                        getFreePay(lang)
+//                    }
+//                    var subTags = ""
+//                    event.eventTags.forEach { tag ->
+//                        subTags += "${tag.name}/"
+//                    }
+//                    if (subTags.isNotEmpty()) {
+//                        subTags = subTags.dropLast(1)
+//                    }
+//                    Card(
+//                        modifier = Modifier.zIndex(0F)
+//                            .clickable(enabled = clickEnabled) {
+//                                clickEnabled = false
+//                                selectId.value = event.eventId
+//                                onClickEvent()
+//                                val isUnderSticky = stickyHeaderInfo != null
+//                                if (!isUnderSticky) {
+//                                    println("Clicked $index")
+//                                } else {
+//                                    println("Click blocked for $index")
+//                                }
+//                            }
+//                            .padding(horizontal = 20.dp, vertical = 18.dp),
+//                        colors = CardDefaults.cardColors(
+//                            containerColor = Color.Transparent,
+//                        ),
+//                    ) {
+//                        Column {
+//                            if (event.eventImageBase64.isNotEmpty()) {
+//                                if (event.eventImageBase64.decodeBase64ToBitmap() != null) {
+//                                    event.eventImageBase64.decodeBase64ToBitmap()?.let {
+//                                        Image(
+//                                            contentScale = ContentScale.Crop,
+//                                            modifier = Modifier
+//                                                .fillMaxWidth()
+//                                                .height(180.dp)
+//                                                .clip(RoundedCornerShape(10.dp)),
+//                                            bitmap = it,
+//                                            contentDescription = event.eventName
+//                                        )
+//                                    }
+//                                } else {
+//                                    ShowNotFoundImageHorizontal()
+//                                }
+//                            } else {
+//                                ShowNotFoundImageHorizontal()
+//                            }
+//                            Row(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(top = 10.dp)
+//                                    .align(Alignment.End)
+//                            ) {
+//                                Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
+//                                    ServiceTag(subTags)
+//                                    ServiceTitle(modifier = Modifier, text = event.eventName)
+//                                }
+//                                Column {
+//                                    ServiceSubLabel(
+//                                        isYellow = false,
+//                                        text = event.eventStartDate, modifier = Modifier
+//                                            .align(Alignment.End)
+//                                    )
+//                                    ServiceText(
+//                                        modifier = Modifier.align(Alignment.CenterHorizontally),
+//                                        text = cost
+//                                    )
+//                                }
+//                            }
+//
+//                        }
+//                    }
+//                }
+//            }
         }
         }
     }

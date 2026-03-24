@@ -15,7 +15,7 @@ import ru.kvmsoft.features.tests.imp.domain.usecase.CheckOfflineTestResultForIos
 import ru.kvmsoft.features.tests.imp.domain.usecase.GetPassedTestsUseCaseImp
 import ru.kvmsoft.features.tests.imp.domain.usecase.GetTestsUseCaseImp
 import ru.kvmsoft.features.tests.imp.domain.usecase.SendTestResultUseCaseImp
-import ru.kvmsoft.features.tests.imp.presentation.viewmodel.TestInnerScreenViewModel
+import ru.kvmsoft.features.tests.imp.presentation.viewmodel.TestsInnerScreenViewModel
 import ru.kvmsoft.features.tests.imp.presentation.viewmodel.TestsListScreenViewModel
 
 val testsModule = module {
@@ -29,5 +29,5 @@ val testsModule = module {
     single<TestsListScreenInteractor> { TestsListScreenInteractor() }
     single<TestInnerScreenInteractor> { TestInnerScreenInteractor() }
     viewModelOf(::TestsListScreenViewModel)
-    viewModelOf(::TestInnerScreenViewModel)
+    viewModelOf(::TestsInnerScreenViewModel)
 }

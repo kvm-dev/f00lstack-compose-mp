@@ -78,6 +78,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtimeCompose)
                 implementation(projects.base.storage)
                 implementation(libs.navigation)
+                implementation(libs.backhandler)
                 //utils
                 implementation(projects.base.utils)
                 //ui

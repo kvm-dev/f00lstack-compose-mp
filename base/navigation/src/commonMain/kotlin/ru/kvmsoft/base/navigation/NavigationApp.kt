@@ -1,5 +1,6 @@
 package ru.kvmsoft.base.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
@@ -31,15 +33,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import ru.kvmsoft.base.ui.background.baseBackground
 import ru.kvmsoft.base.ui.icons.interviewIcon
 import ru.kvmsoft.base.ui.icons.mainIcon
 import ru.kvmsoft.base.ui.icons.newsIcon
 import ru.kvmsoft.base.ui.icons.testsIcon
+import ru.kvmsoft.base.ui.theme.MainOrangeLight
 import ru.kvmsoft.base.ui.theme.SelectedNavigationColor
+import ru.kvmsoft.base.ui.theme.Turquoise
 import ru.kvmsoft.base.ui.theme.UnselectedNavigationColor
 import ru.kvmsoft.base.ui.utils.NoRippleConfiguration
+import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
+import ru.kvmsoft.base.utils.navigationScreens.getDestinationsList
+import ru.kvmsoft.base.utils.navigationScreens.getLabel
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
+import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreen
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreen
 import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewListScreen
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreen
@@ -48,6 +57,7 @@ import ru.kvmsoft.features.profile.imp.presentation.ui.ProfileScreen
 import ru.kvmsoft.features.splash.imp.presentation.ui.SplashScreen
 import ru.kvmsoft.features.tests.imp.presentation.ui.TestsListScreen
 
+@Suppress("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationApp(langIsRus: Boolean) {
@@ -61,7 +71,27 @@ fun NavigationApp(langIsRus: Boolean) {
         selectedTextColor = SelectedNavigationColor, // Color of the text when selected
         unselectedTextColor = UnselectedNavigationColor // Color of the text when unselected
     )
+    var withSplashBackground by remember { mutableStateOf( true) }
     val background = rememberVectorPainter(image = baseBackground)
+    var modifier = Modifier
+        .fillMaxSize()
+        .background(
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    MainOrangeLight,
+                    Turquoise
+                )
+            )
+        )
+    if(!withSplashBackground){
+        modifier = Modifier
+            .fillMaxSize()
+            .paint(painter = background,
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center,
+                sizeToIntrinsics = true)
+    }
+
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
@@ -76,11 +106,11 @@ fun NavigationApp(langIsRus: Boolean) {
                     NavigationBar(
                         containerColor = Color.Transparent
                     )  { // Компонент для нижней навигации
-                        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route // Текущий маршрут
+                        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.id // Текущий маршрут
                         allNavigationItems.forEach { item ->
                             CompositionLocalProvider(LocalRippleConfiguration provides NoRippleConfiguration) {
-                                when(item.route){
-                                    AppDestinations.Main.getRoute()->{
+                                when(item){
+                                    is AppDestinations.Main -> {
                                         NavigationBarItem(
                                         colors = navigationBarItemColors,
                                         icon = {
@@ -90,10 +120,10 @@ fun NavigationApp(langIsRus: Boolean) {
                                                 modifier = Modifier.size(32.dp),
                                             )
                                         },
-                                        label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
-                                        selected = currentRoute == item.route,
+                                        label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
+                                        selected = currentRoute == item.hashCode(),
                                         onClick = {
-                                            navController.navigate(item.route) {
+                                            navController.navigate(item) {
                                                 // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
                                                 popUpTo(navController.graph.findStartDestination().id) {
                                                     saveState = true
@@ -104,7 +134,7 @@ fun NavigationApp(langIsRus: Boolean) {
                                         }
                                     )
                                     }
-                                    AppDestinations.InterviewList.getRoute()->{
+                                    is AppDestinations.InterviewList -> {
                                         NavigationBarItem(
                                             colors = navigationBarItemColors,
                                             icon = {
@@ -114,10 +144,10 @@ fun NavigationApp(langIsRus: Boolean) {
                                                     modifier = Modifier.size(32.dp),
                                                 )
                                             },
-                                            label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
-                                            selected = currentRoute == item.route,
+                                            label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
+                                            selected = currentRoute == item.hashCode(),
                                             onClick = {
-                                                navController.navigate(item.route) {
+                                                navController.navigate(item) {
                                                     // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
                                                     popUpTo(navController.graph.findStartDestination().id) {
                                                         saveState = true
@@ -128,20 +158,20 @@ fun NavigationApp(langIsRus: Boolean) {
                                             }
                                         )
                                     }
-                                    AppDestinations.TestsList.getRoute()->{
+                                    is AppDestinations.TestsList -> {
                                         NavigationBarItem(
                                             colors = navigationBarItemColors,
                                             icon = {
                                                 Icon(
                                                     imageVector = testsIcon, // Reference your ImageVector from the .kt file
-                                                    contentDescription = if(langIsRus)item.labelRus else item.labelEng,
+                                                    contentDescription = getLabel(destinations = item, isLangRus = langIsRus),
                                                     modifier = Modifier.size(32.dp),
                                                 )
                                             },
-                                            label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
-                                            selected = currentRoute == item.route,
+                                            label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
+                                            selected = currentRoute == item.hashCode(),
                                             onClick = {
-                                                navController.navigate(item.route) {
+                                                navController.navigate(item) {
                                                     // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
                                                     popUpTo(navController.graph.findStartDestination().id) {
                                                         saveState = true
@@ -152,7 +182,7 @@ fun NavigationApp(langIsRus: Boolean) {
                                             }
                                         )
                                     }
-                                    AppDestinations.NewsList.getRoute()->{
+                                    is AppDestinations.NewsList -> {
                                         NavigationBarItem(
                                             colors = navigationBarItemColors,
                                             icon = {
@@ -162,10 +192,10 @@ fun NavigationApp(langIsRus: Boolean) {
                                                     modifier = Modifier.size(32.dp),
                                                 )
                                             },
-                                            label = { Text(if(langIsRus)item.labelRus else item.labelEng) },
-                                            selected = currentRoute == item.route,
+                                            label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
+                                            selected = currentRoute == item.hashCode(),
                                             onClick = {
-                                                navController.navigate(item.route) {
+                                                navController.navigate(item) {
                                                     // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
                                                     popUpTo(navController.graph.findStartDestination().id) {
                                                         saveState = true
@@ -178,146 +208,126 @@ fun NavigationApp(langIsRus: Boolean) {
                                     }
                                     else->{}
                                 }
-//                                if(item.icon!=null){
-//                                    NavigationBarItem(
-//                                        colors = navigationBarItemColors,
-//                                        icon = {
-//                                            item.icon.let {
-//                                                Icon(
-//                                                    imageVector = it, // Reference your ImageVector from the .kt file
-//                                                    contentDescription = it.name,
-//                                                    modifier = Modifier.size(32.dp),
-//                                                )
-//                                            }
-//                                        },
-//                                        label = { Text(item.label) },
-//                                        selected = currentRoute == item.route,
-//                                        onClick = {
-//                                            navController.navigate(item.route) {
-//                                                // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
-//                                                popUpTo(navController.graph.findStartDestination().id) {
-//                                                    saveState = true
-//                                                }
-//                                                launchSingleTop = true
-//                                                restoreState = true
-//                                            }
-//                                        }
-//                                    )
-//                                }
                             }
                         }
                     }
                 }
             }
         }
-    ) { paddingValues ->
-        NavHost(modifier = Modifier.fillMaxSize()
-            .paint(painter = background,
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                sizeToIntrinsics = true),
+    ) { _ ->
+        NavHost(modifier = modifier,
             navController = navController,
-            startDestination = AppDestinations.Splash().route // Splash экран
-        ) {
+            startDestination = AppDestinations.Splash // Splash экран
+        ){
             // Определяем маршруты и их Composable-функции
-            composable(AppDestinations.Main().route) {
+            composable<AppDestinations.Main> {
                 MainScreen(
                     onNavigationAuthorization = {
-                        navController.navigate(route = AppDestinations.Authorization().route)
-                        { popUpTo(AppDestinations.Splash().route){
+                        navController.navigate(route = AppDestinations.Authorization)
+                        { popUpTo(AppDestinations.Splash){
                             inclusive = true
                         }}
-                        isShowNavBar = false},
+                        isShowNavBar = false
+                                                },
                     navController = navController,
-                    eventDestination = AppDestinations.EventsInner().route,
+                    eventDestination = AppDestinations.EventsInner(),
                     onclickEvents =  {
                         isShowNavBar = false
-                        navController.navigate(route = AppDestinations.EventsList.getRoute())
+                        navController.navigate(route = AppDestinations.EventsList)
+                    }
+                )
+                isShowNavBar = true
+                withSplashBackground = false
+            }
+            composable<AppDestinations.InterviewList> {
+                InterviewListScreen(
+                    onNavigationAuthorization = {
+                        navController.navigate(route = AppDestinations.Authorization)
+                        { popUpTo(AppDestinations.Splash){
+                            inclusive = true
+                        }}
+                        isShowNavBar = false
                     }
                 )
                 isShowNavBar = true
             }
-            composable(AppDestinations.InterviewList().route) {
-                InterviewListScreen(
-                    onNavigationAuthorization = {
-                        navController.navigate(route = AppDestinations.Authorization().route)
-                        { popUpTo(AppDestinations.Splash().route){
-                            inclusive = true
-                        }}
-                        isShowNavBar = false}
-                )
-                isShowNavBar = true
-            }
-            composable(AppDestinations.TestsList().route) {
+            composable<AppDestinations.TestsList> {
                 TestsListScreen(
                     onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization().route)
-                    { popUpTo(AppDestinations.Splash().route){
+                    navController.navigate(route = AppDestinations.Authorization)
+                    { popUpTo(AppDestinations.Splash){
                         inclusive = true
                     }}
-                    isShowNavBar = false})
+                    isShowNavBar = false
+                    })
                 isShowNavBar = true
             }
-            composable(AppDestinations.NewsList().route) {
+            composable<AppDestinations.NewsList> {
                 NewsListScreen(
                     onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization().route)
-                    { popUpTo(AppDestinations.Splash().route){
+                    navController.navigate(route = AppDestinations.Authorization)
+                    { popUpTo(AppDestinations.Splash){
                         inclusive = true
                     }}
-                    isShowNavBar = false})
+                    isShowNavBar = false
+                    })
                 isShowNavBar = true
             }
-            composable(AppDestinations.Authorization().route) {
+            composable<AppDestinations.Authorization> {
                 AuthorizationScreen(onAuthorized = {
-                    navController.navigate(route = AppDestinations.Main().route)
-                    { popUpTo(AppDestinations.Authorization().route){
+                    navController.navigate(route = AppDestinations.Main)
+                    { popUpTo(AppDestinations.Authorization){
                         inclusive = true
                     }}
                     isShowNavBar = true
                 })
                 isShowNavBar = false
+                withSplashBackground = false
             }
-            composable(AppDestinations.Professions().route) {
+            composable<AppDestinations.Professions> {
                 ProfileScreen(
                     onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization().route)
-                    { popUpTo(AppDestinations.Splash().route){
+                    navController.navigate(route = AppDestinations.Authorization)
+                    { popUpTo(AppDestinations.Splash){
                         inclusive = true
                     }}
-                    isShowNavBar = false})
+                    isShowNavBar = false
+                    })
                 isShowNavBar = false
             }
-            composable(AppDestinations.Splash().route) {
+            composable<AppDestinations.Splash> {
                 SplashScreen(onNavigateToHome = {
-                    navController.navigate(route = AppDestinations.Main().route)
-                    {popUpTo(AppDestinations.Splash().route){
+                    navController.navigate(route = AppDestinations.Main)
+                    {popUpTo(AppDestinations.Splash){
                         inclusive = true
                     }}
-                    isShowNavBar = true},
+                    isShowNavBar = true
+                                                },
                     onNavigationAuthorization = {
-                        navController.navigate(route = AppDestinations.Authorization().route)
-                        { popUpTo(AppDestinations.Splash().route){
+                        navController.navigate(route = AppDestinations.Authorization)
+                        { popUpTo(AppDestinations.Splash){
                             inclusive = true
                         }}
-                        isShowNavBar = false})
+                        isShowNavBar = false
+                    })
             }
-            composable(AppDestinations.EventsList().route) {
-                EventsListScreen(onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization().route)
-                    {popUpTo(AppDestinations.Splash().route){
-                        inclusive = true
-                    }}
-                    isShowNavBar = false},
+            composable<AppDestinations.EventsList> {
+                EventsListScreen(
                     navController = navController,
-                    eventDestination = AppDestinations.EventsInner().route,
+                    eventDestination = AppDestinations.EventsInner(),
                     onClickBack = {
                         isShowNavBar = true
                         navController.popBackStack()
                     })
                 isShowNavBar = false
             }
-
+            composable<AppDestinations.EventsInner>
+            { backStackEntry->
+                val eventId = backStackEntry.toRoute<AppDestinations.EventsInner>().eventId
+                EventsInnerScreen(onClickBack = { navController.popBackStack() },
+                    eventId = eventId)
+                isShowNavBar = false
+            }
         }
     }
 }

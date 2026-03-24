@@ -6,29 +6,20 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import ru.kvmsoft.base.ui.utils.EmailTextFieldValidation
-import ru.kvmsoft.base.utils.model.ResultState
 import ru.kvmsoft.base.viewmodel.BaseViewModel
-import ru.kvmsoft.base.viewmodel.model.ProgressState
 import ru.kvmsoft.features.authorization.imp.domain.AuthorizationScreenInteractor
-import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorEmailEmpty
-import ru.kvmsoft.features.authorization.imp.presentation.res.strings.getAuthorizationErrorEmailIncorrect
+import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
+import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenIntents
+import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenSideEffects
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreenViewState
-import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
-class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenInteractor) : BaseViewModel() {
-    private val _uiState = MutableStateFlow<AuthorizationScreenViewState>(
-        AuthorizationScreenViewState.AuthorizationRegistrationState(
-            lang = currentLangState.value,
-            error = null
-        )
-    )
+class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenInteractor) : BaseViewModel<AuthorizationScreenViewState, AuthorizationScreenSideEffects>(
+    AuthorizationScreenViewState.IdleState){
+
+    val scope = (viewModelScope + coroutineExceptionHandler)
 
     var emailValue by mutableStateOf("")
         private set
@@ -43,103 +34,61 @@ class AuthorizationScreenViewModel(private val interactor: AuthorizationScreenIn
     var otpLoading by mutableStateOf(false)
         private set
 
-    val uiState: StateFlow<AuthorizationScreenViewState> = _uiState.asStateFlow()
-
-    fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
-        launch(Dispatchers.IO) {
-            checkState()
-            updateState(ProgressState.COMPLETED)
-        }
-    }
-
-    fun checkState() = with(viewModelScope + coroutineExceptionHandler) {
-        launch(Dispatchers.IO) {
+    private fun loadData() = orbitIntent {
+        scope.launch(Dispatchers.IO + coroutineExceptionHandler){
             emailLoading = true
             otpLoading = true
-            val state = interactor.checkState(
+            val stateOrSideEffect = interactor.getStateOrSideEffect(
                 lang = currentLangState.value,
                 userEmail = emailValue,
                 userOtp = otpValue,
-                setOtpError = ::setOtpError
+                setOtpError = { otpError.value = it }
             )
             emailLoading = false
             otpLoading = false
-            _uiState.update { state }
-        }
-    }
-
-    private fun validateEmail(): Boolean {
-        val lang = currentLangState.value
-        val email = emailValue.trim()
-        var isValid = true
-        var errorMessage = ""
-        if (email.isBlank() || email.isEmpty()) {
-            errorMessage =
-                getAuthorizationErrorEmailEmpty(lang = lang)
-            isValid = false
-        } else if (!EmailTextFieldValidation.validateEmail(email)) {
-            errorMessage =
-                getAuthorizationErrorEmailIncorrect(lang = lang)
-            isValid = false
-        }
-        emailError.value = errorMessage
-        return isValid
-    }
-
-    fun setEmail(value: String) {
-        emailValue = value
-        emailLoading = false
-        emailError.value = ""
-        validateEmail()
-    }
-
-    fun setOtp(value: String) {
-        otpError.value = ""
-        otpLoading = false
-        if (value.length <= 4) {
-            otpValue = value
-        }
-    }
-
-    fun openChat() {
-        interactor.openChat()
-    }
-
-    fun restartUIState() {
-        _uiState.update { AuthorizationScreenViewState.LoadingState }
-        initViewModel()
-    }
-
-    fun restartProgressState() {
-        updateState(ProgressState.LOADING)
-    }
-
-    fun setIdleProgressState() {
-        updateState(ProgressState.IDLE)
-    }
-
-    fun setEmailError(errorText: String) {
-        emailError.value = errorText
-    }
-
-    fun setOtpError(errorText: String) {
-        otpError.value = errorText
-    }
-
-    fun getCurrentLang() = with(viewModelScope + coroutineExceptionHandler) {
-        launch(Dispatchers.IO) {
-            interactor.getLang()
-            interactor.langState.collect { state ->
-                if (state is ResultState.Success) {
-                    updateLangState(state.data ?: CurrentLanguageDomain.EN)
-                }
+            if(stateOrSideEffect is AuthorizationScreenSideEffects){
+                postSideEffect(AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE)
+            }
+            else{
+                reduce { stateOrSideEffect as AuthorizationScreenViewState }
             }
         }
     }
 
-    fun goToAuthorize() = with(viewModelScope){
-        launch {
-            interactor.clearUserData()
+    override fun intentHandler(intent: Any) {
+        when(intent){
+            AuthorizationScreenIntents.InitViewModelIntent -> loadData()
+            AuthorizationScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
+            AuthorizationScreenIntents.RestartUiIntent -> orbitIntent {
+                reduce { AuthorizationScreenViewState.IntermediateState }
+                delay(500L)
+                reduce { AuthorizationScreenViewState.IdleState }
+            }
+            AuthorizationScreenIntents.GoToAuthorizationIntent -> orbitIntent {
+                scope.launch(Dispatchers.IO + coroutineExceptionHandler){
+                        interactor.clearUserData()
+                }
+            }
+            is AuthorizationScreenIntents.SetEmailIntent -> orbitIntent {
+                emailValue = intent.value
+                emailLoading = false
+                emailError.value = ""
+                val result = interactor.validateEmail(email = intent.value, lang = currentLangState.value)
+                emailError.value = result.first
+            }
+            is AuthorizationScreenIntents.SetOtpIntent -> orbitIntent {
+                otpError.value = ""
+                otpLoading = false
+                if (intent.value.length <= 4) {
+                    otpValue = intent.value
+                }
+            }
+            is AuthorizationScreenIntents.SetEmailErrorIntent -> orbitIntent {
+                emailError.value = intent.value
+            }
+            is AuthorizationScreenIntents.SetOtpErrorIntent -> orbitIntent {
+                otpError.value = intent.value
+            }
         }
     }
 }

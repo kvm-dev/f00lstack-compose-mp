@@ -3,6 +3,8 @@ package ru.kvmsoft.features.events.imp.domain
 import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import ru.kvmsoft.base.ui.model.EventsItemState
 import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.res.strings.getChatLink
+import ru.kvmsoft.base.utils.BrowserUtils
 import ru.kvmsoft.base.utils.errorsMsgHandler
 import ru.kvmsoft.features.asmode.api.domain.usecase.GetAsModeUseCase
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
@@ -17,7 +19,8 @@ class EventsListScreenInteractor(
     private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val networkStateUseCase: GetNetworkStateUseCase,
     private val encryptedDataStore: EncryptedDataStore,
-    private val getAsModeUseCase: GetAsModeUseCase
+    private val getAsModeUseCase: GetAsModeUseCase,
+    private val browserUtils: BrowserUtils
 ) {
 
     suspend fun clearUserData() =  encryptedDataStore.clearUserData()
@@ -38,43 +41,39 @@ class EventsListScreenInteractor(
         val isAsModeEnabled = isAsModeIsEnabled(connectionState).isAsModeActive
         if(isNetworkAvailable()){
                 val eventsResult = getEvents()
-                return if(eventsResult.errorMsg.isEmpty()){
                     val filtersList = HashSet<String>()
                     eventsResult.events.forEach { event->
                         event.eventSubs.forEach { sub->
                             filtersList.add(sub.subName)
                         }
                     }
-                    EventsListScreenViewState.SuccessState(
+                   return EventsListScreenViewState.SuccessState(
                         isNetworkAvailable = true,
                         lang = lang,
                         eventsState = UiState.Success(data = EventsItemState(events = eventsResult.events.mapToEventsItems())),
                         isAsModeEnabled = isAsModeEnabled,
                         selectedFilters = filtersList.toList()
                     )
-                } else{
-                    EventsListScreenViewState.ErrorState(error = errorsMsgHandler(eventsResult.errorMsg))
-                }
             }
         else{
             val eventsResult = getEvents(fromLocal = true)
-            return if(eventsResult.errorMsg.isEmpty()){
                 val filtersList = HashSet<String>()
                 eventsResult.events.forEach { event->
                     event.eventSubs.forEach { sub->
                         filtersList.add(sub.subName)
                     }
                 }
-                EventsListScreenViewState.SuccessState(
+               return EventsListScreenViewState.SuccessState(
                     isNetworkAvailable = false,
                     lang = lang,
                     eventsState = UiState.Success(data = EventsItemState(events = eventsResult.events.mapToEventsItems())),
                     isAsModeEnabled = isAsModeEnabled,
                     selectedFilters = filtersList.toList()
                     )
-            } else{
-                EventsListScreenViewState.ErrorState(error = errorsMsgHandler(errorMsg = eventsResult.errorMsg))
-            }
         }
+    }
+
+    fun openChat(){
+        browserUtils.openInBrowser(getChatLink())
     }
 }

@@ -11,11 +11,11 @@ import androidx.compose.ui.unit.dp
 import ru.kvmsoft.base.ui.theme.TextStyles.serviceTitleStyle
 
 @Composable
-fun ServiceTitle(text: String, modifier: Modifier){
+fun ServiceTitle(text: String, modifier: Modifier, textAlign: TextAlign){
     Text(modifier = modifier
         .padding(top = 10.dp)
         .width(240.dp),
-        textAlign = TextAlign.Start,
+        textAlign = textAlign,
         text = text, style = serviceTitleStyle(),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis

@@ -8,9 +8,9 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 sealed class EventsListScreenViewState {
 
-    data class LoadingState(val lang: CurrentLanguageDomain,): EventsListScreenViewState()
+    data object LoadingState: EventsListScreenViewState()
 
-    data class ErrorState(val error: BaseErrors): EventsListScreenViewState()
+    data class ErrorState(val lang: CurrentLanguageDomain, val error: BaseErrors?): EventsListScreenViewState()
 
     data class SuccessState(
         val isNetworkAvailable: Boolean,

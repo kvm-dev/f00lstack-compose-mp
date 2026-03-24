@@ -1,0 +1,5 @@
+package ru.kvmsoft.features.news.imp.presentation.ui
+
+sealed class NewsListScreenIntents {
+    data object InitViewModelIntent : NewsListScreenIntents()
+}

@@ -12,6 +12,7 @@ val mainModule = module {
         getEventsUseCase = get(),
         getCurrentLanguageUseCase = get(),
         networkStateUseCase = get(),
-        getAsModeUseCase = get()) }
+        getAsModeUseCase = get(),
+        browserUtils = get()) }
     viewModelOf(::MainScreenViewModel)
 }

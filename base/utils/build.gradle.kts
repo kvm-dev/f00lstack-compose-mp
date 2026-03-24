@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.mokkery.plugin)
+    alias(libs.plugins.kotlinxSerialization)
     kotlin("plugin.allopen") version "2.3.0"
 }
 
@@ -64,6 +65,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 //di
                 implementation(libs.koin.core)
+                //serialization
+                implementation(libs.kotlinx.serialization)
             }
         }
 
