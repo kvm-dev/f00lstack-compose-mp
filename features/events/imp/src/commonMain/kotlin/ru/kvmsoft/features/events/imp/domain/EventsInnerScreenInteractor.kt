@@ -1,5 +1,6 @@
 package ru.kvmsoft.features.events.imp.domain
 
+import ru.kvmsoft.base.ui.res.strings.getChatLink
 import ru.kvmsoft.base.utils.BrowserUtils
 import ru.kvmsoft.base.utils.model.BaseErrors
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
@@ -24,5 +25,9 @@ class EventsInnerScreenInteractor(
 
     fun openEventUrl(url: String){
         browserUtils.openInBrowser(url)
+    }
+
+    fun openChat(){
+        browserUtils.openInBrowser(getChatLink())
     }
 }

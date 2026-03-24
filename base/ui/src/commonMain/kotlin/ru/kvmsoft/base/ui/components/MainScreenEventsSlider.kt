@@ -240,7 +240,7 @@ fun MainScreenEventsSlider(sliderState: UiState<EventsItemState>, lang: CurrentL
                             ) {
                                 Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
                                     ServiceTag(subTags)
-                                    ServiceTitle(modifier = Modifier, text = item.eventName)
+                                    ServiceTitle(modifier = Modifier, text = item.eventName, textAlign = TextAlign.Start)
                                 }
                                 Column {
                                     ServiceSubLabel(

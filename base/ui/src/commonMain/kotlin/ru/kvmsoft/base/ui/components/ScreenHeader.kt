@@ -22,7 +22,7 @@ import ru.kvmsoft.base.ui.theme.TextStyles.screenTitleStyle
 @Composable
 fun ScreenHeader(text: String, modifier: Modifier, onBackClicked: () -> Unit){
     val interaction = remember { MutableInteractionSource() }
-    Box(modifier = Modifier.
+    Box(modifier = modifier.
     padding(horizontal = 16.dp)) {
         Icon(
             tint = Color.Unspecified,

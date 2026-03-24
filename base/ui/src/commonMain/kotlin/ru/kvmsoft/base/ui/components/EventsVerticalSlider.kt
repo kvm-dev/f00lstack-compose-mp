@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kashif_e.backdrop.backdrops.rememberLayerBackdrop
@@ -379,7 +380,7 @@ fun EventsVerticalSlider(
                                 ) {
                                     Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
                                         ServiceTag(subTags)
-                                        ServiceTitle(modifier = Modifier, text = event.eventName)
+                                        ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
                                     }
                                     Column {
                                         ServiceSubLabel(

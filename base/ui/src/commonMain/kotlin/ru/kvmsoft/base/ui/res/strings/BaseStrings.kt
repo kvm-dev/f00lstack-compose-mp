@@ -207,6 +207,13 @@ fun getLoadingText(lang: CurrentLanguageDomain): String {
     }
 }
 
+fun joinToEventButtonText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Стать участником"
+        CurrentLanguageDomain.EN -> "Join to event"
+    }
+}
+
 //errorTexts
 fun getErrorTextCodeIsAlreadySent() = "Code Is Already Sent"
 fun getErrorTextUserIsUnconfirmed() = "User Is Unconfirmed"

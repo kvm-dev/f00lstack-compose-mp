@@ -80,7 +80,7 @@ kotlin {
                 //lottie
                 implementation(libs.compottie)
                 //ui - liquid glass
-                implementation(libs.backdrop)
+                api(libs.backdrop)
                 //utils
                 implementation(projects.base.utils)
                 //features

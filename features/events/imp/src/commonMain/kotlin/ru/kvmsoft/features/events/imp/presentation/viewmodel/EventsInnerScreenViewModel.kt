@@ -5,11 +5,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import ru.kvmsoft.base.utils.model.BaseErrors
 import ru.kvmsoft.base.viewmodel.BaseViewModel
 import ru.kvmsoft.features.events.imp.domain.EventsInnerScreenInteractor
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreenIntents
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreenSideEffects
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreenViewState
+import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 class EventsInnerScreenViewModel(private val interactor: EventsInnerScreenInteractor) : BaseViewModel<EventsInnerScreenViewState, EventsInnerScreenSideEffects>(
     EventsInnerScreenViewState.IdleState
@@ -21,12 +23,13 @@ class EventsInnerScreenViewModel(private val interactor: EventsInnerScreenIntera
             is EventsInnerScreenIntents.JoinToEventIntent -> orbitIntent {
                 interactor.openEventUrl(intent.url)
             }
+            EventsInnerScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
             EventsInnerScreenIntents.BackPressedIntent -> orbitIntent {
                 postSideEffect(EventsInnerScreenSideEffects.ON_BACK_PRESSED)
             }
             is EventsInnerScreenIntents.InitViewModelIntent -> orbitIntent {
                 scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-                    val currentState =  interactor.checkState(currentLangState.value, intent.eventId)
+                    val currentState = EventsInnerScreenViewState.ErrorState(lang = CurrentLanguageDomain.EN, error = BaseErrors.UNKNOWN_ERROR)
                     reduce { currentState }
                 }
             }
