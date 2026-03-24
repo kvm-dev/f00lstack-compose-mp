@@ -10,6 +10,8 @@ sealed class EventsListScreenViewState {
 
     data object LoadingState: EventsListScreenViewState()
 
+    data class ErrorState(val lang: CurrentLanguageDomain, val error: BaseErrors?): EventsListScreenViewState()
+
     data class SuccessState(
         val isNetworkAvailable: Boolean,
         val isAsModeEnabled: Boolean,

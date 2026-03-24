@@ -22,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -34,6 +36,8 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import ru.kvmsoft.base.ui.components.BaseErrorBottomSheet
+import ru.kvmsoft.base.ui.components.ExitBottomSheet
 import ru.kvmsoft.base.ui.components.MainScreenAchievementsSlider
 import ru.kvmsoft.base.ui.components.MainScreenEventsSlider
 import ru.kvmsoft.base.ui.components.MainScreenHeader
@@ -44,16 +48,27 @@ import ru.kvmsoft.base.ui.model.UiState
 import ru.kvmsoft.base.ui.res.strings.getAchievementsMainScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getEventsMainScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getLoadingText
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorDescription
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorMainButton
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorSecondButton
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorTitle
+import ru.kvmsoft.base.utils.closeApp
 import ru.kvmsoft.base.utils.model.BaseErrors
 import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, navController: NavController, eventDestination: AppDestinations.EventsInner) {
 
     val state by viewModel.collectAsState()
+
+    var showExitBottomSheet by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        showExitBottomSheet = true
+    }
 
     var isRefreshing by remember { mutableStateOf(false) }
     val pullToRefreshState = rememberPullToRefreshState()
@@ -86,11 +101,17 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
 
     when (state) {
         is MainScreenViewState.ErrorState -> {
-            val error = (state as MainScreenViewState.ErrorState).error
-            when(error){
+            when(val errorState = (state as MainScreenViewState.ErrorState).error){
                 BaseErrors.UNAUTHORIZED-> viewModel.intentHandler(MainScreenIntents.GoToAuthorizationIntent)
                 else-> {
-                //todo something
+                    BaseErrorBottomSheet(
+                        title = getUnknownErrorTitle(lang = viewModel.currentLangState.value),
+                        description = getUnknownErrorDescription(lang = viewModel.currentLangState.value),
+                        mainButtonText = getUnknownErrorMainButton(lang = viewModel.currentLangState.value),
+                        secondButtonText = getUnknownErrorSecondButton(lang = viewModel.currentLangState.value),
+                        actionMain = { closeApp() },
+                        actionSecond = { viewModel.intentHandler(MainScreenIntents.OpenChatIntent) },
+                        onDismiss = { closeApp() })
                 }
             }
         }
@@ -130,6 +151,12 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
             }
             isRefreshing = false
             viewModel.intentHandler(MainScreenIntents.InitViewModelIntent)
+            if (showExitBottomSheet) {
+                ExitBottomSheet(
+                    lang = viewModel.currentLangState.value, onDismissRequest = {
+                        showExitBottomSheet = false
+                    })
+            }
         }
         is MainScreenViewState.SuccessState-> {
             val successState = state as MainScreenViewState.SuccessState
@@ -205,6 +232,12 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                         MainScreenSubNavigationBlock(onClickBooks = {}, onClickStudy = {}, onClickEvents = onclickEvents, lang = (successState.lang))
                     }
                 }
+            }
+            if (showExitBottomSheet) {
+                ExitBottomSheet(
+                    lang = viewModel.currentLangState.value, onDismissRequest = {
+                        showExitBottomSheet = false
+                    })
             }
         }
     }

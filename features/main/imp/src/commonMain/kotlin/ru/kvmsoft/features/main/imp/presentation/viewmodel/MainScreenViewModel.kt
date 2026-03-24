@@ -49,7 +49,6 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                             profileDomain = profile,
                             isKnowHowToUseSlider = isKnowHowToUseSlider
                         )
-                        println("вмстейт $currentState")
                         reduce { currentState }
                         this.cancel()
                     }
@@ -60,11 +59,9 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                         } else {
                             interactor.getProfile(true)
                         }
-                        println("вмстейт фром идл")
                         reduce { MainScreenViewState.LoadingState }
                     }
                     if (it.lang is ResultState.Loading || it.profile is ResultState.Loading) {
-                        println("вмстейт фром лоадинг")
                         reduce { MainScreenViewState.LoadingState }
                     }
                 }
@@ -88,6 +85,7 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
             is MainScreenIntents.NavigateToEventDetailsIntent -> orbitIntent {
                 postSideEffect(MainScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN)
             }
+             MainScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
         }
     }
 }

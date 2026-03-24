@@ -17,8 +17,14 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import ru.kvmsoft.base.ui.components.BaseErrorBottomSheet
 import ru.kvmsoft.base.ui.components.EventsVerticalSlider
 import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorDescription
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorMainButton
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorSecondButton
+import ru.kvmsoft.base.ui.res.strings.getUnknownErrorTitle
+import ru.kvmsoft.base.utils.closeApp
 import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
 import ru.kvmsoft.features.events.imp.mapper.Mapper
 import ru.kvmsoft.features.events.imp.presentation.viewmodel.EventsListScreenViewModel
@@ -85,20 +91,20 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
         }
 
         is EventsListScreenViewState.SuccessState -> {
-            val state = (state as EventsListScreenViewState.SuccessState)
+            val successState = (state as EventsListScreenViewState.SuccessState)
             val selectedFilter = remember { mutableStateOf("") }
             isRefreshing = false
             val isShowAchievementDialog = remember { mutableStateOf(false) }
             EventsVerticalSlider(
                 modifier = Modifier.fillMaxSize(),
-                isAsActive = state.isAsModeEnabled,
-                lang = state.lang,
-                eventsState = state.eventsState,
+                isAsActive = successState.isAsModeEnabled,
+                lang = successState.lang,
+                eventsState = successState.eventsState,
                 chips = Mapper.mapToChips(
-                    eventsState = state.eventsState,
-                    isAsMode = state.isAsModeEnabled
+                    eventsState = successState.eventsState,
+                    isAsMode = successState.isAsModeEnabled
                 ),
-                selectedChips = state.selectedFilters,
+                selectedChips = successState.selectedFilters,
                 onclickChip = { viewModel.intentHandler(EventsListScreenIntents.UpdateFiltersIntent(selectedFilter.value)) },
                 onclickBackToHomeScreen = onClickBack,
                 onClickEvent = {
@@ -107,11 +113,23 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 selectId = eventId,
                 selectedChip = selectedFilter,
                 isRefreshing = isRefreshing,
-                isConnectionAvailable = state.isNetworkAvailable,
+                isConnectionAvailable = successState.isNetworkAvailable,
                 onRefresh = {
                     onRefresh()
                 }
             )
+        }
+
+        is EventsListScreenViewState.ErrorState -> {
+            val errorState = (state as EventsListScreenViewState.ErrorState)
+            BaseErrorBottomSheet(
+                title = getUnknownErrorTitle(lang = errorState.lang),
+                description = getUnknownErrorDescription(lang = errorState.lang),
+                mainButtonText = getUnknownErrorMainButton(lang = errorState.lang),
+                secondButtonText = getUnknownErrorSecondButton(lang = errorState.lang),
+                actionMain = { closeApp() },
+                actionSecond = { viewModel.intentHandler(EventsListScreenIntents.OpenChatIntent) },
+                onDismiss = { closeApp() })
         }
     }
 }

@@ -4,7 +4,9 @@ import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import ru.kvmsoft.base.ui.model.AchievementsItemState
 import ru.kvmsoft.base.ui.model.EventsItemState
 import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.res.strings.getChatLink
 import ru.kvmsoft.base.ui.res.strings.getEmptyName
+import ru.kvmsoft.base.utils.BrowserUtils
 import ru.kvmsoft.base.utils.errorsMsgHandler
 import ru.kvmsoft.features.asmode.api.domain.usecase.GetAsModeUseCase
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
@@ -24,7 +26,8 @@ class MainScreenInteractor(
     private val getEventsUseCase: GetEventsUseCase,
     private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val networkStateUseCase: GetNetworkStateUseCase,
-    private val getAsModeUseCase: GetAsModeUseCase
+    private val getAsModeUseCase: GetAsModeUseCase,
+    private val browserUtils: BrowserUtils
 ) {
 
     val langState = getCurrentLanguageUseCase.langState
@@ -112,6 +115,10 @@ class MainScreenInteractor(
                 }
             }
         }
+    }
+
+    fun openChat(){
+        browserUtils.openInBrowser(getChatLink())
     }
 
     suspend fun updateEventsSliderHintState(){

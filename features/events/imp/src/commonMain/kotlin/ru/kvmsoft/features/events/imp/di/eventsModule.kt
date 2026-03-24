@@ -25,7 +25,8 @@ val eventsModule = module {
             getCurrentLanguageUseCase = get(),
             networkStateUseCase = get(),
             encryptedDataStore = get(),
-            getAsModeUseCase = get()) }
+            getAsModeUseCase = get(),
+            browserUtils = get()) }
     single<EventsInnerScreenInteractor> { EventsInnerScreenInteractor(
         getEventsUseCase = get(),
         browserUtils = get()

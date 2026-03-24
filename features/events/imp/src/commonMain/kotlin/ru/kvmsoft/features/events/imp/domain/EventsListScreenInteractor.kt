@@ -3,6 +3,8 @@ package ru.kvmsoft.features.events.imp.domain
 import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import ru.kvmsoft.base.ui.model.EventsItemState
 import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.res.strings.getChatLink
+import ru.kvmsoft.base.utils.BrowserUtils
 import ru.kvmsoft.base.utils.errorsMsgHandler
 import ru.kvmsoft.features.asmode.api.domain.usecase.GetAsModeUseCase
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
@@ -17,7 +19,8 @@ class EventsListScreenInteractor(
     private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val networkStateUseCase: GetNetworkStateUseCase,
     private val encryptedDataStore: EncryptedDataStore,
-    private val getAsModeUseCase: GetAsModeUseCase
+    private val getAsModeUseCase: GetAsModeUseCase,
+    private val browserUtils: BrowserUtils
 ) {
 
     suspend fun clearUserData() =  encryptedDataStore.clearUserData()
@@ -68,5 +71,9 @@ class EventsListScreenInteractor(
                     selectedFilters = filtersList.toList()
                     )
         }
+    }
+
+    fun openChat(){
+        browserUtils.openInBrowser(getChatLink())
     }
 }

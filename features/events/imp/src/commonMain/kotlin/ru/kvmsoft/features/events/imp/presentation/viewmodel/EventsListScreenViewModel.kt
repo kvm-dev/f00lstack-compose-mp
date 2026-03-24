@@ -8,6 +8,7 @@ import kotlinx.coroutines.plus
 import ru.kvmsoft.base.utils.model.ResultState
 import ru.kvmsoft.base.viewmodel.BaseViewModel
 import ru.kvmsoft.features.events.imp.domain.EventsListScreenInteractor
+import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreenIntents
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreenIntents
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreenSideEffects
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreenViewState
@@ -58,6 +59,7 @@ class EventsListScreenViewModel(private val interactor: EventsListScreenInteract
             is EventsListScreenIntents.NavigateToEventDetailsIntent -> orbitIntent {
                 postSideEffect(EventsListScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN)
             }
+            EventsListScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
         }
     }
 }
