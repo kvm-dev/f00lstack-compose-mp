@@ -311,10 +311,15 @@ class LocalDataSource(databaseDriverFactory: DatabaseDriverFactory) {
 
 
     internal fun getEvents(): Events {
-        val events = dbQuery.selectEvents().executeAsList()
-        val eventsSubs = dbQuery.selectAllEventSubs().executeAsList()
+        try {
+            val events = dbQuery.selectEvents().executeAsList()
+            val eventsSubs = dbQuery.selectAllEventSubs().executeAsList()
 
-        return Mapper.mapEvents(events = events, eventsSubs = eventsSubs)
+            return Mapper.mapEvents(events = events, eventsSubs = eventsSubs)
+        }
+        catch (e: Exception){
+            return Mapper.mapEvents(events = listOf(), eventsSubs = listOf(), withError = true)
+        }
     }
 
     internal fun clearAndSaveEvents(events: Events){

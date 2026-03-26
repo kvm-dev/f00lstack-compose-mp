@@ -71,6 +71,8 @@ kotlin {
                 implementation(libs.sqldelight.coroutines.extension)
                 //serialization
                 implementation(libs.ktor.serialization.kotlinx.json)
+                //utils
+                implementation(projects.base.utils)
 
             }
         }

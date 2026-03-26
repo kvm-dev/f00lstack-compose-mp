@@ -1,11 +1,9 @@
 package ru.kvmsoft.features.events.imp.domain
 
-import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import ru.kvmsoft.base.ui.model.EventsItemState
 import ru.kvmsoft.base.ui.model.UiState
 import ru.kvmsoft.base.ui.res.strings.getChatLink
 import ru.kvmsoft.base.utils.BrowserUtils
-import ru.kvmsoft.base.utils.errorsMsgHandler
 import ru.kvmsoft.features.asmode.api.domain.usecase.GetAsModeUseCase
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
 import ru.kvmsoft.features.events.imp.mapper.Mapper.mapToEventsItems
@@ -16,28 +14,22 @@ import ru.kvmsoft.features.networkconnection.api.domain.usecase.GetNetworkStateU
 
 class EventsListScreenInteractor(
     private val getEventsUseCase: GetEventsUseCase,
-    private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
+    getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val networkStateUseCase: GetNetworkStateUseCase,
-    private val encryptedDataStore: EncryptedDataStore,
     private val getAsModeUseCase: GetAsModeUseCase,
     private val browserUtils: BrowserUtils
 ) {
 
-    suspend fun clearUserData() =  encryptedDataStore.clearUserData()
-
     val langState = getCurrentLanguageUseCase.langState
-
-    fun getCurrentLang() = getCurrentLanguageUseCase.getLang()
 
     suspend fun isAsModeIsEnabled(isConnectionAvailable: Boolean) = getAsModeUseCase.isAsModeEnabled(isConnectionAvailable)
 
-    suspend fun getEvents(fromLocal: Boolean = false) = getEventsUseCase.getEvents()
+    private suspend fun getEvents(fromLocal: Boolean = false) = getEventsUseCase.getEvents(fromLocal)
 
     suspend fun isNetworkAvailable()  = networkStateUseCase.isNetworkAvailable()
 
     suspend fun checkState(lang: CurrentLanguageDomain): EventsListScreenViewState{
         val connectionState = isNetworkAvailable()
-        println("нетворкстейт $connectionState")
         val isAsModeEnabled = isAsModeIsEnabled(connectionState).isAsModeActive
         if(isNetworkAvailable()){
                 val eventsResult = getEvents()

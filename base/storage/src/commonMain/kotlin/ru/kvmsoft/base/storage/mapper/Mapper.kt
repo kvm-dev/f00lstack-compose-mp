@@ -25,6 +25,7 @@ import ru.kvmsoft.base.storage.model.Professions
 import ru.kvmsoft.base.storage.model.Study
 import ru.kvmsoft.base.storage.model.UserAchievement
 import ru.kvmsoft.base.storage.model.Variant
+import ru.kvmsoft.base.utils.res.strings.getLocalDataBaseError
 import ru.kvmsoft.base.storage.Professions as ProfessionsLocal
 import ru.kvmsoft.base.storage.Events as EventsLocal
 import ru.kvmsoft.base.storage.News as NewsLocal
@@ -205,12 +206,12 @@ object Mapper {
         )
     }
 
-    fun mapEvents(events: List<EventsLocal>, eventsSubs: List<EventSubs>): Events {
+    fun mapEvents(events: List<EventsLocal>, eventsSubs: List<EventSubs>, withError:Boolean = false): Events {
         val eventsList = ArrayList<Event>()
         events.forEach { event->
             eventsList.add(mapEvent(event = event, eventSubs = mapEventSubs(eventsSubs.filter { it.eventId == event.eventId })))
         }
-        return Events(errorMsg = "",
+        return Events(errorMsg = if(withError){ getLocalDataBaseError() } else { "" },
             events = eventsList)
     }
 

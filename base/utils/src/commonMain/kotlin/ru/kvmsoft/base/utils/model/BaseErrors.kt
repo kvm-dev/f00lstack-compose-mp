@@ -5,5 +5,7 @@ enum class BaseErrors {
     UNAUTHORIZED,
     TOKEN_EXPIRED,
     USER_IS_BLOCKED,
-    UNKNOWN_ERROR
+    UNKNOWN_ERROR,
+
+    LOCAL_DATABASE_ERROR
 }

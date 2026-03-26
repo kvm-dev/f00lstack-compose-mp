@@ -93,6 +93,10 @@ kotlin {
                 implementation(projects.base.storage)
                 //network
                 implementation(projects.base.network)
+                //language
+                implementation(projects.features.language.api)
+                //network state
+                implementation(projects.features.networkconnection.api)
             }
         }
 
