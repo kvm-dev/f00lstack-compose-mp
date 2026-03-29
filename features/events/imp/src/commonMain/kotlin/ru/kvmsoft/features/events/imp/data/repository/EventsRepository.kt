@@ -9,8 +9,6 @@ class EventsRepository(private val networkDataSource: NetworkDataSource, private
     suspend fun getEventsFromServer(): EventsDomain {
         val currentVersion = localDataSource.getEventsVersion()
         val serverVersion = networkDataSource.getVersion().version
-        println("каррент эвентс вершон $currentVersion")
-        println("сервер эвентс вершон $serverVersion")
         return if(currentVersion != serverVersion){
             val response = networkDataSource.getEvents()
             if(response.errorMsg.isNotEmpty()){

@@ -6,16 +6,42 @@ import ru.kvmsoft.features.events.imp.mapper.Mapper
 
 class LocalDataSource(private val databaseSdk: DataBaseSDK) {
     suspend fun getEvents(): EventsDomain {
-        return EventsDomain(
-            events =  Mapper.map(databaseSdk.getEvents().events),
-            errorMsg = ""
-        )
+        val result = databaseSdk.getEvents()
+        return if (result.errorMsg.isEmpty()) {
+            EventsDomain(
+                events = Mapper.map(databaseSdk.getEvents().events),
+                errorMsg = ""
+            )
+        } else {
+            EventsDomain(
+                events = listOf(),
+                errorMsg = result.errorMsg
+            )
+        }
     }
     suspend fun saveEvents(events:EventsDomain){
-        databaseSdk.saveEvents(Mapper.map(events))
+        try {
+            databaseSdk.saveEvents(Mapper.map(events))
+        }
+        catch (e: Exception){
+            throw e
+        }
     }
 
-    suspend fun getEventsVersion():Int = databaseSdk.getEventsVersion()
+    suspend fun getEventsVersion():Int {
+        return try {
+            databaseSdk.getEventsVersion()
+        } catch (_: Exception){
+            0
+        }
+    }
 
-    suspend fun updateEventsVersion(version: Int) = databaseSdk.updateEventsVersion(version)
+    suspend fun updateEventsVersion(version: Int){
+        try {
+            databaseSdk.updateEventsVersion(version)
+        }
+        catch (e: Exception){
+            throw e
+        }
+    }
 }
