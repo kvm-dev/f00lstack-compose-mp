@@ -11,7 +11,8 @@ data class Profile(
     @SerialName("userEmail") val userEmail: String,
     @SerialName("userPhotoBase64") val userPhotoBase64: String,
     @SerialName("userAchievements") val userAchievements: List<UserAchievement>,
-    @SerialName("userPurchasedProfessions") val userPurchasedProfessions: List<Int>
+    @SerialName("userPurchasedProfessions") val userPurchasedProfessions: List<Int>,
+    @SerialName("errorMsg") val errorMsg: String
 )
 @kotlinx.serialization.Serializable
 data class UserAchievement(
@@ -25,6 +26,7 @@ data class UserAchievement(
 @kotlinx.serialization.Serializable
 data class Materials(
     @SerialName("materials") val materials: List<Material>,
+    @SerialName("errorMsg") val errorMsg: String
 )
 
 @kotlinx.serialization.Serializable
@@ -51,7 +53,8 @@ data class ProfessionListItem(
 
 @kotlinx.serialization.Serializable
 data class Tests(
-    @SerialName("tests") val tests: List<Test>
+    @SerialName("tests") val tests: List<Test>,
+    @SerialName("errorMsg") val errorMsg: String
 )
 
 @kotlinx.serialization.Serializable
@@ -80,7 +83,8 @@ data class Variant(
 
 @kotlinx.serialization.Serializable
 data class PassedTests(
-    @SerialName("passedTests") val passedTests: List<PassedTest>
+    @SerialName("passedTests") val passedTests: List<PassedTest>,
+    @SerialName("errorMsg") val errorMsg: String
 )
 
 @kotlinx.serialization.Serializable

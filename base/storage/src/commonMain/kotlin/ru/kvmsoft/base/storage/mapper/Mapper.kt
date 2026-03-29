@@ -108,7 +108,7 @@ object Mapper {
         return variantsList
     }
 
-    fun mapPassedTests(passedTests: List<PassedTestsLocal>): PassedTests {
+    fun mapPassedTests(passedTests: List<PassedTestsLocal>, withError: Boolean = false): PassedTests {
         val list = ArrayList<PassedTest>()
         passedTests.forEach { passedTest->
             list.add(
@@ -119,9 +119,18 @@ object Mapper {
                 )
             )
         }
-        return PassedTests(
-            passedTests = list
-        )
+        return if(withError){
+            PassedTests(
+                passedTests = list,
+                errorMsg = getLocalDataBaseError()
+            )
+        } else {
+            PassedTests(
+                passedTests = list,
+                errorMsg = ""
+            )
+        }
+
     }
 
     private fun mapProfession(profession: ProfessionsLocal): Profession {
@@ -136,7 +145,7 @@ object Mapper {
         )
     }
 
-    fun mapProfessions(professions: List<ProfessionsLocal>): Professions {
+    fun mapProfessions(professions: List<ProfessionsLocal>, withError: Boolean = false): Professions {
         val profList = ArrayList<Profession>()
         professions.filter { it.professionType == 0L }.forEach {generalProfession->
             profList.add(mapProfession(generalProfession))
@@ -200,10 +209,18 @@ object Mapper {
                 }
             }
         }
-        return Professions(
-            errorMsg = "",
-            professions = profList
-        )
+        if(withError){
+            return Professions(
+                errorMsg = getLocalDataBaseError(),
+                professions = profList
+            )
+        }
+        else{
+            return Professions(
+                errorMsg = "",
+                professions = profList
+            )
+        }
     }
 
     fun mapEvents(events: List<EventsLocal>, eventsSubs: List<EventSubs>, withError:Boolean = false): Events {
@@ -249,15 +266,23 @@ object Mapper {
         return list
     }
 
-    fun mapNews(news: List<NewsLocal>): News {
+    fun mapNews(news: List<NewsLocal>, withError: Boolean = false): News {
         val newsList = ArrayList<New>()
         news.forEach { new->
             newsList.add(mapNew(new))
         }
-        return News(
-            news = newsList,
-            errorMsg = ""
-        )
+        return if(withError){
+            News(
+                news = newsList,
+                errorMsg = getLocalDataBaseError()
+            )
+        } else{
+            News(
+                news = newsList,
+                errorMsg = ""
+            )
+        }
+
     }
 
     private fun mapNew(new: NewsLocal): New {
