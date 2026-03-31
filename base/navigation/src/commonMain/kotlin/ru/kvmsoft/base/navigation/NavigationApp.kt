@@ -214,10 +214,10 @@ fun NavigationApp(langIsRus: Boolean) {
                 }
             }
         }
-    ) { _ ->
+    ) { innerPadding ->
         NavHost(modifier = modifier,
             navController = navController,
-            startDestination = AppDestinations.Splash // Splash экран
+            startDestination = AppDestinations.Splash
         ){
             // Определяем маршруты и их Composable-функции
             composable<AppDestinations.Main> {
@@ -264,13 +264,11 @@ fun NavigationApp(langIsRus: Boolean) {
             }
             composable<AppDestinations.NewsList> {
                 NewsListScreen(
-                    onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization)
-                    { popUpTo(AppDestinations.Splash){
-                        inclusive = true
-                    }}
-                    isShowNavBar = false
-                    })
+                    navController = navController,
+                    newsDestination = AppDestinations.NewsInner(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding))
                 isShowNavBar = true
             }
             composable<AppDestinations.Authorization> {

@@ -19,7 +19,10 @@ val newsModule = module {
     single<NetworkDataSource> { NetworkDataSource(api = get()) }
     single<NewsRepository> { NewsRepository(networkDataSource = get(), localDataSource = get()) }
     single<GetNewsUseCase> { GetNewsUseCaseImp(repository = get()) }
-    single<NewsListScreenInteractor> { NewsListScreenInteractor(getNewsUseCase = get(), networkStateUseCase = get()) }
+    single<NewsListScreenInteractor> { NewsListScreenInteractor(
+        getNewsUseCase = get(),
+        networkStateUseCase = get(),
+        browserUtils = get()) }
     single<NewsInnerScreenInteractor> { NewsInnerScreenInteractor() }
     viewModelOf(::NewsListScreenViewModel)
     viewModelOf(::NewsInnerScreenViewModel)

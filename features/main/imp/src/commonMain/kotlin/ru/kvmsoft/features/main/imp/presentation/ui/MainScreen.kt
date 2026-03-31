@@ -96,6 +96,10 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                 val route = eventDestination.copy(eventId = eventId.intValue)
                 navController.navigate(route)
             }
+
+            MainScreenSideEffects.REFRESH_SCREEN -> {
+                onRefresh()
+            }
         }
     }
 
@@ -188,7 +192,7 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                 },
                 state = pullToRefreshState,
                 isRefreshing = isRefreshing,
-                onRefresh = onRefresh) {
+                onRefresh = { viewModel.intentHandler(MainScreenIntents.RefreshIntent) }) {
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
@@ -242,163 +246,4 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
         }
     }
 }
-
-
-
-//fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, navController: NavController, eventDestination: String) {
-//    val viewModelState by viewModel.progressState.collectAsState()
-//    var isRefreshing by remember { mutableStateOf(false) }
-//    val state = rememberPullToRefreshState()
-//    val scrollState = rememberScrollState()
-//    val scaleFraction = {
-//        if (isRefreshing) 1f
-//        else LinearOutSlowInEasing.transform(state.distanceFraction).coerceIn(0f, 1f)
-//    }
-//    val coroutineScope = rememberCoroutineScope()
-//    val onRefresh: () -> Unit = {
-//        isRefreshing = true
-//        coroutineScope.launch {
-//            // fetch something
-//            delay(2000)
-//            viewModel.refresh()
-//            isRefreshing = false
-//        }
-//    }
-//
-//    when (viewModelState) {
-//        ProgressState.IDLE -> {
-//            viewModel.initViewModel()
-//        }
-//        ProgressState.LOADING -> {
-//            val lang = viewModel.getCurrentLang()
-//            isRefreshing = false
-//            Column(modifier = Modifier
-//                .padding(top = 50.dp, start = 16.dp, end = 16.dp)
-//            ) {
-//                MainScreenHeader(
-//                    onClickUser = {},
-//                    onClickSettings = {},
-//                    onClickConnectionNotFound = {},
-//                    userIcon = "",
-//                    userName = getLoadingText(lang),
-//                    lang = viewModel.getCurrentLang(),
-//                    isConnectionAvailable = true
-//                )
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                ) {
-//                    StartTitle(getEventsMainScreenTitle(lang), modifier = Modifier
-//                        .padding(top = 24.dp, bottom = 18.dp))
-//
-//                    MainScreenEventsSlider(
-//                        sliderState = UiState.Loading,
-//                        lang = CurrentLanguageDomain.EN,
-//                        selectId = mutableStateOf(0),
-//                        onClickEvent = {},
-//                        isAsActive = false,
-//                        isKnowHowToUseSlider = true,
-//                        onSwipeEvent = { viewModel.updateEventsSliderHintState() }
-//                    )
-//                }
-//            }
-//            isRefreshing = false
-//        }
-//        ProgressState.COMPLETED -> {
-//            isRefreshing = false
-//            val eventId  = remember { mutableIntStateOf(0) }
-//            val uiState by viewModel.uiState.collectAsState()
-//            when(uiState){
-//                is MainScreenViewState.ErrorState-> {
-//
-//                }
-//                is MainScreenViewState.SuccessState-> {
-//                    val successState = uiState as MainScreenViewState.SuccessState
-//                    isRefreshing = false
-//                    val isShowAchievementDialog  = remember { mutableStateOf(false) }
-//                    val selectedAchievement  = remember { mutableIntStateOf(0) }
-//                    PullToRefreshBox(
-//                        modifier = Modifier
-//                            .padding(top = 40.dp)
-//                            .zIndex(1F),
-//                        indicator = {
-//                            Box(
-//                                modifier = Modifier
-//                                    .align(Alignment.TopCenter)
-//                                    .graphicsLayer {
-//                                        translationY = state.distanceFraction * 50.dp.toPx()
-//                                        alpha = state.distanceFraction.coerceIn(0f, 1f)
-//                                    }
-//                                    .background(Color.Transparent, CircleShape)
-//
-//                                .padding(8.dp)
-//                            ) {
-//                                if (isRefreshing) {
-//                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-//                                } else {
-//                                    LogoIcon(modifier = Modifier.size(48.dp).rotate(state.distanceFraction * 360f))
-//                                }
-//                            }
-//                        },
-//                        state = state,
-//                        isRefreshing = isRefreshing,
-//                        onRefresh = onRefresh) {
-//                        Column(modifier = Modifier
-//                        .fillMaxSize()
-//                        .verticalScroll(scrollState)
-//                        .padding(top = 20.dp, bottom = 48.dp)) {
-//                        MainScreenHeader(
-//                            onClickUser = {},
-//                            onClickSettings = {},
-//                            onClickConnectionNotFound = {},
-//                            userIcon = "",
-//                            userName = successState.userName,
-//                            lang = CurrentLanguageDomain.EN,
-//                            isConnectionAvailable = true
-//                        )
-//                        Column(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(16.dp)
-//                        ) {
-//                            StartTitle(getEventsMainScreenTitle(successState.lang), modifier = Modifier
-//                                .padding(top = 24.dp, bottom = 18.dp))
-//
-//                            MainScreenEventsSlider(
-//                                sliderState = successState.eventsState,
-//                                lang = successState.lang,
-//                                selectId = eventId,
-//                                onClickEvent = {
-//                                    viewModel.navigateToEvent(
-//                                        navController = navController,
-//                                        eventId = eventId.intValue,
-//                                        eventDestination = eventDestination
-//                                    )
-//                                },
-//                                isAsActive = successState.isAsModeEnabled,
-//                                isKnowHowToUseSlider = successState.isKnowHowToUseSlider,
-//                                onSwipeEvent = { viewModel.updateEventsSliderHintState() }
-//                            )
-//                            StartTitle(getAchievementsMainScreenTitle(successState.lang), modifier = Modifier
-//                                .padding(top = 30.dp, bottom = 16.dp))
-//                            MainScreenAchievementsSlider(
-//                                lang = successState.lang,
-//                                achievementsState = successState.achievements,
-//                                selectId = selectedAchievement,
-//                                isShowDialog = isShowAchievementDialog
-//                            )
-//                            MainScreenSubNavigationBlock(onClickBooks = {}, onClickStudy = {}, onClickEvents = onclickEvents, lang = (uiState as MainScreenViewState.SuccessState).lang)
-//                        }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        ProgressState.UNAUTHORIZED -> {
-//            viewModel.goToAuthorize()
-//            onNavigationAuthorization()
-//        }
-//    }
-//}
 

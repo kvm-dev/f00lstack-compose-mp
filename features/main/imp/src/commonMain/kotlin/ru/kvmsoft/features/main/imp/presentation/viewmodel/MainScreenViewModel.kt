@@ -86,6 +86,9 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseVi
                 postSideEffect(MainScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN)
             }
              MainScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
+            MainScreenIntents.RefreshIntent ->  orbitIntent {
+                postSideEffect(MainScreenSideEffects.REFRESH_SCREEN)
+            }
         }
     }
 }

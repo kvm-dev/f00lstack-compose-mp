@@ -22,7 +22,6 @@ val eventsModule = module {
     single<EventsListScreenInteractor> {
         EventsListScreenInteractor(
             getEventsUseCase = get(),
-            getCurrentLanguageUseCase = get(),
             networkStateUseCase = get(),
             getAsModeUseCase = get(),
             browserUtils = get()) }

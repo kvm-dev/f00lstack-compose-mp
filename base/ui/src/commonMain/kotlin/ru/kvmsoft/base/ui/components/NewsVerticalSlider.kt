@@ -68,12 +68,12 @@ import ru.kvmsoft.base.ui.utils.ShowNotFoundImageHorizontal
 import ru.kvmsoft.base.ui.utils.decodeBase64ToBitmap
 import ru.kvmsoft.base.ui.utils.timestampToDateString
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsVerticalSlider(
     modifier: Modifier,
-    isAsActive: Boolean,
     lang: CurrentLanguageDomain,
     newsState: UiState<NewsItemState>,
     onClickNews: () -> Unit,
@@ -93,7 +93,7 @@ fun NewsVerticalSlider(
                 )
             }
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .padding(top = 10.dp)
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -132,7 +132,7 @@ fun NewsVerticalSlider(
         UiState.Loading -> {
             LazyColumn(
                 contentPadding = PaddingValues(
-                    top = 60.dp,
+                    top = 10.dp,
                     bottom = 10.dp
                 ),
                 modifier = modifier
@@ -154,22 +154,9 @@ fun NewsVerticalSlider(
                         ScreenHeader(
                             withArrow = false,
                             modifier = Modifier,
-                            text = getEventsListScreenTitle(lang = lang),
+                            text = getNewsListScreenTitle(lang = lang),
                             onBackClicked = {}
                         )
-                        LazyRow(Modifier.padding(top = 24.dp, bottom = 10.dp)) {
-                            items(10) {
-                                ShimmerEffect(
-                                    modifier = Modifier
-                                        .width(120.dp)
-                                        .height(37.dp)
-                                        .padding(horizontal = 16.dp)
-                                        .background(ShimmerColor1, RoundedCornerShape(34)),
-                                    durationMillis = 1000,
-                                    cornerRadius = 34
-                                )
-                            }
-                        }
                     }
                 }
                 items(10) {
@@ -189,7 +176,7 @@ fun NewsVerticalSlider(
                             modifier = Modifier
                                 .padding(top = 8.dp)
                                 .fillMaxWidth()
-                                .height(14.dp)
+                                .height(20.dp)
                                 .background(ShimmerColor1, RoundedCornerShape(16)),
                             durationMillis = 1000,
                             cornerRadius = 16
@@ -197,8 +184,8 @@ fun NewsVerticalSlider(
                         ShimmerEffect(
                             modifier = Modifier
                                 .padding(top = 2.dp)
-                                .fillMaxWidth()
-                                .height(14.dp)
+                                .fillMaxWidth(Random.nextFloat())
+                                .height(20.dp)
                                 .background(ShimmerColor1, RoundedCornerShape(16)),
                             durationMillis = 1000,
                             cornerRadius = 16
@@ -230,7 +217,7 @@ fun NewsVerticalSlider(
         is UiState.Success-> {
             PullToRefreshBox(
                 modifier = Modifier
-                    .padding(top = 40.dp)
+                    .padding(top = 10.dp)
                     .zIndex(1F),
                 indicator = {
                     Box(
@@ -254,8 +241,8 @@ fun NewsVerticalSlider(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh) {
                 LazyColumn(
+                    modifier = modifier,
                     contentPadding = PaddingValues(
-                        top = 20.dp,
                         bottom = 10.dp
                     )
                 ) {
@@ -278,11 +265,6 @@ fun NewsVerticalSlider(
 
                         Card(
                             modifier = Modifier
-//                                .clickable(enabled = clickEnabled) {
-//                                    clickEnabled = false
-//                                    selectId.value = news.newsId
-//                                    onClickNews()
-//                                }
                                 .padding(horizontal = 20.dp, vertical = 18.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = Color.Transparent,
@@ -317,7 +299,7 @@ fun NewsVerticalSlider(
                                     text = news.newsDate.timestampToDateString(),
                                     modifier = Modifier
                                         .padding(top = 16.dp))
-                                MainYellowButton(
+                                MainOrangeButton(
                                     modifier = Modifier.fillMaxWidth()
                                         .padding(top = 16.dp),
                                     isEnabled = true,
