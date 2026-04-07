@@ -22,9 +22,7 @@ val eventsModule = module {
     single<EventsListScreenInteractor> {
         EventsListScreenInteractor(
             getEventsUseCase = get(),
-            getCurrentLanguageUseCase = get(),
             networkStateUseCase = get(),
-            encryptedDataStore = get(),
             getAsModeUseCase = get(),
             browserUtils = get()) }
     single<EventsInnerScreenInteractor> { EventsInnerScreenInteractor(

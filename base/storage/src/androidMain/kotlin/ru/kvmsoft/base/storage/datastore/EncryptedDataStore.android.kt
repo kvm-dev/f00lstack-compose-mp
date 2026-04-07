@@ -9,14 +9,14 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "encryptedData")
+
 actual class EncryptedDataStore(private val context: Context, private val secureEncryptor: SecureEncryptor) {
     val accessTokenKey = stringPreferencesKey("access_token")
     val refreshTokenKey = stringPreferencesKey("refresh_token")
     val professionIdKey = stringPreferencesKey("profession_id")
 
     val mainEventsSliderKey = stringPreferencesKey("main_events_slider")
-
-    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "encryptedData")
 
     actual val accessToken: Flow<String> =
         context.dataStore.data.map { preferences ->

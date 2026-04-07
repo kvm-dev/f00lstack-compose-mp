@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-public val StudyIcon: ImageVector
+val StudyIcon: ImageVector
     get() {
         if (_studyIcon != null) {
             return _studyIcon!!

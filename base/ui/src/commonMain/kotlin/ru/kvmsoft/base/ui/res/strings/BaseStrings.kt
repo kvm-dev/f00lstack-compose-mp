@@ -130,6 +130,13 @@ fun getNotFoundEventsText(lang: CurrentLanguageDomain): String {
     }
 }
 
+fun getNotFoundNewsText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "К сожалению,\nинтересных новостей пока нет"
+        CurrentLanguageDomain.EN -> "Unfortunately,\nthere is no interesting news yet"
+    }
+}
+
 fun getAchievementsMainScreenTitle(lang: CurrentLanguageDomain): String {
     return when (lang) {
         CurrentLanguageDomain.RU -> "Твои достижения"
@@ -200,10 +207,24 @@ fun getEventsListScreenTitle(lang: CurrentLanguageDomain): String {
     }
 }
 
+fun getNewsListScreenTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Новости"
+        CurrentLanguageDomain.EN -> "News"
+    }
+}
+
 fun getLoadingText(lang: CurrentLanguageDomain): String {
     return when (lang) {
         CurrentLanguageDomain.RU -> "Загрузка..."
         CurrentLanguageDomain.EN -> "Loading..."
+    }
+}
+
+fun getMoreButtonText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Подробнее"
+        CurrentLanguageDomain.EN -> "More"
     }
 }
 

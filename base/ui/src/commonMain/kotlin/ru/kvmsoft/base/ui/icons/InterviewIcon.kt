@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.Unit
 
-public val interviewIcon: ImageVector
+val interviewIcon: ImageVector
     get() {
         if (_interview != null) {
             return _interview!!

@@ -39,6 +39,7 @@ import ru.kvmsoft.base.ui.res.strings.getUnknownErrorTitle
 import ru.kvmsoft.base.ui.res.strings.joinToEventButtonText
 import ru.kvmsoft.base.ui.utils.ShowNotFoundImageHorizontal
 import ru.kvmsoft.base.ui.utils.decodeBase64ToBitmap
+import ru.kvmsoft.base.ui.utils.timestampToDateString
 import ru.kvmsoft.base.utils.closeApp
 import ru.kvmsoft.features.events.imp.presentation.viewmodel.EventsInnerScreenViewModel
 
@@ -98,8 +99,8 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), e
                         )
                         Row(modifier = Modifier
                             .padding(top = 110.dp, start = 16.dp, end = 16.dp)){
-                            ServiceSubLabel(text = "10.01.01", isYellow = false, modifier = Modifier)
-                            ServiceTransparentLabel("бесплатно", modifier = Modifier)
+                            ServiceSubLabel(text = successState.event.eventDateStart.timestampToDateString(), isYellow = false, modifier = Modifier)
+                            ServiceTransparentLabel(successState.event.eventSubs.toString(), modifier = Modifier)
                         }
                         val background = rememberVectorPainter(image = baseBackground)
                         Spacer(modifier = Modifier.height(22.dp))
@@ -112,7 +113,7 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), e
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .blur(radius = 16.dp) // Размытие фона
+                                    .blur(radius = 16.dp)
                             )
                             Column {
                                 ServiceTitle(

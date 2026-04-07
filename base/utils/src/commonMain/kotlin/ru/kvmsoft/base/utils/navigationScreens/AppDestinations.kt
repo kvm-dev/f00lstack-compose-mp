@@ -34,7 +34,7 @@ sealed class AppDestinations{
     data object NewsList: AppDestinations()
 
     @Serializable
-    data object NewsInner: AppDestinations()
+    data class NewsInner(val newsId: Int = 0): AppDestinations()
 
     @Serializable
     data object Professions: AppDestinations()

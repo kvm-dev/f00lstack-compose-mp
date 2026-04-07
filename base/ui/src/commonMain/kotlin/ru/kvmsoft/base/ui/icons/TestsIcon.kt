@@ -17,7 +17,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlin.Unit
 
-public val testsIcon: ImageVector
+val testsIcon: ImageVector
     get() {
         if (_tests != null) {
             return _tests!!

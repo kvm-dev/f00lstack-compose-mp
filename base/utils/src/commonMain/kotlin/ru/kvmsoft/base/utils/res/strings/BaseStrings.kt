@@ -14,6 +14,8 @@ fun getErrorUserIsUnauthorized() = "Unauthorized"
 
 fun getErrorUserIsBlocked() = "User Is Blocked"
 
+fun getLocalDataBaseError() = "Local Database Error"
+
 
 
 

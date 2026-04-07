@@ -70,7 +70,8 @@ object Mapper {
             userStatus = profile.userStatus,
             userAchievements = map(profile.userAchievements, userId = profile.userId),
             userPhotoBase64 = base64Photo,
-            userPurchasedProfessions = profile.userPurchasedProfessions
+            userPurchasedProfessions = profile.userPurchasedProfessions,
+            errorMsg = profile.errorMsg
         )
     }
 

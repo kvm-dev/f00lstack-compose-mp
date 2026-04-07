@@ -6,4 +6,6 @@ sealed class EventsListScreenIntents {
 
     data class UpdateFiltersIntent(val subName: String): EventsListScreenIntents()
     data object NavigateToEventDetailsIntent: EventsListScreenIntents()
+
+    data object RefreshIntent: EventsListScreenIntents()
 }

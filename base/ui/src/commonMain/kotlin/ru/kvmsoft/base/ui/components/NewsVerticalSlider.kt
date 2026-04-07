@@ -53,42 +53,38 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.icons.LogoIcon
-import ru.kvmsoft.base.ui.model.Chip
 import ru.kvmsoft.base.ui.model.EventItem
-import ru.kvmsoft.base.ui.model.EventsItemState
+import ru.kvmsoft.base.ui.model.NewsItemState
 import ru.kvmsoft.base.ui.model.UiState
 import ru.kvmsoft.base.ui.res.strings.getCurrencySymbol
 import ru.kvmsoft.base.ui.res.strings.getEventsListScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getFreePay
-import ru.kvmsoft.base.ui.res.strings.getNotFoundEventsText
-import ru.kvmsoft.base.ui.res.strings.getOkButton
+import ru.kvmsoft.base.ui.res.strings.getMoreButtonText
+import ru.kvmsoft.base.ui.res.strings.getNewsListScreenTitle
+import ru.kvmsoft.base.ui.res.strings.getNotFoundNewsText
 import ru.kvmsoft.base.ui.theme.HeaderMainColorWithTransparent
 import ru.kvmsoft.base.ui.theme.ShimmerColor1
 import ru.kvmsoft.base.ui.utils.ShowNotFoundImageHorizontal
 import ru.kvmsoft.base.ui.utils.decodeBase64ToBitmap
+import ru.kvmsoft.base.ui.utils.timestampToDateString
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventsVerticalSlider(
+fun NewsVerticalSlider(
     modifier: Modifier,
-    isAsActive: Boolean,
     lang: CurrentLanguageDomain,
-    eventsState: UiState<EventsItemState>,
-    chips: List<Chip>,
-    selectedChips: List<String>,
-    onClickEvent: () -> Unit,
+    newsState: UiState<NewsItemState>,
+    onClickNews: () -> Unit,
     selectId: MutableState<Int>,
-    selectedChip: MutableState<String>,
-    onclickChip: () -> Unit,
     isRefreshing: Boolean,
     isConnectionAvailable: Boolean,
-    onRefresh: ()->Unit,
-    onClickBack: () -> Unit
+    onRefresh: ()->Unit
 ) {
     var clickEnabled by remember { mutableStateOf(true) }
     val state = rememberPullToRefreshState()
-    when(eventsState){
+    when(newsState){
         UiState.Empty -> {
             val backdrop = rememberLayerBackdrop()
             val composition by rememberLottieComposition {
@@ -97,7 +93,7 @@ fun EventsVerticalSlider(
                 )
             }
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .padding(top = 10.dp)
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -128,17 +124,7 @@ fun EventsVerticalSlider(
                             contentDescription = ""
                         )
 
-                        ErrorTitleText(text = getNotFoundEventsText(lang), modifier = Modifier.padding(top = 12.dp))
-
-                        MainYellowButton(
-                            text = getOkButton(),
-                            onClick = onClickBack,
-                            isEnabled = true,
-                            isLoading = false,
-                            modifier = Modifier
-                                .width(200.dp)
-                                .padding(top = 48.dp))
-
+                        ErrorTitleText(text = getNotFoundNewsText(lang), modifier = Modifier.padding(top = 12.dp))
                     }
                 }
             }
@@ -146,49 +132,37 @@ fun EventsVerticalSlider(
         UiState.Loading -> {
             LazyColumn(
                 contentPadding = PaddingValues(
-                    top = 60.dp,
+                    top = 10.dp,
                     bottom = 10.dp
                 ),
                 modifier = modifier
-                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                .pullToRefresh(
-                    state = if(isConnectionAvailable) { state } else {
-                        PullToRefreshState()
-                    },
-                    isRefreshing = isRefreshing,
-                    onRefresh = { if(isConnectionAvailable){
-                        onRefresh()
-                    }
-                    }
-                )
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                    .pullToRefresh(
+                        state = if(isConnectionAvailable) { state } else {
+                            PullToRefreshState()
+                        },
+                        isRefreshing = isRefreshing,
+                        onRefresh = { if(isConnectionAvailable){
+                            onRefresh()
+                        }
+                        }
+                    )
             ) {
                 stickyHeader {
                     Column(modifier = Modifier
                         .background(HeaderMainColorWithTransparent)) {
                         ScreenHeader(
+                            withArrow = false,
                             modifier = Modifier,
-                            text = getEventsListScreenTitle(lang = lang),
-                            onBackClicked = onClickBack
+                            text = getNewsListScreenTitle(lang = lang),
+                            onBackClicked = {}
                         )
-                        LazyRow(Modifier.padding(top = 24.dp, bottom = 10.dp)) {
-                            items(10) {
-                                ShimmerEffect(
-                                    modifier = Modifier
-                                        .width(120.dp)
-                                        .height(37.dp)
-                                        .padding(horizontal = 16.dp)
-                                        .background(ShimmerColor1, RoundedCornerShape(34)),
-                                    durationMillis = 1000,
-                                    cornerRadius = 34
-                                )
-                            }
-                        }
                     }
                 }
                 items(10) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)) {
+                        .padding(horizontal = 16.dp, vertical = 14.dp)) {
                         ShimmerEffect(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -198,82 +172,52 @@ fun EventsVerticalSlider(
                             durationMillis = 1000,
                             cornerRadius = 10
                         )
-                        Row(
-                            Modifier
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(top = 8.dp)
                                 .fillMaxWidth()
-                                .padding(top = 10.dp)
-                        ) {
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(120.dp, 16.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(22.dp)
-                            )
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(80.dp, 24.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(10)),
-                                durationMillis = 1000,
-                                cornerRadius = 10
-                            )
-                        }
-                        Row(
-                            Modifier
+                                .height(20.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
+                            durationMillis = 1000,
+                            cornerRadius = 16
+                        )
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(top = 2.dp)
+                                .fillMaxWidth(Random.nextFloat())
+                                .height(20.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
+                            durationMillis = 1000,
+                            cornerRadius = 16
+                        )
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .width(64.dp)
+                                .height(12.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
+                            durationMillis = 1000,
+                            cornerRadius = 16
+                        )
+
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .padding(top = 16.dp)
                                 .fillMaxWidth()
-                                .padding(top = 10.dp)
-                        ) {
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(200.dp, 48.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(22.dp)
-                            )
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(60.dp, 18.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                        }
+                                .height(48.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
+                            durationMillis = 1000,
+                            cornerRadius = 16
+                        )
                     }
                 }
             }
         }
 
         is UiState.Success-> {
-            val filteredEvents = HashSet<EventItem>()
-            selectedChips.filter { it.isNotEmpty() }.forEach { chip ->
-                eventsState.data?.events?.forEach { event ->
-                    if (isAsActive) {
-                        if (event.eventCost == 0) {
-                            event.eventTags.find { it.name.contains(chip) }.let {
-                                filteredEvents.add(event)
-                            }
-                        }
-                    } else {
-                        event.eventTags.find { it.name.contains(chip) }.let {
-                            filteredEvents.add(event)
-                        }
-                    }
-                }
-            }
-
             PullToRefreshBox(
                 modifier = Modifier
-                    .padding(top = 40.dp)
+                    .padding(top = 10.dp)
                     .zIndex(1F),
                 indicator = {
                     Box(
@@ -297,8 +241,8 @@ fun EventsVerticalSlider(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh) {
                 LazyColumn(
+                    modifier = modifier,
                     contentPadding = PaddingValues(
-                        top = 20.dp,
                         bottom = 10.dp
                     )
                 ) {
@@ -309,50 +253,27 @@ fun EventsVerticalSlider(
                                 .clickable(enabled = false) { }
                         ) {
                             ScreenHeader(
+                                withArrow = false,
                                 modifier = Modifier,
-                                text = getEventsListScreenTitle(lang = lang),
-                                onBackClicked = onClickBack
-                            )
-                            ChipSelector(
-                                chips = chips,
-                                selectedChips = selectedChips,
-                                selectedChip = selectedChip,
-                                onclickChip = onclickChip
+                                text = getNewsListScreenTitle(lang = lang),
+                                onBackClicked = {}
                             )
                         }
                     }
-                    
-                    itemsIndexed(filteredEvents.toList().sortedBy { it.eventId }) { index, event ->
-                        val cost: String
-                        val symbol = getCurrencySymbol(lang)
-                        cost = if (event.eventCost > 0) {
-                            "${event.eventCost} $symbol"
-                        } else {
-                            getFreePay(lang)
-                        }
-                        var subTags = ""
-                        event.eventTags.forEach { tag ->
-                            subTags += "${tag.name}/"
-                        }
-                        if (subTags.isNotEmpty()) {
-                            subTags = subTags.dropLast(1)
-                        }
+
+                    itemsIndexed(newsState.data?.news?.sortedBy { it.newsId } ?: listOf()) { index, news ->
+
                         Card(
                             modifier = Modifier
-                                .clickable(enabled = clickEnabled) {
-                                    clickEnabled = false
-                                    selectId.value = event.eventId
-                                    onClickEvent()
-                                }
                                 .padding(horizontal = 20.dp, vertical = 18.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = Color.Transparent,
                             ),
                         ) {
                             Column {
-                                if (event.eventImageBase64.isNotEmpty()) {
-                                    if (event.eventImageBase64.decodeBase64ToBitmap() != null) {
-                                        event.eventImageBase64.decodeBase64ToBitmap()?.let {
+                                if (news.newsImageBase64.isNotEmpty()) {
+                                    if (news.newsImageBase64.decodeBase64ToBitmap() != null) {
+                                        news.newsImageBase64.decodeBase64ToBitmap()?.let {
                                             Image(
                                                 contentScale = ContentScale.Crop,
                                                 modifier = Modifier
@@ -360,7 +281,7 @@ fun EventsVerticalSlider(
                                                     .height(180.dp)
                                                     .clip(RoundedCornerShape(10.dp)),
                                                 bitmap = it,
-                                                contentDescription = event.eventName
+                                                contentDescription = news.newsName
                                             )
                                         }
                                     } else {
@@ -369,35 +290,34 @@ fun EventsVerticalSlider(
                                 } else {
                                     ShowNotFoundImageHorizontal()
                                 }
-                                Row(
+                                ServiceTitle(modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .fillMaxWidth(),
+                                    text = news.newsName,
+                                    textAlign = TextAlign.Start)
+                                ServiceTag(
+                                    text = news.newsDate.timestampToDateString(),
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 10.dp)
-                                        .align(Alignment.End)
-                                ) {
-                                    Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                        ServiceTag(subTags, modifier = Modifier)
-                                        ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
+                                        .padding(top = 16.dp))
+                                MainOrangeButton(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .padding(top = 16.dp),
+                                    isEnabled = true,
+                                    isLoading = false,
+                                    text = getMoreButtonText(lang),
+                                    onClick = {
+                                    if(clickEnabled) {
+                                        clickEnabled = false
+                                        selectId.value = news.newsId
+                                        onClickNews()
                                     }
-                                    Column {
-                                        ServiceSubLabel(
-                                            isYellow = false,
-                                            text = event.eventStartDate, modifier = Modifier
-                                                .align(Alignment.End)
-                                        )
-                                        ServiceText(
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            text = cost
-                                        )
                                     }
-                                }
-
+                                )
                             }
                         }
                     }
                 }
-
-        }
+            }
         }
     }
 }

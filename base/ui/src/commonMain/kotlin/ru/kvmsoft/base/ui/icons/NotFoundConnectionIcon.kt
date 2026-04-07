@@ -18,7 +18,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlin.Unit
 
-public val notFoundConnectionIcon: ImageVector
+val notFoundConnectionIcon: ImageVector
     get() {
         if (_notFoundConnectionIcon != null) {
             return _notFoundConnectionIcon!!

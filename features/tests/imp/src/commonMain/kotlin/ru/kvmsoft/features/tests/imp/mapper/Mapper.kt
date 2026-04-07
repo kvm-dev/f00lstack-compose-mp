@@ -148,7 +148,8 @@ object Mapper {
 
     fun map(response: TestsDomain):Tests{
         return Tests(
-            tests = mapTestFromDomain(response.tests)
+            tests = mapTestFromDomain(response.tests),
+            errorMsg = response.errorMsg
         )
     }
 
@@ -282,7 +283,8 @@ object Mapper {
             )
         }
         return PassedTests(
-            passedTests = passedTests
+            passedTests = passedTests,
+            errorMsg = response.errorMsg
         )
     }
 

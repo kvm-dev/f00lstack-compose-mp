@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-public val BooksIcon: ImageVector
+val BooksIcon: ImageVector
     get() {
         if (_booksIcon != null) {
             return _booksIcon!!

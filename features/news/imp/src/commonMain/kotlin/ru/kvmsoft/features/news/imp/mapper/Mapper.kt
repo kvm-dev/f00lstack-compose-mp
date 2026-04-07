@@ -57,9 +57,9 @@ object Mapper {
         )
     }
 
-    fun mapToNewsItems(news: NewsDomain): List<NewsItem>{
+    fun NewsDomain.mapToNewsItems(): List<NewsItem>{
         val newsList = HashSet<NewsItem>()
-        news.news.forEach { newsItem->
+        this.news.forEach { newsItem->
             newsList.add(NewsItem(
                 newsId = newsItem.newsId,
                 newsName = newsItem.newsName,

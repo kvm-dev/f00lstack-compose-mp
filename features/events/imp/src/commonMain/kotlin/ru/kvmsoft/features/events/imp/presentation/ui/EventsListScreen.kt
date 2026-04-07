@@ -28,7 +28,6 @@ import ru.kvmsoft.base.utils.closeApp
 import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
 import ru.kvmsoft.features.events.imp.mapper.Mapper
 import ru.kvmsoft.features.events.imp.presentation.viewmodel.EventsListScreenViewModel
-import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -41,7 +40,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
     val onRefresh: () -> Unit = {
         isRefreshing = true
         coroutineScope.launch {
-            delay(2000)
+            delay(1000)
             viewModel.intentHandler(EventsListScreenIntents.InitViewModelIntent)
             isRefreshing = false
         }
@@ -57,6 +56,10 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 val route = eventDestination.copy(eventId = eventId.intValue)
                 navController.navigate(route)
             }
+
+            EventsListScreenSideEffects.REFRESH_SCREEN -> {
+                onRefresh()
+            }
         }
     }
 
@@ -66,7 +69,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
             EventsVerticalSlider(
                 modifier = Modifier.fillMaxSize(),
                 isAsActive = false,
-                lang = CurrentLanguageDomain.EN,
+                lang = viewModel.currentLangState.value,
                 eventsState = UiState.Loading,
                 chips = listOf(),
                 selectedChips = listOf(),
@@ -77,7 +80,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                         )
                     )
                 },
-                onclickBackToHomeScreen = onClickBack,
+                onClickBack = onClickBack,
                 onClickEvent = {
                     viewModel.intentHandler(EventsListScreenIntents.NavigateToEventDetailsIntent)
                 },
@@ -94,7 +97,6 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
             val successState = (state as EventsListScreenViewState.SuccessState)
             val selectedFilter = remember { mutableStateOf("") }
             isRefreshing = false
-            val isShowAchievementDialog = remember { mutableStateOf(false) }
             EventsVerticalSlider(
                 modifier = Modifier.fillMaxSize(),
                 isAsActive = successState.isAsModeEnabled,
@@ -106,7 +108,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 ),
                 selectedChips = successState.selectedFilters,
                 onclickChip = { viewModel.intentHandler(EventsListScreenIntents.UpdateFiltersIntent(selectedFilter.value)) },
-                onclickBackToHomeScreen = onClickBack,
+                onClickBack = onClickBack,
                 onClickEvent = {
                     viewModel.intentHandler(EventsListScreenIntents.NavigateToEventDetailsIntent)
                 },
@@ -115,7 +117,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 isRefreshing = isRefreshing,
                 isConnectionAvailable = successState.isNetworkAvailable,
                 onRefresh = {
-                    onRefresh()
+                    viewModel.intentHandler(EventsListScreenIntents.RefreshIntent)
                 }
             )
         }

@@ -3,6 +3,7 @@ package ru.kvmsoft.features.events.imp.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import ru.kvmsoft.base.utils.model.ResultState
@@ -21,19 +22,15 @@ class EventsListScreenViewModel(private val interactor: EventsListScreenInteract
 
 
     fun initViewModel() = orbitIntent {
-            scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-                interactor.langState.collect {
-                        if (it is ResultState.Success) {
-                            val lang = it.data
-                            val currentState = interactor.checkState(
-                                lang = lang ?: CurrentLanguageDomain.EN)
-                            reduce { currentState }
-                        }
-                        else{
-                            reduce { EventsListScreenViewState.LoadingState }
-                        }
-                }
+        scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            reduce { EventsListScreenViewState.LoadingState }
+           currentLangState.collect {
+                    val currentState = interactor.checkState(
+                        lang = it
+                    )
+                    reduce { currentState }
             }
+        }
     }
 
     override fun intentHandler(intent: Any) {
@@ -60,6 +57,10 @@ class EventsListScreenViewModel(private val interactor: EventsListScreenInteract
                 postSideEffect(EventsListScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN)
             }
             EventsListScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
+
+            EventsListScreenIntents.RefreshIntent ->  orbitIntent {
+                postSideEffect(EventsListScreenSideEffects.REFRESH_SCREEN)
+            }
         }
     }
 }

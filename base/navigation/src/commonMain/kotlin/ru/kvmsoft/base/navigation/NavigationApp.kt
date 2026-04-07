@@ -52,6 +52,7 @@ import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreen
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreen
 import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewListScreen
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreen
+import ru.kvmsoft.features.news.imp.presentation.ui.NewsInnerScreen
 import ru.kvmsoft.features.news.imp.presentation.ui.NewsListScreen
 import ru.kvmsoft.features.profile.imp.presentation.ui.ProfileScreen
 import ru.kvmsoft.features.splash.imp.presentation.ui.SplashScreen
@@ -214,10 +215,10 @@ fun NavigationApp(langIsRus: Boolean) {
                 }
             }
         }
-    ) { _ ->
+    ) { innerPadding ->
         NavHost(modifier = modifier,
             navController = navController,
-            startDestination = AppDestinations.Splash // Splash экран
+            startDestination = AppDestinations.Splash
         ){
             // Определяем маршруты и их Composable-функции
             composable<AppDestinations.Main> {
@@ -264,14 +265,24 @@ fun NavigationApp(langIsRus: Boolean) {
             }
             composable<AppDestinations.NewsList> {
                 NewsListScreen(
-                    onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization)
-                    { popUpTo(AppDestinations.Splash){
-                        inclusive = true
-                    }}
-                    isShowNavBar = false
-                    })
+                    navController = navController,
+                    newsDestination = AppDestinations.NewsInner(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding))
                 isShowNavBar = true
+            }
+            composable<AppDestinations.NewsInner>
+            { backStackEntry->
+                val newsId = backStackEntry.toRoute<AppDestinations.NewsInner>().newsId
+                NewsInnerScreen(
+                    newsId = newsId,
+                    onClickBack = {
+                        isShowNavBar = true
+                        navController.popBackStack()
+                    }
+                )
+                isShowNavBar = false
             }
             composable<AppDestinations.Authorization> {
                 AuthorizationScreen(onAuthorized = {

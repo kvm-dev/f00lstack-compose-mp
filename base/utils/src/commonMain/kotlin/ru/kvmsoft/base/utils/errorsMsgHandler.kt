@@ -8,6 +8,7 @@ import ru.kvmsoft.base.utils.res.strings.getErrorExpectationVersion
 import ru.kvmsoft.base.utils.res.strings.getErrorTokenIsExpired
 import ru.kvmsoft.base.utils.res.strings.getErrorUserIsBlocked
 import ru.kvmsoft.base.utils.res.strings.getErrorUserIsUnauthorized
+import ru.kvmsoft.base.utils.res.strings.getLocalDataBaseError
 
 fun errorsMsgHandler(errorMsg: String?): BaseErrors {
     return when (errorMsg) {
@@ -15,6 +16,7 @@ fun errorsMsgHandler(errorMsg: String?): BaseErrors {
         getErrorTokenIsExpired()-> BaseErrors.TOKEN_EXPIRED
         getErrorUserIsUnauthorized()-> BaseErrors.UNAUTHORIZED
         getErrorUserIsBlocked() -> BaseErrors.USER_IS_BLOCKED
+        getLocalDataBaseError() -> BaseErrors.LOCAL_DATABASE_ERROR
         else -> BaseErrors.UNKNOWN_ERROR
     }
 }
