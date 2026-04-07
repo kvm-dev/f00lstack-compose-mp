@@ -79,7 +79,7 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
         isRefreshing = true
         coroutineScope.launch {
             // fetch something
-            delay(2000)
+            delay(1000)
             viewModel.intentHandler(MainScreenIntents.InitViewModelIntent)
             isRefreshing = false
         }

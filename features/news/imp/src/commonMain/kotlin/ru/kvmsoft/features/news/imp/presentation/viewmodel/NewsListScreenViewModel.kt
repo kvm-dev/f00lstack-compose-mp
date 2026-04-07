@@ -3,6 +3,7 @@ package ru.kvmsoft.features.news.imp.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import ru.kvmsoft.base.viewmodel.BaseViewModel
@@ -16,8 +17,12 @@ class NewsListScreenViewModel(private val interactor: NewsListScreenInteractor) 
 ) {
     val scope = (viewModelScope + coroutineExceptionHandler)
 
-    fun initViewModel() = orbitIntent {
+    fun initViewModel(withLoading: Boolean = false) = orbitIntent {
         scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            if(withLoading){
+                reduce { NewsListScreenViewState.LoadingState }
+                delay(3000)
+            }
             currentLangState.collect {
                 val currentState = interactor.checkState(
                     lang = it
@@ -29,7 +34,7 @@ class NewsListScreenViewModel(private val interactor: NewsListScreenInteractor) 
 
     override fun intentHandler(intent: Any) {
         when(intent){
-            NewsListScreenIntents.InitViewModelIntent -> initViewModel()
+            is NewsListScreenIntents.InitViewModelIntent -> initViewModel(intent.withLoading)
 
             is NewsListScreenIntents.NavigateToNewsDetailsIntent -> orbitIntent {
                 postSideEffect(NewsListScreenSideEffects.NAVIGATE_TO_NEWS_INNER_SCREEN)

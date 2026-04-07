@@ -6,14 +6,13 @@ import ru.kvmsoft.base.utils.errorsMsgHandler
 import ru.kvmsoft.base.utils.model.BaseErrors
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreenViewState
-import ru.kvmsoft.features.language.api.domain.usecase.GetCurrentLanguageUseCase
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 class EventsInnerScreenInteractor(
     private val getEventsUseCase: GetEventsUseCase,
     private val browserUtils: BrowserUtils
 ) {
-    private suspend fun getEvents(fromLocal: Boolean = false) = getEventsUseCase.getEvents()
+    private suspend fun getEvents(fromLocal: Boolean = false) = getEventsUseCase.getEvents(fromLocal = fromLocal)
 
     suspend fun checkState(lang: CurrentLanguageDomain, eventId: Int): EventsInnerScreenViewState{
         val events = getEvents(fromLocal = true)
@@ -26,9 +25,8 @@ class EventsInnerScreenInteractor(
             }
         }
         else{
-            return EventsInnerScreenViewState.ErrorState(lang = lang, error(errorsMsgHandler(events.errorMsg)))
+            return EventsInnerScreenViewState.ErrorState(lang = lang, error(errorsMsgHandler("")))
         }
-
     }
 
     fun openEventUrl(url: String){

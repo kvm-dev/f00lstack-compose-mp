@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.Unit
 
-public val newsIcon: ImageVector
+val newsIcon: ImageVector
     get() {
         if (_news != null) {
             return _news!!

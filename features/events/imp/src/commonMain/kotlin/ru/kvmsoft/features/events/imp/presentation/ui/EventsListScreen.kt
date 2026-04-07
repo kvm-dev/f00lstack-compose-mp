@@ -40,7 +40,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
     val onRefresh: () -> Unit = {
         isRefreshing = true
         coroutineScope.launch {
-            delay(2000)
+            delay(1000)
             viewModel.intentHandler(EventsListScreenIntents.InitViewModelIntent)
             isRefreshing = false
         }

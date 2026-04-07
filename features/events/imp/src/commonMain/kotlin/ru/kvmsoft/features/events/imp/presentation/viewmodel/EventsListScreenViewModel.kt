@@ -23,6 +23,7 @@ class EventsListScreenViewModel(private val interactor: EventsListScreenInteract
 
     fun initViewModel() = orbitIntent {
         scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            reduce { EventsListScreenViewState.LoadingState }
            currentLangState.collect {
                     val currentState = interactor.checkState(
                         lang = it

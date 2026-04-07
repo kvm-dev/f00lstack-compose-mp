@@ -1,6 +1,5 @@
 package ru.kvmsoft.features.news.imp.presentation.ui
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,8 +37,8 @@ fun NewsListScreen(viewModel: NewsListScreenViewModel = koinViewModel(), navCont
     val onRefresh: () -> Unit = {
         isRefreshing = true
         coroutineScope.launch {
-            delay(2000)
-            viewModel.intentHandler(NewsListScreenIntents.InitViewModelIntent)
+            delay(1000)
+            viewModel.intentHandler(NewsListScreenIntents.InitViewModelIntent(withLoading = true))
             isRefreshing = false
         }
     }
@@ -57,6 +56,7 @@ fun NewsListScreen(viewModel: NewsListScreenViewModel = koinViewModel(), navCont
     }
     when (state) {
         NewsListScreenViewState.LoadingState -> {
+            println()
             isRefreshing = false
             NewsVerticalSlider(
                 modifier = modifier,
@@ -70,7 +70,7 @@ fun NewsListScreen(viewModel: NewsListScreenViewModel = koinViewModel(), navCont
                 onRefresh = {},
                 isConnectionAvailable = true
             )
-            viewModel.intentHandler(NewsListScreenIntents.InitViewModelIntent)
+            viewModel.intentHandler(NewsListScreenIntents.InitViewModelIntent(withLoading = false))
         }
         is NewsListScreenViewState.ErrorState -> {
             val errorState = (state as NewsListScreenViewState.ErrorState)

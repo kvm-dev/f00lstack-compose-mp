@@ -23,7 +23,11 @@ val newsModule = module {
         getNewsUseCase = get(),
         networkStateUseCase = get(),
         browserUtils = get()) }
-    single<NewsInnerScreenInteractor> { NewsInnerScreenInteractor() }
+    single<NewsInnerScreenInteractor> { NewsInnerScreenInteractor(
+        getNewsUseCase = get(),
+        browserUtils = get(),
+        shareUtils = get()
+    ) }
     viewModelOf(::NewsListScreenViewModel)
     viewModelOf(::NewsInnerScreenViewModel)
 }
