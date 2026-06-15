@@ -1,6 +1,7 @@
 package ru.kvmsoft.base.ui.res.strings
 
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
+import kotlin.math.ceil
 
 //errors
 fun getErrorEndpointNotFound(lang: CurrentLanguageDomain): String {
@@ -234,6 +235,76 @@ fun joinToEventButtonText(lang: CurrentLanguageDomain): String {
         CurrentLanguageDomain.EN -> "Join to event"
     }
 }
+
+fun getStudiesListScreenTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Обучение"
+        CurrentLanguageDomain.EN -> "Study"
+    }
+}
+fun getStudiesAdvText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Запишись на курсы из нашего приложения и получи скидку на весь период обучения"
+        CurrentLanguageDomain.EN -> "Enjoy courses from our app and receive a discount for the entire course duration"
+    }
+}
+
+fun getStudyCostMonth(lang: CurrentLanguageDomain, fullPay: Int, periodType: Int, period: Int): String {
+    val typeRus = when(periodType){
+        0-> "мес"
+        1-> "нед"
+        else-> "день"
+    }
+    val typeEng = when(periodType){
+        0-> "month"
+        1-> "week"
+        else-> "day"
+    }
+
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "от ${ceil((fullPay/period).toDouble()).toInt()} ₽/$typeRus"
+        CurrentLanguageDomain.EN -> "from \$${ceil((fullPay/period).toDouble()).toInt()}/$typeEng"
+    }
+}
+
+fun getNotFoundStudiesText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "В данный момент\nпрограммы обучения отсутствуют"
+        CurrentLanguageDomain.EN -> "Not available\nstudy programs at now"
+    }
+}
+
+fun getStudySalePercentText(lang: CurrentLanguageDomain, percent: Int): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Скидка $percent%"
+        CurrentLanguageDomain.EN -> "$percent% discount"
+    }
+}
+
+fun getStudyPeriodText(lang: CurrentLanguageDomain, period: Int, periodType: Int): String {
+    val typeRus = when(periodType){
+        0-> "мес"
+        1-> "нед"
+        else-> "дней"
+    }
+    val typeEng = when(periodType){
+        0-> "months"
+        1-> "weeks"
+        else-> "days"
+    }
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Длительность: $period $typeRus"
+        CurrentLanguageDomain.EN -> "Duration: $period $typeEng"
+    }
+}
+
+fun getBooksSearchPlaceholderText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Название книги"
+        CurrentLanguageDomain.EN -> "Book name"
+    }
+}
+
 
 //errorTexts
 fun getErrorTextCodeIsAlreadySent() = "Code Is Already Sent"

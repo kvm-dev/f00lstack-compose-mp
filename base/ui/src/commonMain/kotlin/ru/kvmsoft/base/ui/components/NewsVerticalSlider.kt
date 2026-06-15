@@ -183,15 +183,6 @@ fun NewsVerticalSlider(
                         )
                         ShimmerEffect(
                             modifier = Modifier
-                                .padding(top = 2.dp)
-                                .fillMaxWidth(Random.nextFloat())
-                                .height(20.dp)
-                                .background(ShimmerColor1, RoundedCornerShape(16)),
-                            durationMillis = 1000,
-                            cornerRadius = 16
-                        )
-                        ShimmerEffect(
-                            modifier = Modifier
                                 .padding(top = 16.dp)
                                 .width(64.dp)
                                 .height(12.dp)

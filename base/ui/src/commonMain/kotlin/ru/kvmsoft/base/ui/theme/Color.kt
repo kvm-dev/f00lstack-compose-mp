@@ -27,6 +27,8 @@ val SimplyWhite = Color(0xfffffff0)
 
 val UnselectedBorderChipColor = Color(0xFFD4CFCF)
 
+val InputBorder = Color(0xB9B3AAAA)
+
 val SimplyBlack = Color(0xFF000000)
 val Turquoise = Color(83, 170, 172)
 val MainYellowLight = Color(0xffffd700)

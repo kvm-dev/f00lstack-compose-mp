@@ -62,6 +62,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+
                 implementation(libs.kotlin.stdlib)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -73,6 +74,9 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtimeCompose)
                 implementation(libs.navigation)
                 implementation(libs.backhandler)
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
                 //screens
                 implementation(projects.features.splash.imp)
                 implementation(projects.features.main.imp)

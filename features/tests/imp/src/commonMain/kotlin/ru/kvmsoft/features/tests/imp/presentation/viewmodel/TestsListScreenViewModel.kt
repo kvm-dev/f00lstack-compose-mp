@@ -10,9 +10,8 @@ import ru.kvmsoft.features.tests.imp.presentation.ui.TestsListScreenViewState
 class TestsListScreenViewModel(private val interactor: TestInnerScreenInteractor) : BaseViewModel<TestsListScreenViewState, TestsListScreenSideEffects>(
     TestsListScreenViewState.LoadingState
 ) {
-    val scope = (viewModelScope + coroutineExceptionHandler)
 
-    fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
+    fun initViewModel() {
 
     }
 

@@ -74,7 +74,10 @@ fun AuthorizationScreen(
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE -> { onAuthorized() }
+            AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE -> {
+                onAuthorized()
+            }
+            AuthorizationScreenSideEffects.OPEN_CHAT -> viewModel.openChat()
         }
     }
 
@@ -95,7 +98,7 @@ fun AuthorizationScreen(
                 )
                 if (showExitBottomSheet) {
                     ExitBottomSheet(
-                        lang = viewModel.currentLangState.value, onDismissRequest = {
+                        lang = viewModel.getLang(), onDismissRequest = {
                             showExitBottomSheet = false
                             showBottomSheet = true
                             viewModel.intentHandler(AuthorizationScreenIntents.RestartUiIntent)
@@ -110,7 +113,7 @@ fun AuthorizationScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    getAuthorizationPreviewTitle(viewModel.currentLangState.value),
+                                    getAuthorizationPreviewTitle(viewModel.getLang()),
                                     modifier = Modifier.fillMaxWidth(),
                                     style = getFoolStackTypography().displayLarge,
                                     color = SimplyWhite,
@@ -122,7 +125,7 @@ fun AuthorizationScreen(
                                         .align(Alignment.CenterHorizontally)
                                 )
                                 Text(
-                                    getAuthorizationPreviewDescription(viewModel.currentLangState.value),
+                                    getAuthorizationPreviewDescription(viewModel.getLang()),
                                     modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
                                     style = getFoolStackTypography().bodyMedium,
                                     color = GreenLight,
@@ -133,7 +136,7 @@ fun AuthorizationScreen(
                                     isEnabled = true,
                                     onClick = { viewModel.intentHandler(AuthorizationScreenIntents.InitViewModelIntent) },
                                     text = getAuthorizationPreviewButton(
-                                        viewModel.currentLangState.value
+                                        viewModel.getLang()
                                     ),
                                     modifier = Modifier.fillMaxWidth().padding(20.dp)
                                 )
@@ -144,6 +147,7 @@ fun AuthorizationScreen(
         }
 
         is AuthorizationScreenViewState.AuthorizationRegistrationState -> {
+            val currentState = state as AuthorizationScreenViewState.AuthorizationRegistrationState
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     getAppName(),
@@ -153,7 +157,7 @@ fun AuthorizationScreen(
                 )
                 if (showExitBottomSheet) {
                     ExitBottomSheet(
-                        lang = viewModel.currentLangState.value, onDismissRequest = {
+                        lang = currentState.lang, onDismissRequest = {
                             showExitBottomSheet = false
                             showBottomSheet = true
                             viewModel.intentHandler(AuthorizationScreenIntents.RestartUiIntent)
@@ -168,7 +172,7 @@ fun AuthorizationScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    getAuthorizationEmailTitle(viewModel.currentLangState.value),
+                                    getAuthorizationEmailTitle(currentState.lang),
                                     modifier = Modifier.fillMaxWidth(),
                                     style = getFoolStackTypography().displayLarge,
                                     color = SimplyWhite,
@@ -180,7 +184,7 @@ fun AuthorizationScreen(
                                         .align(Alignment.CenterHorizontally)
                                 )
                                 Text(
-                                    getAuthorizationEmailDescription(viewModel.currentLangState.value),
+                                    getAuthorizationEmailDescription(currentState.lang),
                                     modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
                                     style = getFoolStackTypography().bodyMedium,
                                     color = GreenLight,
@@ -203,7 +207,7 @@ fun AuthorizationScreen(
                                         viewModel.intentHandler(AuthorizationScreenIntents.InitViewModelIntent)
                                     },
                                     text = getAuthorizationEmailButton(
-                                        viewModel.currentLangState.value
+                                        currentState.lang
                                     ),
                                     modifier = Modifier.fillMaxWidth().padding(20.dp)
                                 )
@@ -214,6 +218,7 @@ fun AuthorizationScreen(
         }
 
         is AuthorizationScreenViewState.OtpState -> {
+            val currentState = state as AuthorizationScreenViewState.OtpState
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     getAppName(),
@@ -223,7 +228,7 @@ fun AuthorizationScreen(
                 )
                 if (showExitBottomSheet) {
                     ExitBottomSheet(
-                        lang = viewModel.currentLangState.value, onDismissRequest = {
+                        lang = currentState.lang, onDismissRequest = {
                             showExitBottomSheet = false
                             showBottomSheet = true
                             viewModel.intentHandler(AuthorizationScreenIntents.RestartUiIntent)
@@ -238,7 +243,7 @@ fun AuthorizationScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    getAuthorizationOtpTitle(viewModel.currentLangState.value),
+                                    getAuthorizationOtpTitle(currentState.lang),
                                     modifier = Modifier.fillMaxWidth(),
                                     style = getFoolStackTypography().displayLarge,
                                     color = SimplyWhite,
@@ -250,7 +255,7 @@ fun AuthorizationScreen(
                                         .align(Alignment.CenterHorizontally)
                                 )
                                 Text(
-                                    getAuthorizationOtpDescription(viewModel.currentLangState.value),
+                                    getAuthorizationOtpDescription(currentState.lang),
                                     modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
                                     style = getFoolStackTypography().bodyMedium,
                                     color = GreenLight,
@@ -272,7 +277,7 @@ fun AuthorizationScreen(
                                     onClick = {
                                         viewModel.intentHandler(AuthorizationScreenIntents.InitViewModelIntent)
                                     },
-                                    text = getAuthorizationOtpMainButton(viewModel.currentLangState.value),
+                                    text = getAuthorizationOtpMainButton(currentState.lang),
                                     modifier = Modifier.fillMaxWidth().padding(20.dp)
                                 )
                             }
@@ -300,7 +305,7 @@ fun AuthorizationScreen(
                     )
                     if (showExitBottomSheet) {
                         ExitBottomSheet(
-                            lang = viewModel.currentLangState.value, onDismissRequest = {
+                            lang = errorState.lang, onDismissRequest = {
                                 showExitBottomSheet = false
                                 showBottomSheet = true
                                 viewModel.intentHandler(AuthorizationScreenIntents.RestartUiIntent)
@@ -316,7 +321,7 @@ fun AuthorizationScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    getAuthorizationErrorConnectionNotFoundTitle(viewModel.currentLangState.value),
+                                    getAuthorizationErrorConnectionNotFoundTitle(errorState.lang),
                                     modifier = Modifier.fillMaxWidth(),
                                     style = getFoolStackTypography().displayLarge,
                                     color = SimplyWhite,
@@ -333,7 +338,7 @@ fun AuthorizationScreen(
                                     contentDescription = ""
                                 )
                                 Text(
-                                    getAuthorizationErrorConnectionNotFoundDescription(viewModel.currentLangState.value),
+                                    getAuthorizationErrorConnectionNotFoundDescription(errorState.lang),
                                     modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                                     style = getFoolStackTypography().bodyMedium,
                                     color = GreenLight,
@@ -363,319 +368,3 @@ fun AuthorizationScreen(
         }
     }
 }
-
-
-//    when (viewModelState) {
-//        ProgressState.IDLE -> {
-//            showBottomSheet = true
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//    ) {
-//        Text(getAppName(), modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(top = 80.dp),
-//            style = getFoolStackTypography().headlineLarge,
-//            textAlign  = TextAlign.Center
-//        )
-//        if(showExitBottomSheet){
-//            ExitBottomSheet(
-//                lang = viewModel.currentLangState.value,
-//                onDismissRequest = {
-//                    showExitBottomSheet = false
-//                    showBottomSheet = true
-//                    viewModel.restartProgressState()
-//                })
-//        }
-//        if (showBottomSheet) {
-//            NonDismissibleBottomSheet(
-//                onDismissRequest = { showExitBottomSheet = true },
-//                contentBottomSheet = {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        Text(getAuthorizationPreviewTitle(viewModel.currentLangState.value),
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                            style = getFoolStackTypography().displayLarge,
-//                            color = SimplyWhite,
-//                            textAlign  = TextAlign.Center
-//                        )
-//                        PreviewIcon(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(top = 30.dp, start = 20.dp, end = 20.dp)
-//                                .align(Alignment.CenterHorizontally)
-//                        )
-//                        Text(
-//                            getAuthorizationPreviewDescription(viewModel.currentLangState.value),
-//                            modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 30.dp),
-//                            style = getFoolStackTypography().bodyMedium,
-//                            color = GreenLight,
-//                            textAlign  = TextAlign.Center
-//                        )
-//                        MainOrangeButton(isLoading = viewModel.emailLoading,
-//                        isEnabled = true,
-//                        onClick = { viewModel.initViewModel() },
-//                        text = getAuthorizationPreviewButton(
-//                            viewModel.currentLangState.value), modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(20.dp))
-//                    }
-//                }
-//            )
-//        }
-//    }
-//        }
-//        ProgressState.LOADING -> {
-//            viewModel.setIdleProgressState()
-//        }
-//        ProgressState.COMPLETED -> {
-//            val uiState by viewModel.uiState.collectAsState()
-//            when(uiState){
-//                AuthorizationScreenViewState.LoadingState->{
-//                    //intermediate state
-//                }
-//                AuthorizationScreenViewState.AuthorizedState -> {
-//                    onAuthorized() }
-//                is AuthorizationScreenViewState.AuthorizationRegistrationState->{
-//                    Column(
-//                        modifier = Modifier.fillMaxSize(),
-//                    ) {
-//                        Text(getAppName(), modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 80.dp),
-//                            style = getFoolStackTypography().headlineLarge,
-//                            textAlign  = TextAlign.Center
-//                        )
-//                        if(showExitBottomSheet){
-//                            ExitBottomSheet(
-//                                lang = viewModel.currentLangState.value,
-//                                onDismissRequest = {
-//                                    showExitBottomSheet = false
-//                                    showBottomSheet = true
-//                                    viewModel.restartUIState()
-//                                })
-//                        }
-//                        if (showBottomSheet) {
-//                            NonDismissibleBottomSheet(
-//                                onDismissRequest = { showExitBottomSheet = true },
-//                                contentBottomSheet = {
-//                                    Column(
-//                                        modifier = Modifier
-//                                            .fillMaxWidth(),
-//                                        horizontalAlignment = Alignment.CenterHorizontally
-//                                    ) {
-//                                        Text(getAuthorizationEmailTitle(viewModel.currentLangState.value), modifier = Modifier
-//                                            .fillMaxWidth(),
-//                                            style = getFoolStackTypography().displayLarge,
-//                                            color = SimplyWhite,
-//                                            textAlign  = TextAlign.Center
-//                                        )
-//                                        LogoIcon(
-//                                            modifier = Modifier
-//                                                .fillMaxWidth()
-//                                                .padding(top = 30.dp, start = 20.dp, end = 20.dp)
-//                                                .align(Alignment.CenterHorizontally)
-//                                        )
-//                                        Text(
-//                                            getAuthorizationEmailDescription(viewModel.currentLangState.value), modifier = Modifier
-//                                                .fillMaxWidth()
-//                                                .padding(top = 30.dp),
-//                                            style = getFoolStackTypography().bodyMedium,
-//                                            color = GreenLight,
-//                                            textAlign  = TextAlign.Center
-//                                        )
-//                                        EmailTextField(modifier = Modifier
-//                                            .fillMaxWidth()
-//                                            .padding(20.dp),
-//                                            value = viewModel.emailValue,
-//                                            placeholder = getAuthorizationEmailPlaceholder(),
-//                                            onChange = {viewModel.setEmail(value = it)},
-//                                            isEnabled = !viewModel.emailLoading,
-//                                            isError = viewModel.emailError.value.isNotEmpty(),
-//                                            errorMessage = viewModel.emailError.value
-//                                        )
-//
-//                                        MainOrangeButton(isLoading = viewModel.emailLoading,
-//                                            isEnabled = viewModel.emailError.value.isEmpty() && viewModel.emailValue.isNotEmpty(),
-//                                            onClick = {
-//                                                viewModel.checkState()
-//                                            }, text = getAuthorizationEmailButton(
-//                                                viewModel.currentLangState.value), modifier = Modifier
-//                                                .fillMaxWidth()
-//                                                .padding(20.dp))
-//                                    }
-//                                }
-//                            )
-//                        }
-//                    }
-//                }
-//                is AuthorizationScreenViewState.OtpState->{
-//                    Column(modifier = Modifier.fillMaxSize()) {
-//                        Text(getAppName(), modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 80.dp),
-//                            style = getFoolStackTypography().headlineLarge,
-//                            textAlign  = TextAlign.Center
-//                        )
-//                        if(showExitBottomSheet){
-//                            ExitBottomSheet(
-//                                lang = viewModel.currentLangState.value,
-//                                onDismissRequest = {
-//                                    showExitBottomSheet = false
-//                                    showBottomSheet = true
-//                                    viewModel.restartUIState()
-//                                })
-//                        }
-//                        if (showBottomSheet) {
-//                            NonDismissibleBottomSheet(
-//                                onDismissRequest = { showExitBottomSheet = true },
-//                                contentBottomSheet = {
-//                                    Column(
-//                                        modifier = Modifier
-//                                            .fillMaxWidth(),
-//                                        horizontalAlignment = Alignment.CenterHorizontally
-//                                    ) {
-//                                        Text(
-//                                            getAuthorizationOtpTitle(viewModel.currentLangState.value), modifier = Modifier
-//                                            .fillMaxWidth(),
-//                                            style = getFoolStackTypography().displayLarge,
-//                                            color = SimplyWhite,
-//                                            textAlign  = TextAlign.Center
-//                                        )
-//                                        LogoIcon(
-//                                            modifier = Modifier
-//                                                .fillMaxWidth()
-//                                                .padding(top = 30.dp, start = 20.dp, end = 20.dp)
-//                                                .align(Alignment.CenterHorizontally)
-//                                        )
-//                                        Text(
-//                                            getAuthorizationOtpDescription(viewModel.currentLangState.value),
-//                                            modifier = Modifier
-//                                                .fillMaxWidth()
-//                                                .padding(top = 30.dp),
-//                                            style = getFoolStackTypography().bodyMedium,
-//                                            color = GreenLight,
-//                                            textAlign  = TextAlign.Center
-//                                        )
-//                                        OtpTextField(modifier = Modifier
-//                                            .fillMaxWidth()
-//                                            .padding(20.dp),
-//                                            otpText = viewModel.otpValue,
-//                                            onOtpTextChange = {viewModel.setOtp(value = it)},
-//                                            isEnabled = !viewModel.otpLoading,
-//                                            isError = viewModel.otpError.value.isNotEmpty(),
-//                                            errorMessage = viewModel.otpError.value
-//                                        )
-//
-//                                        MainOrangeButton(isLoading = viewModel.otpLoading,
-//                                            isEnabled = viewModel.otpError.value.isEmpty() && viewModel.otpValue.length==4,
-//                                            onClick = {
-//                                                viewModel.checkState()
-//                                            }, text = getAuthorizationOtpMainButton(viewModel.currentLangState.value), modifier = Modifier
-//                                            .fillMaxWidth()
-//                                            .padding(20.dp))
-//                                    }
-//                                }
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                is AuthorizationScreenViewState.ErrorState-> {
-//                    val state = uiState as AuthorizationScreenViewState.ErrorState
-//                    if((state).error == AuthorizationErrors.CONNECTION_NOT_FOUND){
-//                        val notFoundConnectionAnimation by rememberLottieComposition {
-//                        LottieCompositionSpec.JsonString(
-//                            Res.readBytes("files/not-found-connection.json").decodeToString())}
-//                        Column(
-//                            modifier = Modifier.fillMaxSize(),
-//                        ) {
-//                            Text(getAppName(), modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(top = 80.dp),
-//                                style = getFoolStackTypography().headlineLarge,
-//                                textAlign  = TextAlign.Center
-//                            )
-//                            if(showExitBottomSheet){
-//                                ExitBottomSheet(
-//                                    lang = viewModel.currentLangState.value,
-//                                    onDismissRequest = {
-//                                        showExitBottomSheet = false
-//                                        showBottomSheet = true
-//                                        viewModel.restartUIState()
-//                                    })
-//                            }
-//                            if (showBottomSheet) {
-//                                NonDismissibleBottomSheet(
-//                                    onDismissRequest = {
-//                                    showBottomSheet = false
-//                                    showExitBottomSheet = true
-//                                },
-//                                    contentBottomSheet = {
-//                                        Column(
-//                                            modifier = Modifier
-//                                                .fillMaxWidth(),
-//                                            horizontalAlignment = Alignment.CenterHorizontally
-//                                        ) {
-//                                            Text(
-//                                                getAuthorizationErrorConnectionNotFoundTitle(viewModel.currentLangState.value), modifier = Modifier
-//                                                    .fillMaxWidth(),
-//                                                style = getFoolStackTypography().displayLarge,
-//                                                color = SimplyWhite,
-//                                                textAlign  = TextAlign.Center
-//                                            )
-//                                            Image(
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth()
-//                                                    .padding(vertical = 10.dp, horizontal = 20.dp),
-//                                                contentScale = ContentScale.FillWidth,
-//                                                painter = rememberLottiePainter(
-//                                                    composition = notFoundConnectionAnimation,
-//                                                    iterations = Compottie.IterateForever
-//                                                ),
-//                                                contentDescription = ""
-//                                            )
-//                                            Text(
-//                                                getAuthorizationErrorConnectionNotFoundDescription(viewModel.currentLangState.value),
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth()
-//                                                    .padding(top = 10.dp),
-//                                                style = getFoolStackTypography().bodyMedium,
-//                                                color = GreenLight,
-//                                                textAlign  = TextAlign.Center
-//                                            )
-//                                            MainOrangeButton(isLoading = viewModel.otpLoading,
-//                                                isEnabled = true,
-//                                                onClick = {viewModel.finishApplication()},
-//                                                text = getOkButton(),
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth()
-//                                                    .padding(20.dp))
-//                                        }
-//                                    }
-//                                )
-//                            }
-//                        }
-//                    }
-//                    else{
-//                        BaseErrorBottomSheet(
-//                            title = getUnknownErrorTitle(lang = state.lang),
-//                            description = getUnknownErrorDescription(lang = state.lang),
-//                            mainButtonText = getUnknownErrorMainButton(lang = state.lang),
-//                            secondButtonText = getUnknownErrorSecondButton(lang = state.lang),
-//                            actionMain = { closeApp() },
-//                            actionSecond = { viewModel.openChat() },
-//                            onDismiss = { closeApp() })
-//                    }
-//                }
-//            }
-//        }
-//        ProgressState.UNAUTHORIZED -> {
-//            viewModel.goToAuthorize()
-//        }
-//    }

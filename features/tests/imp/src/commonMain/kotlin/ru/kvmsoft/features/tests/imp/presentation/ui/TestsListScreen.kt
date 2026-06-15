@@ -8,7 +8,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.features.tests.imp.presentation.viewmodel.TestsListScreenViewModel
 
 @Composable
-fun TestsListScreen(viewModel: TestsListScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
+fun TestsListScreen(viewModel: TestsListScreenViewModel, onNavigationAuthorization: ()->Unit) {
 
     val state by viewModel.collectAsState()
 

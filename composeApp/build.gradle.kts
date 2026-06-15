@@ -32,6 +32,11 @@ kotlin {
             //di
             implementation(libs.koin.android)
         }
+
+        iosMain.dependencies {
+            implementation(compose.ui)
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)

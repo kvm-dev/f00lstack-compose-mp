@@ -10,9 +10,7 @@ import ru.kvmsoft.features.settings.imp.presentation.ui.SettingsScreenViewState
 class SettingsScreenViewModel(private val interactor: SettingsScreenInteractor) : BaseViewModel<SettingsScreenViewState, SettingsScreenSideEffects>(
     SettingsScreenViewState.LoadingState
 ) {
-    val scope = (viewModelScope + coroutineExceptionHandler)
-
-    fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
+    fun initViewModel() {
 
     }
 

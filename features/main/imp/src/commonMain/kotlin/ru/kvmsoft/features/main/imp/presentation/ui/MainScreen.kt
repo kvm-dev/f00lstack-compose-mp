@@ -33,7 +33,6 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.base.ui.components.BaseErrorBottomSheet
@@ -60,7 +59,7 @@ import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, navController: NavController, eventDestination: AppDestinations.EventsInner) {
+fun MainScreen(viewModel: MainScreenViewModel, onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, onclickStudy: ()->Unit,  navController: NavController, eventDestination: AppDestinations.EventsInner) {
 
     val state by viewModel.collectAsState()
 
@@ -78,9 +77,7 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
     val onRefresh: () -> Unit = {
         isRefreshing = true
         coroutineScope.launch {
-            // fetch something
             delay(1000)
-            viewModel.intentHandler(MainScreenIntents.InitViewModelIntent)
             isRefreshing = false
         }
     }
@@ -88,39 +85,47 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             MainScreenSideEffects.NAVIGATE_TO_AUTHORIZATION_ZONE -> {
-                viewModel.intentHandler(MainScreenIntents.GoToAuthorizationIntent)
                 onNavigationAuthorization()
             }
-
             MainScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN -> {
-                val route = eventDestination.copy(eventId = eventId.intValue)
-                navController.navigate(route)
+                navController.navigate(eventDestination.copy(eventId = eventId.intValue))
             }
-
+            MainScreenSideEffects.NAVIGATE_TO_EVENTS_LIST_SCREEN -> {
+                onclickEvents()
+            }
+            MainScreenSideEffects.NAVIGATE_TO_STUDY_LIST_SCREEN -> {
+                onclickStudy()
+            }
             MainScreenSideEffects.REFRESH_SCREEN -> {
                 onRefresh()
+            }
+            MainScreenSideEffects.CLOSE_APP -> {
+                closeApp()
+            }
+            MainScreenSideEffects.OPEN_CHAT -> {
+                viewModel.openChat()
             }
         }
     }
 
     when (state) {
         is MainScreenViewState.ErrorState -> {
-            when(val errorState = (state as MainScreenViewState.ErrorState).error){
+            when((state as MainScreenViewState.ErrorState).error){
                 BaseErrors.UNAUTHORIZED-> viewModel.intentHandler(MainScreenIntents.GoToAuthorizationIntent)
                 else-> {
                     BaseErrorBottomSheet(
-                        title = getUnknownErrorTitle(lang = viewModel.currentLangState.value),
-                        description = getUnknownErrorDescription(lang = viewModel.currentLangState.value),
-                        mainButtonText = getUnknownErrorMainButton(lang = viewModel.currentLangState.value),
-                        secondButtonText = getUnknownErrorSecondButton(lang = viewModel.currentLangState.value),
-                        actionMain = { closeApp() },
+                        title = getUnknownErrorTitle(lang = viewModel.getLang()),
+                        description = getUnknownErrorDescription(lang = viewModel.getLang()),
+                        mainButtonText = getUnknownErrorMainButton(lang = viewModel.getLang()),
+                        secondButtonText = getUnknownErrorSecondButton(lang = viewModel.getLang()),
+                        actionMain = { viewModel.intentHandler(MainScreenIntents.CloseApplication) },
                         actionSecond = { viewModel.intentHandler(MainScreenIntents.OpenChatIntent) },
-                        onDismiss = { closeApp() })
+                        onDismiss = { viewModel.intentHandler(MainScreenIntents.CloseApplication) })
                 }
             }
         }
         MainScreenViewState.LoadingState -> {
-            val lang = viewModel.currentLangState.value
+            val lang = viewModel.getLang()
             isRefreshing = false
             Column(modifier = Modifier
                 .padding(top = 50.dp, start = 16.dp, end = 16.dp)
@@ -154,10 +159,9 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                 }
             }
             isRefreshing = false
-            viewModel.intentHandler(MainScreenIntents.InitViewModelIntent)
             if (showExitBottomSheet) {
                 ExitBottomSheet(
-                    lang = viewModel.currentLangState.value, onDismissRequest = {
+                    lang = viewModel.getLang(), onDismissRequest = {
                         showExitBottomSheet = false
                     })
             }
@@ -192,7 +196,7 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                 },
                 state = pullToRefreshState,
                 isRefreshing = isRefreshing,
-                onRefresh = { viewModel.intentHandler(MainScreenIntents.RefreshIntent) }) {
+                onRefresh = { viewModel.intentHandler(MainScreenIntents.RefreshIntent)  }) {
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
@@ -233,15 +237,20 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel(), onNavigationAut
                             selectId = selectedAchievement,
                             isShowDialog = isShowAchievementDialog
                         )
-                        MainScreenSubNavigationBlock(onClickBooks = {}, onClickStudy = {}, onClickEvents = onclickEvents, lang = (successState.lang))
+                        MainScreenSubNavigationBlock(
+                            onClickBooks = {},
+                            onClickStudy = { viewModel.intentHandler(MainScreenIntents.NavigateToStudyList) },
+                            onClickEvents = { viewModel.intentHandler(MainScreenIntents.NavigateToEventsList) },
+                            lang = (successState.lang))
                     }
                 }
             }
             if (showExitBottomSheet) {
                 ExitBottomSheet(
-                    lang = viewModel.currentLangState.value, onDismissRequest = {
+                    lang = successState.lang, onDismissRequest = {
                         showExitBottomSheet = false
-                    })
+                    }
+                )
             }
         }
     }

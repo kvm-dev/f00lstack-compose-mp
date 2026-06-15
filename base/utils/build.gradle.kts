@@ -81,7 +81,6 @@ kotlin {
         androidMain {
             dependencies {
                 //di
-                //di
                 implementation(libs.koin.android)
                 implementation(libs.koin.compose)
             }

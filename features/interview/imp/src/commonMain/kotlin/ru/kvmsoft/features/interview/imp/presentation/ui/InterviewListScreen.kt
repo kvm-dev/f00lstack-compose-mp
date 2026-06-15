@@ -8,7 +8,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import ru.kvmsoft.features.interview.imp.presentation.viewmodel.InterviewListScreenViewModel
 
 @Composable
-fun InterviewListScreen(viewModel: InterviewListScreenViewModel = koinViewModel(), onNavigationAuthorization: ()->Unit) {
+fun InterviewListScreen(viewModel: InterviewListScreenViewModel, onNavigationAuthorization: ()->Unit) {
 
     val state by viewModel.collectAsState()
 

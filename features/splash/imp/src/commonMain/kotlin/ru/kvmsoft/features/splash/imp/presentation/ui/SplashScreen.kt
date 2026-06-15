@@ -80,7 +80,7 @@ fun SplashScreen(viewModel: SplashScreenViewModel = koinViewModel(), onNavigateT
                         .align(Alignment.CenterHorizontally)
                 )
                 Text(
-                    getSplashDescription(lang = (viewModel.currentLangState.value)),
+                    getSplashDescription(lang = (viewModel.getLang())),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 40.dp),

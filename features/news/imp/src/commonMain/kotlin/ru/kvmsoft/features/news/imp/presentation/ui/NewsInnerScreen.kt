@@ -55,8 +55,18 @@ fun NewsInnerScreen(viewModel: NewsInnerScreenViewModel = koinViewModel(), newsI
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            NewsInnerScreenSideEffects.ON_BACK_PRESSED -> {
+            NewsInnerScreenSideEffects.OnBackPressed -> {
                 onClickBack()
+            }
+            NewsInnerScreenSideEffects.CloseApp -> {
+                closeApp()
+            }
+            is NewsInnerScreenSideEffects.ShareNews -> {
+                viewModel.shareNews(sideEffect.url)
+            }
+
+            NewsInnerScreenSideEffects.OpenChat -> {
+                viewModel.openChat()
             }
         }
     }
@@ -147,9 +157,9 @@ fun NewsInnerScreen(viewModel: NewsInnerScreenViewModel = koinViewModel(), newsI
                 description = getUnknownErrorDescription(lang = errorState.lang),
                 mainButtonText = getUnknownErrorMainButton(lang = errorState.lang),
                 secondButtonText = getUnknownErrorSecondButton(lang = errorState.lang),
-                actionMain = { closeApp() },
+                actionMain = { viewModel.intentHandler(NewsInnerScreenIntents.CloseApplication) },
                 actionSecond = { viewModel.intentHandler(NewsInnerScreenIntents.OpenChatIntent) },
-                onDismiss = { closeApp() })
+                onDismiss = { viewModel.intentHandler(NewsInnerScreenIntents.CloseApplication) })
         }
     }
 }

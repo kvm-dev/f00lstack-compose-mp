@@ -32,6 +32,17 @@ class ProfileApi(private val client: HttpClient) {
         }
     }
 
+    suspend fun getProfileWithToken(userToken: String): ProfileResponse {
+        val result = with(client) {
+            get("${getBaseUrl()}${ProfileEndpoints.getProfile}")
+        }
+        return if(result.status == HttpStatusCode.OK) {
+            result.body<ProfileResponse>()
+        } else{
+            ProfileResponse(errorMsg = exceptionHandler(result.status).message?: "")
+        }
+    }
+
     suspend fun updateEmail(email: String): UpdateEmailResponse {
         val result = with(client) {
             post("${getBaseUrl()}${ProfileEndpoints.updateEmail}"){

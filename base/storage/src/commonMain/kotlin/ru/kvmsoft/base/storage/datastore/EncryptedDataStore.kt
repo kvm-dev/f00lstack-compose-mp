@@ -13,7 +13,7 @@ expect class EncryptedDataStore {
 
     suspend fun saveToken(userToken: String)
     suspend fun saveRefreshToken(refreshToken: String)
-    suspend fun saveProfessionId(professionId:Int)
+    suspend fun saveProfessionId(professionId: Int)
     suspend fun clearUserData()
 
     //first events methods

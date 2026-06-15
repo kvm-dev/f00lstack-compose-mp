@@ -60,7 +60,6 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 fun MainScreenEventsSlider(sliderState: UiState<EventsItemState>, lang: CurrentLanguageDomain, onClickEvent: () -> Unit,
                            selectId: MutableState<Int>, isAsActive: Boolean, isKnowHowToUseSlider: Boolean, onSwipeEvent: () -> Unit) {
     var isKnowHowToUseSlider by remember { mutableStateOf(isKnowHowToUseSlider) }
-    println("стейт слайдер ин $isKnowHowToUseSlider")
     when(sliderState){
         UiState.Empty -> {
             val background = rememberVectorPainter(image = emptyEvents)
@@ -257,7 +256,7 @@ fun MainScreenEventsSlider(sliderState: UiState<EventsItemState>, lang: CurrentL
                         }
                     }
                 }
-                    if(!isKnowHowToUseSlider){
+                    if(!isKnowHowToUseSlider && sliderState.data?.events?.isNotEmpty() == true){
                         Image(
                             modifier = Modifier
                                 .fillMaxWidth(),

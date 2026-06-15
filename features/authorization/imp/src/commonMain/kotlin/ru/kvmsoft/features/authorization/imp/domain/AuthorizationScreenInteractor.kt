@@ -26,150 +26,173 @@ import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
 import ru.kvmsoft.features.language.api.domain.usecase.GetCurrentLanguageUseCase
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.networkconnection.api.domain.usecase.GetNetworkStateUseCase
+import ru.kvmsoft.features.profile.api.domain.usecase.GetProfileUseCase
 
 class AuthorizationScreenInteractor(
     private val networkStateUseCase: GetNetworkStateUseCase,
-    getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
+    private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
     private val confirmAuthAndRegUseCase: ConfirmAuthAndRegUseCase,
     private val isUserExistUseCase: IsUserExistUseCase,
     private val registrationByEmailUseCase: RegistrationByEmailUseCase,
     private val authByEmailUseCase: AuthByEmailUseCase,
     private val browserUtils: BrowserUtils,
-    private val encryptedDataStore: EncryptedDataStore
+    private val encryptedDataStore: EncryptedDataStore,
+    private val getProfileUseCase: GetProfileUseCase
     ) {
 
     val langState = getCurrentLanguageUseCase.langState
-    @Suppress("SuspiciousIndentation")
+
+    fun getCurrentLang() = getCurrentLanguageUseCase.getLang()
+
     suspend fun getStateOrSideEffect(
-        setOtpError:(String)-> Unit,
+        setOtpError: (String) -> Unit,
         lang: CurrentLanguageDomain,
         userEmail: String? = null,
-        userOtp: String? = null): Any{
+        userOtp: String? = null
+    ): Any {
         val isNetworkAvailable = networkStateUseCase.isNetworkAvailable()
-        if(!isNetworkAvailable){
+        if (!isNetworkAvailable) {
             setOtpError("")
             return AuthorizationScreenViewState.ErrorState(lang = lang, errorsMsgHandler(null))
-        }
-        else{
-            if(!userEmail.isNullOrEmpty()){
-                if(userOtp.isNullOrEmpty()){
+        } else {
+            if (!userEmail.isNullOrEmpty()) {
+                if (userOtp.isNullOrEmpty()) {
                     val isUserExistResult = isUserExistUseCase.isUserExist(userEmail)
-                    if(isUserExistResult.errorMsg.isEmpty()){
-                        if(isUserExistResult.success){
+                    if (isUserExistResult.errorMsg.isEmpty()) {
+                        if (isUserExistResult.success) {
                             setOtpError("")
-                            return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(isUserExistResult.errorMsg))
-                        }
-                        else{
+                            return AuthorizationScreenViewState.OtpState(
+                                lang = lang,
+                                error = errorsMsgHandler(isUserExistResult.errorMsg)
+                            )
+                        } else {
                             val registrationResult = registrationByEmailUseCase.registration(email = userEmail)
-                            return if(registrationResult.errorMsg.isEmpty()){
-                                if(registrationResult.success){
+                            return if (registrationResult.errorMsg.isEmpty()) {
+                                if (registrationResult.success) {
                                     setOtpError("")
-                                    AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(registrationResult.errorMsg))
-                                } else{
+                                    AuthorizationScreenViewState.OtpState(
+                                        lang = lang,
+                                        error = errorsMsgHandler(registrationResult.errorMsg)
+                                    )
+                                } else {
                                     setOtpError("")
-                                    AuthorizationScreenViewState.ErrorState(lang = lang, errorsMsgHandler(errorMsg = hardCreateUnknownError()))
+                                    AuthorizationScreenViewState.ErrorState(
+                                        lang = lang,
+                                        errorsMsgHandler(errorMsg = hardCreateUnknownError())
+                                    )
                                 }
-                            } else{
-                                AuthorizationScreenViewState.AuthorizationRegistrationState(lang = lang, error = errorsMsgHandler(registrationResult.errorMsg))
+                            } else {
+                                AuthorizationScreenViewState.AuthorizationRegistrationState(
+                                    lang = lang,
+                                    error = errorsMsgHandler(registrationResult.errorMsg)
+                                )
                             }
                         }
-                    }
-                    else{
-                        val error = errorsMsgHandler(isUserExistResult.errorMsg)
-                        when(error){
+                    } else {
+                        when (val error = errorsMsgHandler(isUserExistResult.errorMsg)) {
                             AuthorizationErrors.CODE_IS_ALREADY_SENT -> {
                                 setOtpError(getAuthorizationErrorOtpAlreadySent(lang = lang))
                                 return AuthorizationScreenViewState.OtpState(lang = lang, error = error)
                             }
+
                             AuthorizationErrors.USER_IS_UNCONFIRMED -> {
                                 setOtpError("")
                                 return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(""))
                             }
+
                             AuthorizationErrors.USER_IS_NOT_FOUND -> {
                                 registrationByEmailUseCase.registration(email = userEmail)
                                 setOtpError("")
                                 return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(""))
                             }
+
                             else -> {
                                 setOtpError("")
                                 AuthorizationScreenViewState.ErrorState(lang = lang, error)
                             }
                         }
                     }
-                }
-                else{
+                } else {
                     val authOrRegResult = confirmAuthAndRegUseCase.confirm(email = userEmail, code = userOtp)
-                    return if(authOrRegResult.errorMsg.isNotEmpty()){
+                    return if (authOrRegResult.errorMsg.isNotEmpty()) {
                         val error = errorsMsgHandler(authOrRegResult.errorMsg)
-                        if(error == AuthorizationErrors.USER_IS_ALREADY_CONFIRMED){
+                        if (error == AuthorizationErrors.USER_IS_ALREADY_CONFIRMED) {
                             val authorizationByEmailResult = authByEmailUseCase.auth(email = userEmail, code = userOtp)
                             setOtpError("")
-                            if(authorizationByEmailResult.errorMsg.isNotEmpty()){
+                            if (authorizationByEmailResult.errorMsg.isNotEmpty()) {
                                 val errorAuthorization = errorsMsgHandler(authorizationByEmailResult.errorMsg)
-                                if(errorAuthorization == AuthorizationErrors.CODE_IS_INCORRECT){
+                                if (errorAuthorization == AuthorizationErrors.CODE_IS_INCORRECT) {
                                     setOtpError(getAuthorizationErrorOtpCodeIsEmptyOrIncorrect(lang = lang))
                                     return AuthorizationScreenViewState.OtpState(lang = lang, error = error)
                                 }
-                                if(errorAuthorization == AuthorizationErrors.USER_IS_UNCONFIRMED){
+                                if (errorAuthorization == AuthorizationErrors.USER_IS_UNCONFIRMED) {
                                     val confirmResult = confirmAuthAndRegUseCase.confirm(email = userEmail, code = userOtp)
-                                    if(confirmResult.errorMsg.isNotEmpty()){
+                                    if (confirmResult.errorMsg.isNotEmpty()) {
                                         setOtpError(getAuthorizationErrorOtpCodeIsExpiredOrIncorrect(lang = lang))
-                                        return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(authOrRegResult.errorMsg))
-                                    }
-                                    else{
+                                        return AuthorizationScreenViewState.OtpState(
+                                            lang = lang,
+                                            error = errorsMsgHandler(authOrRegResult.errorMsg)
+                                        )
+                                    } else {
                                         setOtpError("")
+                                        getProfileUseCase.getProfile(fromLocal = !networkStateUseCase.isNetworkAvailable())
                                         return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                                     }
                                 }
-                                if(errorAuthorization == AuthorizationErrors.CODE_IS_EXPIRED){
+                                if (errorAuthorization == AuthorizationErrors.CODE_IS_EXPIRED) {
                                     val isCurrentExist = isUserExistUseCase.isUserExist(email = userEmail)
-                                    if(isCurrentExist.errorMsg.isNotEmpty()){
+                                    if (isCurrentExist.errorMsg.isNotEmpty()) {
                                         val error = errorsMsgHandler(authorizationByEmailResult.errorMsg)
-                                            setOtpError(getAuthorizationErrorOtpCodeIsExpiredOrIncorrect(lang = lang))
-                                            return AuthorizationScreenViewState.OtpState(lang = lang, error = error)
-                                    }
-                                    else{
+                                        setOtpError(getAuthorizationErrorOtpCodeIsExpiredOrIncorrect(lang = lang))
+                                        return AuthorizationScreenViewState.OtpState(lang = lang, error = error)
+                                    } else {
                                         setOtpError("")
+                                        getProfileUseCase.getProfile(fromLocal = !networkStateUseCase.isNetworkAvailable())
                                         return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                                     }
                                 }
-                            }
-                            else{
+                            } else {
+                                getProfileUseCase.getProfile(fromLocal = !networkStateUseCase.isNetworkAvailable())
                                 return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                             }
                         }
-                        if(error == AuthorizationErrors.CODE_IS_INCORRECT){
+                        if (error == AuthorizationErrors.CODE_IS_INCORRECT) {
                             setOtpError(getAuthorizationErrorOtpCodeIsEmptyOrIncorrect(lang = lang))
                             return AuthorizationScreenViewState.OtpState(lang = lang, error = error)
                         }
                         setOtpError(authOrRegResult.errorMsg)
-                        return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(authOrRegResult.errorMsg))
-                    } else{
-                        if(!authOrRegResult.success){
+                        AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(authOrRegResult.errorMsg))
+                    } else {
+                        if (!authOrRegResult.success) {
                             setOtpError("")
-                            AuthorizationScreenViewState.ErrorState(lang = lang, error = errorsMsgHandler(hardCreateUnknownError()))
-                        } else{
+                            AuthorizationScreenViewState.ErrorState(
+                                lang = lang,
+                                error = errorsMsgHandler(hardCreateUnknownError())
+                            )
+                        } else {
                             setOtpError("")
+                            getProfileUseCase.getProfile(fromLocal = !networkStateUseCase.isNetworkAvailable())
                             return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
                         }
                     }
                 }
             }
-        }
-
-        if(!userEmail.isNullOrEmpty() && !userOtp.isNullOrEmpty()){
-            val currentAuthorizationResult = authByEmailUseCase.auth(email = userEmail, code = userOtp)
-            if(currentAuthorizationResult.errorMsg.isNotEmpty()){
-                setOtpError(getAuthorizationErrorOtpCodeIsExpiredOrIncorrect(lang = lang))
-                return AuthorizationScreenViewState.OtpState(lang = lang, error = errorsMsgHandler(currentAuthorizationResult.errorMsg))
+            if (!userEmail.isNullOrEmpty() && !userOtp.isNullOrEmpty()) {
+                val currentAuthorizationResult = authByEmailUseCase.auth(email = userEmail, code = userOtp)
+                if (currentAuthorizationResult.errorMsg.isNotEmpty()) {
+                    setOtpError(getAuthorizationErrorOtpCodeIsExpiredOrIncorrect(lang = lang))
+                    return AuthorizationScreenViewState.OtpState(
+                        lang = lang,
+                        error = errorsMsgHandler(currentAuthorizationResult.errorMsg)
+                    )
+                } else {
+                    getProfileUseCase.getProfile(fromLocal = !networkStateUseCase.isNetworkAvailable())
+                    return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
+                }
+            } else {
+                setOtpError("")
+                return AuthorizationScreenViewState.AuthorizationRegistrationState(lang = lang, error = errorsMsgHandler(""))
             }
-            else{
-                return AuthorizationScreenSideEffects.NAVIGATE_TO_AUTHORIZED_ZONE
-            }
-        }
-        else{
-            setOtpError("")
-            return AuthorizationScreenViewState.AuthorizationRegistrationState(lang = lang, error = errorsMsgHandler(""))
         }
     }
 
@@ -210,4 +233,5 @@ class AuthorizationScreenInteractor(
     suspend fun clearUserData(){
         encryptedDataStore.clearUserData()
     }
+
 }

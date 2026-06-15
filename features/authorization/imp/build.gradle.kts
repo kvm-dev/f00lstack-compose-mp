@@ -100,6 +100,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 //features
                 implementation(projects.features.language.api)
+                implementation(projects.features.profile.api)
                 //network
                 implementation(projects.features.networkconnection.api)
             }

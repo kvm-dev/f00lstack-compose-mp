@@ -5,6 +5,6 @@ sealed class NewsListScreenIntents {
 
     data object OpenChatIntent : NewsListScreenIntents()
     data object NavigateToNewsDetailsIntent: NewsListScreenIntents()
-
+    data object CloseApplication : NewsListScreenIntents()
     data object RefreshIntent: NewsListScreenIntents()
 }

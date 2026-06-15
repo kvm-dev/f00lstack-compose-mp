@@ -25,7 +25,7 @@ import ru.kvmsoft.features.authorization.imp.presentation.viewmodel.Authorizatio
 val authorizationModule = module {
     single<AuthorizationApi> { AuthorizationApi(client = get()) }
     single<NetworkDataSource> { NetworkDataSource(api = get()) }
-    single<LocalDataSource> { LocalDataSource(encryptedDataStore = get(), dataBaseSDK = get()) }
+    single<LocalDataSource> { LocalDataSource(encryptedDataStore = get(), dataBaseSDK = get(), client = get()) }
     single<AuthByEmailUseCase> { AuthByEmailUseCaseImp(repository = get()) }
     single<ConfirmAuthAndRegUseCase> { ConfirmAuthAndRegUseCaseImp(repository = get()) }
     single<IsUserExistUseCase> { IsUserExistUseCaseImp(repository = get()) }
@@ -41,6 +41,7 @@ val authorizationModule = module {
         browserUtils = get(),
         authByEmailUseCase = get(),
         getCurrentLanguageUseCase = get(),
-        encryptedDataStore = get()) }
+        encryptedDataStore = get(),
+        getProfileUseCase = get()) }
     viewModelOf(::AuthorizationScreenViewModel)
 }
