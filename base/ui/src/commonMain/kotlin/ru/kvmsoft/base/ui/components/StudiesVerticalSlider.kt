@@ -57,13 +57,16 @@ import kotlinx.coroutines.launch
 import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.icons.LogoIcon
 import ru.kvmsoft.base.ui.model.Chip
-import ru.kvmsoft.base.ui.model.EventsItemState
+import ru.kvmsoft.base.ui.model.StudiesItemState
+import ru.kvmsoft.base.ui.model.StudyItem
 import ru.kvmsoft.base.ui.model.UiState
-import ru.kvmsoft.base.ui.res.strings.getCurrencySymbol
-import ru.kvmsoft.base.ui.res.strings.getEventsListScreenTitle
-import ru.kvmsoft.base.ui.res.strings.getFreePay
-import ru.kvmsoft.base.ui.res.strings.getNotFoundEventsText
+import ru.kvmsoft.base.ui.res.strings.getNotFoundStudiesText
 import ru.kvmsoft.base.ui.res.strings.getOkButton
+import ru.kvmsoft.base.ui.res.strings.getStudiesAdvText
+import ru.kvmsoft.base.ui.res.strings.getStudiesListScreenTitle
+import ru.kvmsoft.base.ui.res.strings.getStudyCostMonth
+import ru.kvmsoft.base.ui.res.strings.getStudyPeriodText
+import ru.kvmsoft.base.ui.res.strings.getStudySalePercentText
 import ru.kvmsoft.base.ui.theme.HeaderMainColorWithTransparent
 import ru.kvmsoft.base.ui.theme.ShimmerColor1
 import ru.kvmsoft.base.ui.utils.ShowNotFoundImageHorizontal
@@ -72,15 +75,13 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventsVerticalSlider(
+fun StudiesVerticalSlider(
     modifier: Modifier,
-    isAsActive: Boolean,
     lang: CurrentLanguageDomain,
-    eventsState: UiState<EventsItemState>,
+    studiesState: UiState<StudiesItemState>,
     chips: List<Chip>,
     selectedChips: List<String>,
-    onClickEvent: () -> Unit,
-    selectId: MutableState<Int>,
+    onClickStudy: (String) -> Unit,
     selectedChip: MutableState<String>,
     onclickChip: () -> Unit,
     isRefreshing: Boolean,
@@ -90,12 +91,12 @@ fun EventsVerticalSlider(
 ) {
     var clickEnabled by remember { mutableStateOf(true) }
     val state = rememberPullToRefreshState()
-    when(eventsState){
+    when(studiesState){
         UiState.Empty -> {
             val backdrop = rememberLayerBackdrop()
             val composition by rememberLottieComposition {
                 LottieCompositionSpec.JsonString(
-                    Res.readBytes("files/calendar-animation.json").decodeToString()
+                    Res.readBytes("files/study-animation.json").decodeToString()
                 )
             }
             Box(
@@ -130,7 +131,7 @@ fun EventsVerticalSlider(
                             contentDescription = ""
                         )
 
-                        ErrorTitleText(text = getNotFoundEventsText(lang), modifier = Modifier.padding(top = 12.dp))
+                        ErrorTitleText(text = getNotFoundStudiesText(lang), modifier = Modifier.padding(top = 12.dp))
 
                         MainYellowButton(
                             text = getOkButton(),
@@ -140,7 +141,6 @@ fun EventsVerticalSlider(
                             modifier = Modifier
                                 .width(200.dp)
                                 .padding(top = 48.dp))
-
                     }
                 }
             }
@@ -152,24 +152,24 @@ fun EventsVerticalSlider(
                     bottom = 10.dp
                 ),
                 modifier = modifier
-                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                .pullToRefresh(
-                    state = if(isConnectionAvailable) { state } else {
-                        PullToRefreshState()
-                    },
-                    isRefreshing = isRefreshing,
-                    onRefresh = { if(isConnectionAvailable){
-                        onRefresh()
-                    }
-                    }
-                )
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                    .pullToRefresh(
+                        state = if(isConnectionAvailable) { state } else {
+                            PullToRefreshState()
+                        },
+                        isRefreshing = isRefreshing,
+                        onRefresh = { if(isConnectionAvailable){
+                            onRefresh()
+                        }
+                        }
+                    )
             ) {
                 stickyHeader {
                     Column(modifier = Modifier
                         .background(HeaderMainColorWithTransparent)) {
                         ScreenHeader(
                             modifier = Modifier,
-                            text = getEventsListScreenTitle(lang = lang),
+                            text = getStudiesListScreenTitle(lang = lang),
                             onBackClicked = onClickBack
                         )
                         LazyRow(Modifier.padding(top = 24.dp, bottom = 10.dp)) {
@@ -219,37 +219,19 @@ fun EventsVerticalSlider(
                             )
                             ShimmerEffect(
                                 modifier = Modifier
-                                    .size(80.dp, 24.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(30)),
+                                    .size(120.dp, 16.dp)
+                                    .background(ShimmerColor1, RoundedCornerShape(10)),
                                 durationMillis = 1000,
-                                cornerRadius = 30
+                                cornerRadius = 10
                             )
                         }
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp)
-                        ) {
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(200.dp, 22.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(22.dp)
-                            )
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(30.dp, 18.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                        }
+                        ShimmerEffect(
+                            modifier = Modifier
+                                .size(200.dp, 28.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
+                            durationMillis = 1000,
+                            cornerRadius = 16
+                        )
                     }
                 }
             }
@@ -257,19 +239,19 @@ fun EventsVerticalSlider(
 
         is UiState.Success -> {
             val scope = rememberCoroutineScope()
-            val filteredEvents = remember(eventsState, selectedChips, isAsActive) {
-                val allEvents = eventsState.data?.events ?: emptyList()
+
+            val filteredStudies = remember(studiesState, selectedChips) {
+                val allStudies = studiesState.data?.studies ?: emptyList()
                 val activeChips = selectedChips.filter { it.isNotEmpty() }
 
                 if (activeChips.isEmpty()) {
                     emptyList()
                 } else {
-                    allEvents.filter { event ->
-                        val matchesActivity = !isAsActive || event.eventCost == 0
-                        matchesActivity && event.eventTags.any { tag ->
+                    allStudies.filter { study ->
+                        study.studyTags.any { tag ->
                             activeChips.any { chip -> tag.name.contains(chip, ignoreCase = true) }
                         }
-                    }.sortedBy { it.eventId }
+                    }.sortedBy { it.studyId }
                 }
             }
 
@@ -313,7 +295,7 @@ fun EventsVerticalSlider(
                         ) {
                             ScreenHeader(
                                 modifier = Modifier,
-                                text = getEventsListScreenTitle(lang = lang),
+                                text = getStudiesListScreenTitle(lang = lang),
                                 onBackClicked = onClickBack
                             )
                             ChipSelector(
@@ -324,30 +306,15 @@ fun EventsVerticalSlider(
                             )
                         }
                     }
-                    itemsIndexed(filteredEvents) { index, event ->
-                        val cost = remember(event.eventCost, lang) {
-                            if (event.eventCost > 0) {
-                                if(lang == CurrentLanguageDomain.RU){
-                                    "${event.eventCost} ${getCurrencySymbol(lang)}"
-                                }
-                                else{
-                                    "${getCurrencySymbol(lang)}${event.eventCost}"
-                                }
-                            } else {
-                                getFreePay(lang)
-                            }
-                        }
-
-                        val subTags = remember(event.eventTags) {
-                            event.eventTags.joinToString(separator = "/") { it.name }
-                        }
-
+                    item {
+                        AdvTextBlock(getStudiesAdvText(lang), modifier = Modifier)
+                    }
+                    itemsIndexed(filteredStudies) { _, study ->
                         Card(
                             modifier = Modifier
                                 .clickable(enabled = clickEnabled) {
                                     clickEnabled = false
-                                    selectId.value = event.eventId
-                                    onClickEvent()
+                                    onClickStudy(study.studyRefLink)
                                     scope.launch {
                                         delay(500)
                                         clickEnabled = true
@@ -359,20 +326,37 @@ fun EventsVerticalSlider(
                             ),
                         ) {
                             Column {
-                                if (event.eventImageBase64.isNotEmpty()) {
-                                    val bitmap = remember(event.eventImageBase64) {
-                                        event.eventImageBase64.decodeBase64ToBitmap()
+                                if (study.studyImageBase64.isNotEmpty()) {
+                                    val bitmap = remember(study.studyImageBase64) {
+                                        study.studyImageBase64.decodeBase64ToBitmap()
                                     }
                                     if (bitmap != null) {
-                                        Image(
-                                            contentScale = ContentScale.Crop,
+                                        Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(180.dp)
-                                                .clip(RoundedCornerShape(10.dp)),
-                                            bitmap = bitmap,
-                                            contentDescription = event.eventName
-                                        )
+                                                .clip(RoundedCornerShape(10.dp))
+                                        ) {
+                                            Image(
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(180.dp)
+                                                    .clip(RoundedCornerShape(10.dp)),
+                                                bitmap = bitmap,
+                                                contentDescription = study.studyName
+                                            )
+                                            TopStartImageServiceTag(
+                                                text = getStudySalePercentText(lang = lang, percent = study.studySalePercent),
+                                                modifier = Modifier
+                                            )
+                                            if (study.studyAdditionalText.isNotEmpty()) {
+                                                BottomStartImageServiceTag(
+                                                    text = study.studyAdditionalText,
+                                                    modifier = Modifier.align(Alignment.BottomStart)
+                                                )
+                                            }
+                                        }
                                     } else {
                                         ShowNotFoundImageHorizontal()
                                     }
@@ -386,19 +370,18 @@ fun EventsVerticalSlider(
                                         .align(Alignment.End)
                                 ) {
                                     Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                        ServiceTag(subTags, modifier = Modifier)
-                                        ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
-                                    }
-                                    Column {
-                                        ServiceSubLabel(
-                                            isYellow = false,
-                                            text = event.eventStartDate,
-                                            modifier = Modifier.align(Alignment.End)
-                                        )
-                                        ServiceText(
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            text = cost
-                                        )
+                                        Row {
+                                            ServiceTag(
+                                                text = getStudyPeriodText(lang = lang, period = study.studyLength, periodType = study.studyLengthType),
+                                                modifier = Modifier
+                                            )
+                                            Spacer(modifier = Modifier.weight(1f))
+                                            ServiceTag(
+                                                text = getStudyCostMonth(lang = lang, fullPay = study.studyCost, period = study.studyLength, periodType = study.studyLengthType),
+                                                modifier = Modifier
+                                            )
+                                        }
+                                        ServiceTitle(modifier = Modifier, text = study.studyName, textAlign = TextAlign.Start)
                                     }
                                 }
                             }

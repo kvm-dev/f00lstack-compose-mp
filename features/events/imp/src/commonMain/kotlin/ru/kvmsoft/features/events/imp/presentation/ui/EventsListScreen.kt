@@ -60,6 +60,16 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
             EventsListScreenSideEffects.REFRESH_SCREEN -> {
                 onRefresh()
             }
+
+            EventsListScreenSideEffects.ON_CLICK_BACK -> {
+                onClickBack()
+            }
+            EventsListScreenSideEffects.CLOSE_APP -> {
+                closeApp()
+            }
+            EventsListScreenSideEffects.OPEN_CHAT -> {
+                viewModel.openChat()
+            }
         }
     }
 
@@ -69,7 +79,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
             EventsVerticalSlider(
                 modifier = Modifier.fillMaxSize(),
                 isAsActive = false,
-                lang = viewModel.currentLangState.value,
+                lang = viewModel.getLang(),
                 eventsState = UiState.Loading,
                 chips = listOf(),
                 selectedChips = listOf(),
@@ -80,7 +90,9 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                         )
                     )
                 },
-                onClickBack = onClickBack,
+                onClickBack = {
+                    viewModel.intentHandler(EventsListScreenIntents.OnClickBack)
+                },
                 onClickEvent = {
                     viewModel.intentHandler(EventsListScreenIntents.NavigateToEventDetailsIntent)
                 },
@@ -108,7 +120,7 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 ),
                 selectedChips = successState.selectedFilters,
                 onclickChip = { viewModel.intentHandler(EventsListScreenIntents.UpdateFiltersIntent(selectedFilter.value)) },
-                onClickBack = onClickBack,
+                onClickBack = { viewModel.intentHandler(EventsListScreenIntents.OnClickBack) },
                 onClickEvent = {
                     viewModel.intentHandler(EventsListScreenIntents.NavigateToEventDetailsIntent)
                 },
@@ -129,9 +141,9 @@ fun EventsListScreen(viewModel: EventsListScreenViewModel = koinViewModel(), nav
                 description = getUnknownErrorDescription(lang = errorState.lang),
                 mainButtonText = getUnknownErrorMainButton(lang = errorState.lang),
                 secondButtonText = getUnknownErrorSecondButton(lang = errorState.lang),
-                actionMain = { closeApp() },
+                actionMain = { viewModel.intentHandler(EventsListScreenIntents.CloseApplication) },
                 actionSecond = { viewModel.intentHandler(EventsListScreenIntents.OpenChatIntent) },
-                onDismiss = { closeApp() })
+                onDismiss =  { viewModel.intentHandler(EventsListScreenIntents.CloseApplication) })
         }
     }
 }

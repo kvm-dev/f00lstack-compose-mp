@@ -72,12 +72,12 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 //network
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.encoding)
-                implementation(libs.ktor.client.auth)
+                api(libs.ktor.client.core)
+                api(libs.ktor.client.logging)
+                api(libs.ktor.serialization.kotlinx.json)
+                api(libs.ktor.client.content.negotiation)
+                api(libs.ktor.client.encoding)
+                api(libs.ktor.client.auth)
                 //coroutines
                 implementation(libs.kotlinx.coroutines.core)
                 //storage

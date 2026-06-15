@@ -1,5 +1,8 @@
 package ru.kvmsoft.features.events.imp.presentation.ui
 
-enum class EventsInnerScreenSideEffects {
-    ON_BACK_PRESSED
+sealed class EventsInnerScreenSideEffects {
+    data object OnBackPressed: EventsInnerScreenSideEffects()
+    data object OpenChat: EventsInnerScreenSideEffects()
+    data object CloseApp: EventsInnerScreenSideEffects()
+    data class JoinToEvent(val url: String): EventsInnerScreenSideEffects()
 }

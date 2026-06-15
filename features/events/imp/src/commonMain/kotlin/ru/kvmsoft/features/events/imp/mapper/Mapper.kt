@@ -96,16 +96,6 @@ object Mapper {
         )
     }
 
-//    fun mapToChips(eventList: List<EventDomain>): List<Chip>{
-//        val list = HashSet<Chip>()
-//        eventList.forEach { event->
-//            event.eventSubs.forEach {sub->
-//                list.add(mapToEventChip(sub))
-//            }
-//        }
-//        return list.toList()
-//    }
-
     fun mapToChips(eventsState: UiState<EventsItemState>, isAsMode: Boolean): List<Chip>{
         val list = HashSet<Chip>()
         if (eventsState is UiState.Success){

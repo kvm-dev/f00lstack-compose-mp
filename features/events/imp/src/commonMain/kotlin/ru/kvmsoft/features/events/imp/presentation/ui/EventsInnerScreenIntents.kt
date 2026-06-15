@@ -4,5 +4,6 @@ sealed class EventsInnerScreenIntents {
     data class InitViewModelIntent(val eventId: Int) : EventsInnerScreenIntents()
     data object BackPressedIntent : EventsInnerScreenIntents()
     data object OpenChatIntent : EventsInnerScreenIntents()
+    data object CloseApplication : EventsInnerScreenIntents()
     data class JoinToEventIntent(val url: String) : EventsInnerScreenIntents()
 }

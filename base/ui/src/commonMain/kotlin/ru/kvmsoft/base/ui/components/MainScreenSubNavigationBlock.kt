@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ru.kvmsoft.base.ui.icons.BooksIcon
 import ru.kvmsoft.base.ui.icons.EventsIcon
+import ru.kvmsoft.base.ui.icons.StudyIcon
 import ru.kvmsoft.base.ui.res.strings.getSubMenuBooks
 import ru.kvmsoft.base.ui.res.strings.getSubMenuEvents
 import ru.kvmsoft.base.ui.res.strings.getSubMenuStudy
@@ -81,7 +82,7 @@ fun MainScreenSubNavigationBlock(
             .align(Alignment.CenterVertically)
             .padding(horizontal = 18.dp, vertical = 16.dp)){
             Icon(
-                imageVector = BooksIcon,
+                imageVector = StudyIcon,
                 tint = Color.Unspecified,
                 contentDescription = null,
                 modifier = Modifier

@@ -6,6 +6,6 @@ data class BookItem(
     val bookPrice: Int,
     val bookSalePrice: Int,
     val bookImageBase64: String,
-    val bookTags: List<String>,
+    val bookTags: List<Chip>,
     val bookRefLink: String
 )

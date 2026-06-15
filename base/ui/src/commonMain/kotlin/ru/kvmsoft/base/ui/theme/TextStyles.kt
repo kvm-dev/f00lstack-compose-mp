@@ -102,4 +102,23 @@ object TextStyles {
         color = SimplyWhite,
         textAlign = TextAlign.Start
     )
+
+    @Composable
+    fun advTextStyle() = TextStyle(
+        fontFamily = getFoolStackFontFamily(),
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        color = SimplyWhite,
+        fontStyle = Italic,
+        textAlign = TextAlign.Center
+    )
+
+    @Composable
+    fun placeholderStyle() = TextStyle(
+        fontFamily = getFoolStackFontFamily(),
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        color = InputBorder,
+        textAlign = TextAlign.Center
+    )
 }

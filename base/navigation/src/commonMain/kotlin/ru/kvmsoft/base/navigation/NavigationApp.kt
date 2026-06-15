@@ -16,6 +16,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +30,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import org.koin.compose.koinInject
 import ru.kvmsoft.base.ui.background.baseBackground
 import ru.kvmsoft.base.ui.icons.interviewIcon
 import ru.kvmsoft.base.ui.icons.mainIcon
@@ -45,170 +49,123 @@ import ru.kvmsoft.base.ui.theme.Turquoise
 import ru.kvmsoft.base.ui.theme.UnselectedNavigationColor
 import ru.kvmsoft.base.ui.utils.NoRippleConfiguration
 import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
-import ru.kvmsoft.base.utils.navigationScreens.getDestinationsList
 import ru.kvmsoft.base.utils.navigationScreens.getLabel
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreen
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreen
 import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewListScreen
+import ru.kvmsoft.features.interview.imp.presentation.viewmodel.InterviewListScreenViewModel
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreen
+import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 import ru.kvmsoft.features.news.imp.presentation.ui.NewsInnerScreen
 import ru.kvmsoft.features.news.imp.presentation.ui.NewsListScreen
+import ru.kvmsoft.features.news.imp.presentation.viewmodel.NewsListScreenViewModel
 import ru.kvmsoft.features.profile.imp.presentation.ui.ProfileScreen
 import ru.kvmsoft.features.splash.imp.presentation.ui.SplashScreen
+import ru.kvmsoft.features.study.imp.presentation.ui.StudyListScreen
 import ru.kvmsoft.features.tests.imp.presentation.ui.TestsListScreen
+import ru.kvmsoft.features.tests.imp.presentation.viewmodel.TestsListScreenViewModel
 
-@Suppress("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationApp(langIsRus: Boolean) {
-    var isShowNavBar by remember { mutableStateOf(false) }
-    val navController = rememberNavController() // Инициализация контроллера навигации
-    val allNavigationItems = getDestinationsList()
-    val navigationBarItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = Color.Transparent, // Color of the selected item's indicator
-        selectedIconColor = SelectedNavigationColor, // Color of the icon when selected
-        unselectedIconColor = UnselectedNavigationColor, // Color of the icon when unselected
-        selectedTextColor = SelectedNavigationColor, // Color of the text when selected
-        unselectedTextColor = UnselectedNavigationColor // Color of the text when unselected
-    )
-    var withSplashBackground by remember { mutableStateOf( true) }
-    val background = rememberVectorPainter(image = baseBackground)
-    var modifier = Modifier
-        .fillMaxSize()
-        .background(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    MainOrangeLight,
-                    Turquoise
-                )
-            )
+    val navController = rememberNavController()
+    val bottomBarItems = remember {
+        listOf(
+            AppDestinations.Main,
+            AppDestinations.InterviewList,
+            AppDestinations.TestsList,
+            AppDestinations.NewsList
         )
-    if(!withSplashBackground){
-        modifier = Modifier
+    }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val isShowNavBar by remember(currentDestination) {
+        derivedStateOf {
+            currentDestination?.let { destination ->
+                destination.hasRoute<AppDestinations.Main>() ||
+                        destination.hasRoute<AppDestinations.InterviewList>() ||
+                        destination.hasRoute<AppDestinations.TestsList>() ||
+                        destination.hasRoute<AppDestinations.NewsList>()
+            } ?: false
+        }
+    }
+
+    var withSplashBackground by remember { mutableStateOf(true) }
+    LaunchedEffect(currentDestination) {
+        currentDestination?.let { dest ->
+            if (dest.hasRoute<AppDestinations.Main>() || dest.hasRoute<AppDestinations.Authorization>()) {
+                withSplashBackground = false
+            }
+        }
+    }
+
+    val navigationBarItemColors = NavigationBarItemDefaults.colors(
+        indicatorColor = Color.Transparent,
+        selectedIconColor = SelectedNavigationColor,
+        unselectedIconColor = UnselectedNavigationColor,
+        selectedTextColor = SelectedNavigationColor,
+        unselectedTextColor = UnselectedNavigationColor
+    )
+
+    val background = rememberVectorPainter(image = baseBackground)
+    val modifier = if (withSplashBackground) {
+        Modifier
             .fillMaxSize()
-            .paint(painter = background,
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                sizeToIntrinsics = true)
+            .background(brush = Brush.verticalGradient(colors = listOf(MainOrangeLight, Turquoise)))
+    } else {
+        Modifier
+            .fillMaxSize()
+            .paint(painter = background, contentScale = ContentScale.Crop, alignment = Alignment.Center, sizeToIntrinsics = true)
     }
 
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
-            if(isShowNavBar){
-               HorizontalDivider(Modifier.padding(horizontal = 20.dp), 1.dp, UnselectedNavigationColor)
+            if (isShowNavBar) {
+                HorizontalDivider(Modifier.padding(horizontal = 20.dp), 1.dp, UnselectedNavigationColor)
                 BottomAppBar(
                     containerColor = Color.Transparent,
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                ){
-                    // Нижняя панель приложения
-                    NavigationBar(
-                        containerColor = Color.Transparent
-                    )  { // Компонент для нижней навигации
-                        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.id // Текущий маршрут
-                        allNavigationItems.forEach { item ->
+                    modifier = Modifier.padding(top = 10.dp)
+                ) {
+                    NavigationBar(containerColor = Color.Transparent) {
+                        bottomBarItems.forEach { item ->
                             CompositionLocalProvider(LocalRippleConfiguration provides NoRippleConfiguration) {
-                                when(item){
-                                    is AppDestinations.Main -> {
-                                        NavigationBarItem(
-                                        colors = navigationBarItemColors,
-                                        icon = {
-                                            Icon(
-                                                imageVector = mainIcon, // Reference your ImageVector from the .kt file
-                                                contentDescription = null,
-                                                modifier = Modifier.size(32.dp),
-                                            )
-                                        },
-                                        label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
-                                        selected = currentRoute == item.hashCode(),
-                                        onClick = {
+                                val icon = when (item) {
+                                    is AppDestinations.Main -> mainIcon
+                                    is AppDestinations.InterviewList -> interviewIcon
+                                    is AppDestinations.TestsList -> testsIcon
+                                    is AppDestinations.NewsList -> newsIcon
+                                    else -> mainIcon
+                                }
+                                val isSelected = currentDestination?.hasRoute(item::class) ?: false
+                                NavigationBarItem(
+                                    colors = navigationBarItemColors,
+                                    icon = {
+                                        Icon(
+                                            imageVector = icon,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(32.dp),
+                                        )
+                                    },
+                                    label = { Text(getLabel(destinations = item, isLangRus = langIsRus) ?: "") },
+                                    selected = isSelected,
+                                    onClick = {
+                                        if (!isSelected) {
                                             navController.navigate(item) {
-                                                // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
+                                                // Сохраняем состояние экрана, с которого уходим
                                                 popUpTo(navController.graph.findStartDestination().id) {
                                                     saveState = true
                                                 }
+                                                // Избегаем создания копий экрана на вершине стека
                                                 launchSingleTop = true
+                                                // Восстанавливаем состояние (скролл, стейт) при возвращении
                                                 restoreState = true
                                             }
                                         }
-                                    )
                                     }
-                                    is AppDestinations.InterviewList -> {
-                                        NavigationBarItem(
-                                            colors = navigationBarItemColors,
-                                            icon = {
-                                                Icon(
-                                                    imageVector = interviewIcon, // Reference your ImageVector from the .kt file
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(32.dp),
-                                                )
-                                            },
-                                            label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
-                                            selected = currentRoute == item.hashCode(),
-                                            onClick = {
-                                                navController.navigate(item) {
-                                                    // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
-                                            }
-                                        )
-                                    }
-                                    is AppDestinations.TestsList -> {
-                                        NavigationBarItem(
-                                            colors = navigationBarItemColors,
-                                            icon = {
-                                                Icon(
-                                                    imageVector = testsIcon, // Reference your ImageVector from the .kt file
-                                                    contentDescription = getLabel(destinations = item, isLangRus = langIsRus),
-                                                    modifier = Modifier.size(32.dp),
-                                                )
-                                            },
-                                            label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
-                                            selected = currentRoute == item.hashCode(),
-                                            onClick = {
-                                                navController.navigate(item) {
-                                                    // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
-                                            }
-                                        )
-                                    }
-                                    is AppDestinations.NewsList -> {
-                                        NavigationBarItem(
-                                            colors = navigationBarItemColors,
-                                            icon = {
-                                                Icon(
-                                                    imageVector = newsIcon, // Reference your ImageVector from the .kt file
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(32.dp),
-                                                )
-                                            },
-                                            label = { Text(getLabel(destinations = item, isLangRus = langIsRus)?:"") },
-                                            selected = currentRoute == item.hashCode(),
-                                            onClick = {
-                                                navController.navigate(item) {
-                                                    // Опции навигации, например, чтобы избежать повторных входов в один и тот же экран
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
-                                            }
-                                        )
-                                    }
-                                    else->{}
-                                }
+                                )
                             }
                         }
                     }
@@ -216,128 +173,113 @@ fun NavigationApp(langIsRus: Boolean) {
             }
         }
     ) { innerPadding ->
-        NavHost(modifier = modifier,
+        NavHost(
+            modifier = modifier,
             navController = navController,
             startDestination = AppDestinations.Splash
-        ){
-            // Определяем маршруты и их Composable-функции
+        ) {
             composable<AppDestinations.Main> {
+                val mainViewModel = koinInject<MainScreenViewModel>()
                 MainScreen(
+                    viewModel = mainViewModel,
                     onNavigationAuthorization = {
-                        navController.navigate(route = AppDestinations.Authorization)
-                        { popUpTo(AppDestinations.Splash){
-                            inclusive = true
-                        }}
-                        isShowNavBar = false
-                                                },
+                        navController.navigate(route = AppDestinations.Authorization) {
+                            popUpTo(AppDestinations.Splash) { inclusive = true }
+                        }
+                    },
                     navController = navController,
                     eventDestination = AppDestinations.EventsInner(),
-                    onclickEvents =  {
-                        isShowNavBar = false
+                    onclickEvents = {
                         navController.navigate(route = AppDestinations.EventsList)
+                    },
+                    onclickStudy = {
+                        navController.navigate(route = AppDestinations.StudyList)
                     }
                 )
-                isShowNavBar = true
-                withSplashBackground = false
             }
             composable<AppDestinations.InterviewList> {
+                val interviewListViewModel = koinInject<InterviewListScreenViewModel>()
                 InterviewListScreen(
+                    viewModel = interviewListViewModel,
                     onNavigationAuthorization = {
-                        navController.navigate(route = AppDestinations.Authorization)
-                        { popUpTo(AppDestinations.Splash){
-                            inclusive = true
-                        }}
-                        isShowNavBar = false
+                        navController.navigate(route = AppDestinations.Authorization) {
+                            popUpTo(AppDestinations.Splash) { inclusive = true }
+                        }
                     }
                 )
-                isShowNavBar = true
             }
             composable<AppDestinations.TestsList> {
+                val testsListViewModel = koinInject<TestsListScreenViewModel>()
                 TestsListScreen(
+                    viewModel = testsListViewModel,
                     onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization)
-                    { popUpTo(AppDestinations.Splash){
-                        inclusive = true
-                    }}
-                    isShowNavBar = false
-                    })
-                isShowNavBar = true
-            }
-            composable<AppDestinations.NewsList> {
-                NewsListScreen(
-                    navController = navController,
-                    newsDestination = AppDestinations.NewsInner(),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding))
-                isShowNavBar = true
-            }
-            composable<AppDestinations.NewsInner>
-            { backStackEntry->
-                val newsId = backStackEntry.toRoute<AppDestinations.NewsInner>().newsId
-                NewsInnerScreen(
-                    newsId = newsId,
-                    onClickBack = {
-                        isShowNavBar = true
-                        navController.popBackStack()
+                        navController.navigate(route = AppDestinations.Authorization) {
+                            popUpTo(AppDestinations.Splash) { inclusive = true }
+                        }
                     }
                 )
-                isShowNavBar = false
+            }
+            composable<AppDestinations.NewsList> {
+                val newsListViewModel = koinInject<NewsListScreenViewModel>()
+                NewsListScreen(
+                    viewModel = newsListViewModel,
+                    navController = navController,
+                    newsDestination = AppDestinations.NewsInner(),
+                    modifier = Modifier.fillMaxSize().padding(innerPadding)
+                )
+            }
+            composable<AppDestinations.NewsInner> {
+                backStackEntry ->
+                val newsId = backStackEntry.toRoute<AppDestinations.NewsInner>().newsId
+                NewsInnerScreen(newsId = newsId,onClickBack = { navController.popBackStack() })
             }
             composable<AppDestinations.Authorization> {
-                AuthorizationScreen(onAuthorized = {
-                    navController.navigate(route = AppDestinations.Main)
-                    { popUpTo(AppDestinations.Authorization){
-                        inclusive = true
-                    }}
-                    isShowNavBar = true
-                })
-                isShowNavBar = false
-                withSplashBackground = false
+                AuthorizationScreen(
+                    onAuthorized = {
+                        navController.navigate(route = AppDestinations.Main) {
+                            popUpTo(AppDestinations.Authorization) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable<AppDestinations.Professions> {
                 ProfileScreen(
                     onNavigationAuthorization = {
-                    navController.navigate(route = AppDestinations.Authorization)
-                    { popUpTo(AppDestinations.Splash){
-                        inclusive = true
-                    }}
-                    isShowNavBar = false
-                    })
-                isShowNavBar = false
+                        navController.navigate(route = AppDestinations.Authorization) {
+                            popUpTo(AppDestinations.Splash) { inclusive = true }
+                        }
+                    }
+                )
             }
+
             composable<AppDestinations.Splash> {
                 SplashScreen(onNavigateToHome = {
-                    navController.navigate(route = AppDestinations.Main)
-                    {popUpTo(AppDestinations.Splash){
-                        inclusive = true
-                    }}
-                    isShowNavBar = true
-                                                },
+                    navController.navigate(route = AppDestinations.Main) {
+                        popUpTo(AppDestinations.Splash) { inclusive = true }
+                    }},
                     onNavigationAuthorization = {
-                        navController.navigate(route = AppDestinations.Authorization)
-                        { popUpTo(AppDestinations.Splash){
-                            inclusive = true
-                        }}
-                        isShowNavBar = false
-                    })
+                        navController.navigate(route = AppDestinations.Authorization) {
+                            popUpTo(AppDestinations.Splash) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable<AppDestinations.EventsList> {
                 EventsListScreen(
                     navController = navController,
                     eventDestination = AppDestinations.EventsInner(),
-                    onClickBack = {
-                        isShowNavBar = true
-                        navController.popBackStack()
-                    })
-                isShowNavBar = false
+                    onClickBack = { navController.popBackStack() }
+                )
             }
-            composable<AppDestinations.EventsInner>
-            { backStackEntry->
+            composable<AppDestinations.EventsInner> {
+                backStackEntry ->
                 val eventId = backStackEntry.toRoute<AppDestinations.EventsInner>().eventId
                 EventsInnerScreen(onClickBack = { navController.popBackStack() },
                     eventId = eventId)
-                isShowNavBar = false
+            }
+            composable<AppDestinations.StudyList> {
+                StudyListScreen(onClickBack = { navController.popBackStack() }
+                )
             }
         }
     }

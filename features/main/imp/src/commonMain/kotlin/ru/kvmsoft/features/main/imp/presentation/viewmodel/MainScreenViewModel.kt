@@ -1,93 +1,96 @@
 package ru.kvmsoft.features.main.imp.presentation.viewmodel
 
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
+import kotlinx.coroutines.flow.first
 import ru.kvmsoft.base.utils.model.ResultState
 import ru.kvmsoft.base.viewmodel.BaseViewModel
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.main.imp.domain.MainScreenInteractor
-import ru.kvmsoft.features.main.imp.model.MainScreenData
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreenIntents
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreenSideEffects
 import ru.kvmsoft.features.main.imp.presentation.ui.MainScreenViewState
+import ru.kvmsoft.features.profile.api.model.ProfileDomain
 
-class MainScreenViewModel(private val interactor: MainScreenInteractor) : BaseViewModel<MainScreenViewState, MainScreenSideEffects>(
-    MainScreenViewState.LoadingState){
+class MainScreenViewModel(private val interactor: MainScreenInteractor) :
+    BaseViewModel<MainScreenViewState, MainScreenSideEffects>(MainScreenViewState.LoadingState) {
 
-    val scope = (viewModelScope + coroutineExceptionHandler)
-
-    private val _isKnowHowToUseSlider = MutableStateFlow(false)
+    init {
+        intentHandler(MainScreenIntents.InitViewModelIntent)
+    }
 
     fun initViewModel() = orbitIntent {
-        val job = scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-                reduce { MainScreenViewState.LoadingState }
-                combine(
-                    interactor.langState,
-                    interactor.profile,
-                    interactor.isKnowHowToUseEventSlider
-                ) { lang, profile, isKnowHowToUseEventsSlider ->
-                    _isKnowHowToUseSlider.update { isKnowHowToUseEventsSlider }
-                    MainScreenData(
-                        lang = lang,
-                        profile = profile,
-                        isKnowHowToUseSlider = isKnowHowToUseEventsSlider
-                    )
-                }.collect {
-                    if (it.lang is ResultState.Success && it.profile is ResultState.Success) {
-                        val lang = it.lang.data
-                        val profile = it.profile.data
-                        val isKnowHowToUseSlider = it.isKnowHowToUseSlider
-                        val currentState = interactor.checkState(
-                            lang = lang ?: CurrentLanguageDomain.EN,
-                            profileDomain = profile,
-                            isKnowHowToUseSlider = isKnowHowToUseSlider
-                        )
-                        reduce { currentState }
-                        this.cancel()
-                    }
-                    if (it.lang is ResultState.Idle || it.profile is ResultState.Idle) {
-                        interactor.getCurrentLang()
-                        if (interactor.isNetworkAvailable()) {
-                            interactor.getProfile()
-                        } else {
-                            interactor.getProfile(true)
-                        }
-                        reduce { MainScreenViewState.LoadingState }
-                    }
-                    if (it.lang is ResultState.Loading || it.profile is ResultState.Loading) {
-                        reduce { MainScreenViewState.LoadingState }
-                    }
-                }
-            }
-            if(!job.isActive) job.join()
-}
+        val profile = getProfile()
+        if (profile != null) {
+            val boolState = interactor.isKnowHowToUseEventSlider.first()
+
+            val newState = interactor.getOrCheckState(
+                lang = getLang(),
+                profileDomain = profile,
+                isKnowHowToUseSlider = boolState
+            )
+            reduce { newState }
+        } else {
+            interactor.clearUserData()
+            postSideEffect(MainScreenSideEffects.NAVIGATE_TO_AUTHORIZATION_ZONE)
+        }
+    }
+
+    suspend fun getProfile(): ProfileDomain? {
+        val profile = interactor.profile.value
+        return if (profile is ResultState.Success) {
+            profile.data
+        } else {
+            interactor.getProfile(fromLocal = !interactor.isNetworkAvailable())
+        }
+    }
+
+    fun getLang(): CurrentLanguageDomain {
+        val langState = interactor.langState.value
+        return if (langState is ResultState.Success) {
+            langState.data ?: CurrentLanguageDomain.EN
+        } else {
+            interactor.getCurrentLang()
+        }
+    }
+
+    fun openChat() = interactor.openChat()
 
     override fun intentHandler(intent: Any) {
-        when(intent){
-            MainScreenIntents.GoToAuthorizationIntent-> orbitIntent {
-                scope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-                    interactor.clearUserData()
-                }
+        when (intent) {
+            MainScreenIntents.GoToAuthorizationIntent -> orbitIntent {
+                interactor.clearUserData()
+                postSideEffect(MainScreenSideEffects.NAVIGATE_TO_AUTHORIZATION_ZONE)
             }
+
             MainScreenIntents.InitViewModelIntent -> initViewModel()
-            MainScreenIntents.UpdateEventsSliderHintStateIntent-> orbitIntent {
-                scope.launch(Dispatchers.IO + coroutineExceptionHandler){
-                    interactor.updateEventsSliderHintState()
-                }
+
+            MainScreenIntents.UpdateEventsSliderHintStateIntent -> orbitIntent {
+                interactor.updateEventsSliderHintState()
             }
+
+            MainScreenIntents.NavigateToEventsList -> orbitIntent {
+                postSideEffect(MainScreenSideEffects.NAVIGATE_TO_EVENTS_LIST_SCREEN)
+            }
+
+            MainScreenIntents.NavigateToStudyList -> orbitIntent {
+                postSideEffect(MainScreenSideEffects.NAVIGATE_TO_STUDY_LIST_SCREEN)
+            }
+
+            MainScreenIntents.CloseApplication -> orbitIntent {
+                postSideEffect(MainScreenSideEffects.CLOSE_APP)
+            }
+
+            MainScreenIntents.OpenChatIntent -> orbitIntent {
+                postSideEffect(MainScreenSideEffects.OPEN_CHAT)
+            }
+
+            MainScreenIntents.RefreshIntent -> orbitIntent {
+                interactor.clearCache()
+                reduce { MainScreenViewState.LoadingState }
+                initViewModel()
+            }
+
             is MainScreenIntents.NavigateToEventDetailsIntent -> orbitIntent {
                 postSideEffect(MainScreenSideEffects.NAVIGATE_TO_EVENT_INNER_SCREEN)
-            }
-             MainScreenIntents.OpenChatIntent -> orbitIntent { interactor.openChat() }
-            MainScreenIntents.RefreshIntent ->  orbitIntent {
-                postSideEffect(MainScreenSideEffects.REFRESH_SCREEN)
             }
         }
     }

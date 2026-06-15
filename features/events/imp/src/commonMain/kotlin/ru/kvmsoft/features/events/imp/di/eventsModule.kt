@@ -24,10 +24,12 @@ val eventsModule = module {
             getEventsUseCase = get(),
             networkStateUseCase = get(),
             getAsModeUseCase = get(),
-            browserUtils = get()) }
+            browserUtils = get(),
+            getCurrentLanguageUseCase = get()) }
     single<EventsInnerScreenInteractor> { EventsInnerScreenInteractor(
         getEventsUseCase = get(),
-        browserUtils = get()
+        browserUtils = get(),
+        getCurrentLanguageUseCase = get()
     ) }
     viewModelOf(::EventsListScreenViewModel)
     viewModelOf(::EventsInnerScreenViewModel)

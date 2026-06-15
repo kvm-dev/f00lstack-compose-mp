@@ -10,9 +10,8 @@ import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewListScreenView
 class InterviewListScreenViewModel(private val interactor: InterviewListScreenInteractor) : BaseViewModel<InterviewListScreenViewState, InterviewListScreenSideEffects>(
     InterviewListScreenViewState.LoadingState
 ) {
-    val scope = (viewModelScope + coroutineExceptionHandler)
 
-    fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
+    fun initViewModel() {
 
     }
 

@@ -42,7 +42,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kashif_e.backdrop.backdrops.rememberLayerBackdrop
@@ -56,9 +58,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.icons.LogoIcon
+import ru.kvmsoft.base.ui.model.BooksItemState
 import ru.kvmsoft.base.ui.model.Chip
-import ru.kvmsoft.base.ui.model.EventsItemState
 import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.res.strings.getBooksSearchPlaceholderText
 import ru.kvmsoft.base.ui.res.strings.getCurrencySymbol
 import ru.kvmsoft.base.ui.res.strings.getEventsListScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getFreePay
@@ -72,14 +75,17 @@ import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventsVerticalSlider(
+fun BooksVerticalSlider(
     modifier: Modifier,
     isAsActive: Boolean,
     lang: CurrentLanguageDomain,
-    eventsState: UiState<EventsItemState>,
+    booksState: UiState<BooksItemState>,
     chips: List<Chip>,
     selectedChips: List<String>,
-    onClickEvent: () -> Unit,
+    onClickBook: () -> Unit,
+    subscribeText: String,
+    subscribeClick: ()-> Unit,
+    searchKeyWord: MutableState<String>,
     selectId: MutableState<Int>,
     selectedChip: MutableState<String>,
     onclickChip: () -> Unit,
@@ -90,7 +96,7 @@ fun EventsVerticalSlider(
 ) {
     var clickEnabled by remember { mutableStateOf(true) }
     val state = rememberPullToRefreshState()
-    when(eventsState){
+    when(booksState){
         UiState.Empty -> {
             val backdrop = rememberLayerBackdrop()
             val composition by rememberLottieComposition {
@@ -152,17 +158,17 @@ fun EventsVerticalSlider(
                     bottom = 10.dp
                 ),
                 modifier = modifier
-                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                .pullToRefresh(
-                    state = if(isConnectionAvailable) { state } else {
-                        PullToRefreshState()
-                    },
-                    isRefreshing = isRefreshing,
-                    onRefresh = { if(isConnectionAvailable){
-                        onRefresh()
-                    }
-                    }
-                )
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                    .pullToRefresh(
+                        state = if(isConnectionAvailable) { state } else {
+                            PullToRefreshState()
+                        },
+                        isRefreshing = isRefreshing,
+                        onRefresh = { if(isConnectionAvailable){
+                            onRefresh()
+                        }
+                        }
+                    )
             ) {
                 stickyHeader {
                     Column(modifier = Modifier
@@ -257,20 +263,26 @@ fun EventsVerticalSlider(
 
         is UiState.Success -> {
             val scope = rememberCoroutineScope()
-            val filteredEvents = remember(eventsState, selectedChips, isAsActive) {
-                val allEvents = eventsState.data?.events ?: emptyList()
+            val filteredBooks = remember(booksState, selectedChips, isAsActive) {
+                val allBooks = booksState.data?.events ?: emptyList()
                 val activeChips = selectedChips.filter { it.isNotEmpty() }
 
                 if (activeChips.isEmpty()) {
                     emptyList()
                 } else {
-                    allEvents.filter { event ->
-                        val matchesActivity = !isAsActive || event.eventCost == 0
-                        matchesActivity && event.eventTags.any { tag ->
+                    allBooks.filter { book ->
+                        val matchesActivity = !isAsActive
+                        matchesActivity && book.bookTags.any { tag ->
                             activeChips.any { chip -> tag.name.contains(chip, ignoreCase = true) }
                         }
-                    }.sortedBy { it.eventId }
+                    }.sortedBy { it.bookId }
                 }
+            }
+
+            val keywordWithFilteredBooks = if(searchKeyWord.value.isNotEmpty() && searchKeyWord.value.length>2){
+                filteredBooks.filter { it.bookName.toLowerCase(Locale.current).contains(searchKeyWord.value.toLowerCase(Locale.current)) }.toList()
+            } else {
+                filteredBooks
             }
 
             PullToRefreshBox(
@@ -322,32 +334,47 @@ fun EventsVerticalSlider(
                                 selectedChip = selectedChip,
                                 onclickChip = onclickChip
                             )
+                            SearchInput(
+                                modifier = Modifier,
+                                keyword = searchKeyWord,
+                                placeholderText = getBooksSearchPlaceholderText(lang),
+                                onValueChange = { searchKeyWord.value = it }
+                            )
                         }
                     }
-                    itemsIndexed(filteredEvents) { index, event ->
-                        val cost = remember(event.eventCost, lang) {
-                            if (event.eventCost > 0) {
+                    itemsIndexed(keywordWithFilteredBooks) { index, book ->
+                        val defaultCost = remember(book.bookPrice, lang) {
+                            if (book.bookPrice > 0) {
                                 if(lang == CurrentLanguageDomain.RU){
-                                    "${event.eventCost} ${getCurrencySymbol(lang)}"
+                                    "${book.bookPrice} ${getCurrencySymbol(lang)}"
                                 }
                                 else{
-                                    "${getCurrencySymbol(lang)}${event.eventCost}"
+                                    "${getCurrencySymbol(lang)}${book.bookPrice}"
                                 }
                             } else {
                                 getFreePay(lang)
                             }
                         }
 
-                        val subTags = remember(event.eventTags) {
-                            event.eventTags.joinToString(separator = "/") { it.name }
+                        val saleCost = remember(book.bookSalePrice, lang) {
+                            if (book.bookSalePrice > 0) {
+                                if(lang == CurrentLanguageDomain.RU){
+                                    "${book.bookSalePrice} ${getCurrencySymbol(lang)}"
+                                }
+                                else{
+                                    "${getCurrencySymbol(lang)}${book.bookSalePrice}"
+                                }
+                            } else {
+                                ""
+                            }
                         }
 
                         Card(
                             modifier = Modifier
                                 .clickable(enabled = clickEnabled) {
                                     clickEnabled = false
-                                    selectId.value = event.eventId
-                                    onClickEvent()
+                                    selectId.value = book.bookId
+                                    onClickBook()
                                     scope.launch {
                                         delay(500)
                                         clickEnabled = true
@@ -359,9 +386,9 @@ fun EventsVerticalSlider(
                             ),
                         ) {
                             Column {
-                                if (event.eventImageBase64.isNotEmpty()) {
-                                    val bitmap = remember(event.eventImageBase64) {
-                                        event.eventImageBase64.decodeBase64ToBitmap()
+                                if (book.bookImageBase64.isNotEmpty()) {
+                                    val bitmap = remember(book.bookImageBase64) {
+                                        book.bookImageBase64.decodeBase64ToBitmap()
                                     }
                                     if (bitmap != null) {
                                         Image(
@@ -371,7 +398,7 @@ fun EventsVerticalSlider(
                                                 .height(180.dp)
                                                 .clip(RoundedCornerShape(10.dp)),
                                             bitmap = bitmap,
-                                            contentDescription = event.eventName
+                                            contentDescription = book.bookName
                                         )
                                     } else {
                                         ShowNotFoundImageHorizontal()
@@ -386,19 +413,7 @@ fun EventsVerticalSlider(
                                         .align(Alignment.End)
                                 ) {
                                     Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                        ServiceTag(subTags, modifier = Modifier)
-                                        ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
-                                    }
-                                    Column {
-                                        ServiceSubLabel(
-                                            isYellow = false,
-                                            text = event.eventStartDate,
-                                            modifier = Modifier.align(Alignment.End)
-                                        )
-                                        ServiceText(
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            text = cost
-                                        )
+                                        ServiceTitle(modifier = Modifier, text = book.bookName, textAlign = TextAlign.Start)
                                     }
                                 }
                             }

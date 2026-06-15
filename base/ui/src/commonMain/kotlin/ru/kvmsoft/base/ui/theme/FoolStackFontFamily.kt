@@ -1,6 +1,5 @@
 package ru.kvmsoft.base.ui.theme
 
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle

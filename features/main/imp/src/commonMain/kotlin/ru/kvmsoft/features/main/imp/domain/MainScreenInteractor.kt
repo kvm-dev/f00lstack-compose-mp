@@ -30,11 +30,13 @@ class MainScreenInteractor(
     private val browserUtils: BrowserUtils
 ) {
 
-    val langState = getCurrentLanguageUseCase.langState
+    private var cachedViewState: MainScreenViewState? = null
 
     val profile = getProfileUseCase.profileState
 
     val isKnowHowToUseEventSlider = encryptedDataStore.mainEventsSlider
+
+    val langState = getCurrentLanguageUseCase.langState
 
     fun getCurrentLang() = getCurrentLanguageUseCase.getLang()
 
@@ -123,5 +125,24 @@ class MainScreenInteractor(
 
     suspend fun updateEventsSliderHintState(){
         encryptedDataStore.iKnowHowToUseMainEventsSlider()
+    }
+
+    suspend fun getOrCheckState(
+        lang: CurrentLanguageDomain,
+        profileDomain: ProfileDomain?,
+        isKnowHowToUseSlider: Boolean
+    ): MainScreenViewState {
+        if (cachedViewState is MainScreenViewState.SuccessState) {
+            return cachedViewState!!
+        }
+        val newState = checkState(lang, profileDomain, isKnowHowToUseSlider)
+        if (newState is MainScreenViewState.SuccessState) {
+            cachedViewState = newState
+        }
+        return newState
+    }
+
+    fun clearCache() {
+        cachedViewState = null
     }
 }

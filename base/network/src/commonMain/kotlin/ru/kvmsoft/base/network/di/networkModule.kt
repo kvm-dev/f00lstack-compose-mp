@@ -1,9 +1,8 @@
 package ru.kvmsoft.base.network.di
 
-import io.ktor.client.HttpClient
 import org.koin.dsl.module
-import ru.kvmsoft.base.network.client
+import ru.kvmsoft.base.network.HttpClientProvider
 
 val networkModule = module {
-    single<HttpClient> { client }
+    single { HttpClientProvider.client }
 }

@@ -2,7 +2,7 @@ package ru.kvmsoft.base.network.utils
 
 import io.ktor.client.request.get
 import io.ktor.client.statement.readBytes
-import ru.kvmsoft.base.network.client
+import ru.kvmsoft.base.network.HttpClientProvider.client
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 

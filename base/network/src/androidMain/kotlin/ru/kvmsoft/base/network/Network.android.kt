@@ -10,7 +10,6 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -21,12 +20,10 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
+import io.ktor.http.contentType
+import io.ktor.http.encodedPath
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.java.KoinJavaComponent.inject
@@ -43,105 +40,120 @@ import ru.kvmsoft.base.network.utils.getPlatform
 import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import java.util.Locale
 
-@OptIn(ExperimentalSerializationApi::class)
-actual val client: HttpClient
-    get() = HttpClient(OkHttp) {
-        //encrypted data store
-        val encryptedDataStore: EncryptedDataStore by inject(EncryptedDataStore::class.java)
-        val scope = CoroutineScope(Job() + Dispatchers.Default)
-        //Timeout plugin to set up timeout milliseconds for client
-        install(HttpTimeout) {
-            socketTimeoutMillis = 180_000
-            requestTimeoutMillis = 180_000
+actual object HttpClientProvider {
+
+    // 1. Создаем изолированный клиент ТОЛЬКО для запроса обновления токенов (без плагина Auth!)
+    private val refreshClient = HttpClient(OkHttp) {
+        install(ContentNegotiation) {
+            json(Json { ignoreUnknownKeys = true })
         }
-        //Logging plugin combined with kermit(KMP Logger library)
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
-            logger = object : Logger {
-                override fun log(message: String) {
-                    Log.i("KtorClient", message)
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000
+            connectTimeoutMillis = 10_000
+        }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    actual val client: HttpClient by lazy {
+        val encryptedDataStore: EncryptedDataStore by inject(EncryptedDataStore::class.java)
+
+        HttpClient(OkHttp) {
+            install(HttpTimeout) {
+                requestTimeoutMillis = 30_000
+                connectTimeoutMillis = 15_000
+                socketTimeoutMillis = 30_000
+            }
+
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        Log.i("KtorClient", message)
+                    }
+                }
+                level = LogLevel.ALL
+            }
+
+            install(ResponseObserver) {
+                onResponse { response ->
+                    Log.d("HTTP status:", "${response.status.value}")
                 }
             }
-        }
-        install(Auth) {
-            scope.launch {
-                encryptedDataStore.accessToken.combine(encryptedDataStore.refreshToken) { accessToken, refreshToken ->
-                    Pair(accessToken, refreshToken)
-                }.collect { (accessToken, refreshToken) ->
 
-                    bearer {
-                        // Load initial tokens (access and refresh) from secure storage
-                        loadTokens {
-                            if (accessToken.isNotEmpty() && refreshToken.isNotEmpty()) {
-                                BearerTokens(accessToken, refreshToken)
-                            } else {
-                                null // No tokens available, user needs to log in
-                            }
+            install(Auth) {
+                bearer {
+                    // loadTokens срабатывает при КАЖДОМ новом запросе к API.
+                    // Так как DataStore отдает актуальные данные через .first(),
+                    // новые токены подтянутся в реальном времени сразу после сохранения.
+                    loadTokens {
+                        val accessToken = encryptedDataStore.accessToken.first()
+                        val refreshToken = encryptedDataStore.refreshToken.first()
+
+                        if (accessToken.isNotEmpty() && refreshToken.isNotEmpty()) {
+                            BearerTokens(accessToken, refreshToken)
+                        } else {
+                            null
                         }
-                        // Define the refresh token logic
-                        refreshTokens {
-                            var tokensResponse = RefreshTokenResponse(errorMsg = "")
-                            // this: RefreshTokensParams
-                            // Call your API to get new tokens using the refresh token
-                            val newTokens = try {
+                    }
 
-                                val result = with(client) {
-                                    post("${getBaseUrl()}${RefreshEndpoints.refreshToken}") {
-                                        setBody(RefreshTokenRequest(refreshToken = refreshToken))
-                                        header(HttpHeaders.Authorization, accessToken)
-                                    }
-                                }
-                                if (result.status == HttpStatusCode.OK) {
-                                    tokensResponse = result.body<RefreshTokenResponse>()
-                                } else {
-                                    throw NetworkError.Unauthorized()
-                                }
-                            } catch (e: Exception) {
-                                // Handle refresh token failure (e.g., log out user)
+                    // Обязательно: отправляем заголовок превентивно
+                    sendWithoutRequest { request ->
+                        !request.url.encodedPath.contains(RefreshEndpoints.refreshToken)
+                    }
+
+                    // Срабатывает только если сервер вернул 401 Unauthorized
+                    refreshTokens {
+                        // Важно брать токены заново, так как они могли обновиться в другом параллельном запросе
+                        val currentAccessToken = encryptedDataStore.accessToken.first()
+                        val currentRefreshToken = encryptedDataStore.refreshToken.first()
+
+                        try {
+                            // 2. Используем чистый refreshClient вместо основного client, чтобы избежать дедлока
+                            val result = refreshClient.post("${getBaseUrl()}${RefreshEndpoints.refreshToken}") {
+                                contentType(ContentType.Application.Json)
+                                setBody(RefreshTokenRequest(refreshToken = currentRefreshToken))
+                                // Передаем старый accessToken в заголовок, если этого требует ваш бэкенд
+                                header(HttpHeaders.Authorization, "Bearer $currentAccessToken")
+                            }
+
+                            if (result.status == HttpStatusCode.OK) {
+                                val tokensResponse = result.body<RefreshTokenResponse>()
+
+                                // Сохраняем новые токены в DataStore
+                                encryptedDataStore.saveToken(tokensResponse.userToken)
+                                encryptedDataStore.saveRefreshToken(tokensResponse.userRefreshToken)
+
+                                // Возвращаем новые токены для текущего упавшего запроса
+                                BearerTokens(tokensResponse.userToken, tokensResponse.userRefreshToken)
+                            } else {
                                 encryptedDataStore.clearUserData()
                                 throw NetworkError.Unauthorized()
                             }
-
-                            // Store new tokens securely
-//                            secureStorage.setTokens(newTokens.accessToken, newTokens.refreshToken)
-                            encryptedDataStore.saveToken(tokensResponse.userToken)
-                            encryptedDataStore.saveRefreshToken(tokensResponse.userRefreshToken)
-
-                            // Return the new tokens
-                            BearerTokens(tokensResponse.userToken, tokensResponse.userRefreshToken)
+                        } catch (e: Exception) {
+                            encryptedDataStore.clearUserData()
+                            throw NetworkError.Unauthorized()
                         }
                     }
                 }
             }
-        }
 
-        install(ResponseObserver) {
-            onResponse { response ->
-                Log.d("HTTP status:", "${response.status.value}")
+            install(DefaultRequest) {
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+                header("Local", if(Locale.getDefault().toString().contains("RU")){"RU"} else {"ENG"})
+                header("Platform", if(getPlatform() == PlatformType.ANDROID) "android" else "ios")
+                header("Version", getCurrentVersion())
+                header(UserType.Client().key, UserType.Client().type)
+            }
+
+            install(disableAuthPlugin())
+
+            install(ContentNegotiation) {
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                    explicitNulls = false
+                })
             }
         }
-
-        install(DefaultRequest) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-            header("Local", if(Locale.getDefault().toString().contains("RU")){"RU"} else {"ENG"})
-            header("Platform", if(getPlatform() == PlatformType.ANDROID) "android" else "ios")
-            header("Version", getCurrentVersion())
-            header(UserType.Client().key, UserType.Client().type)
-        }
-
-        install(disableAuthPlugin())
-
-        install(ContentNegotiation) {
-            register(
-                ContentType.Application.Json, KotlinxSerializationConverter(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                        explicitNulls = false
-                    }
-                )
-            )
-        }
     }
+}

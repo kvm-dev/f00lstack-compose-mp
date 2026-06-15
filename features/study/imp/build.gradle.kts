@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -74,6 +75,10 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(libs.androidx.lifecycle.viewmodelCompose)
                 implementation(libs.androidx.lifecycle.runtimeCompose)
+                implementation(libs.navigation)
+                implementation(libs.backhandler)
+                //storage
+                implementation(projects.base.storage)
                 //utils
                 implementation(projects.base.utils)
                 //ui
@@ -86,11 +91,13 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
-                //storage
-                implementation(projects.base.storage)
                 //network
                 implementation(libs.ktor.client.core)
                 implementation(projects.base.network)
+                //features
+                implementation(projects.features.networkconnection.api)
+                implementation(projects.features.language.api)
+                implementation(projects.features.asmode.api)
             }
         }
 

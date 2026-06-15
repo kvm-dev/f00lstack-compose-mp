@@ -1,19 +1,24 @@
 package ru.kvmsoft.features.authorization.imp.data.local
 
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.authProvider
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import ru.kvmsoft.base.storage.data.DataBaseSDK
 import ru.kvmsoft.base.storage.datastore.EncryptedDataStore
 import ru.kvmsoft.base.storage.model.OfflineAuthData
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-class LocalDataSource(private val encryptedDataStore: EncryptedDataStore, private val dataBaseSDK: DataBaseSDK) {
+class LocalDataSource(private val encryptedDataStore: EncryptedDataStore, private val dataBaseSDK: DataBaseSDK, private val client: HttpClient) {
 
     suspend fun saveUserTokenToLocal(userToken: String){
         encryptedDataStore.saveToken(userToken)
+        client.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
     suspend fun saveRefreshTokenToLocal(refreshToken: String){
         encryptedDataStore.saveRefreshToken(refreshToken)
+        client.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
     @OptIn(ExperimentalTime::class)

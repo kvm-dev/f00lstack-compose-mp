@@ -9,7 +9,7 @@ data class StudyItem(
     val studyAdditionalText: String,
     val studyCost: Int,
     val studyImageBase64: String,
-    val studyTags: List<String>,
+    val studyTags: List<Chip>,
     val studyRefLink: String,
     val studyOwner: String
 )

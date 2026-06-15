@@ -10,9 +10,8 @@ import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewInnerScreenVie
 class InterviewInnerScreenViewModel(private val interactor: InterviewInnerScreenInteractor) : BaseViewModel<InterviewInnerScreenViewState, InterviewInnerScreenSideEffects>(
     InterviewInnerScreenViewState.LoadingState
 ) {
-    val scope = (viewModelScope + coroutineExceptionHandler)
 
-    fun initViewModel() = with(viewModelScope + coroutineExceptionHandler) {
+    fun initViewModel() {
 
     }
 

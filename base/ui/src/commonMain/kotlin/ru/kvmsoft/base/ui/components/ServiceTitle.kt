@@ -17,7 +17,7 @@ fun ServiceTitle(text: String, modifier: Modifier, textAlign: TextAlign){
         .width(240.dp),
         textAlign = textAlign,
         text = text, style = serviceTitleStyle(),
-        maxLines = 2,
+        maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
 }

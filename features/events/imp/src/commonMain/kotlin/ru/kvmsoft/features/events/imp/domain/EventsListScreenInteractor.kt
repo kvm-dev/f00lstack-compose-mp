@@ -9,6 +9,7 @@ import ru.kvmsoft.features.asmode.api.domain.usecase.GetAsModeUseCase
 import ru.kvmsoft.features.events.api.domain.usecase.GetEventsUseCase
 import ru.kvmsoft.features.events.imp.mapper.Mapper.mapToEventsItems
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreenViewState
+import ru.kvmsoft.features.language.api.domain.usecase.GetCurrentLanguageUseCase
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 import ru.kvmsoft.features.networkconnection.api.domain.usecase.GetNetworkStateUseCase
 
@@ -16,9 +17,12 @@ class EventsListScreenInteractor(
     private val getEventsUseCase: GetEventsUseCase,
     private val networkStateUseCase: GetNetworkStateUseCase,
     private val getAsModeUseCase: GetAsModeUseCase,
-    private val browserUtils: BrowserUtils
+    private val browserUtils: BrowserUtils,
+    private val getCurrentLanguageUseCase: GetCurrentLanguageUseCase,
 ) {
+    val langState = getCurrentLanguageUseCase.langState
 
+    fun getCurrentLang() = getCurrentLanguageUseCase.getLang()
     suspend fun isAsModeIsEnabled(isConnectionAvailable: Boolean) = getAsModeUseCase.isAsModeEnabled(isConnectionAvailable)
 
     private suspend fun getEvents(fromLocal: Boolean = false) = getEventsUseCase.getEvents(fromLocal)

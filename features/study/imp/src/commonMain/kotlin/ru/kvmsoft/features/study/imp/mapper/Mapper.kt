@@ -4,7 +4,9 @@ import ru.kvmsoft.base.storage.model.ProfessionListItem
 import ru.kvmsoft.base.storage.model.Studies
 import ru.kvmsoft.base.storage.model.Study
 import ru.kvmsoft.base.ui.model.Chip
+import ru.kvmsoft.base.ui.model.StudiesItemState
 import ru.kvmsoft.base.ui.model.StudyItem
+import ru.kvmsoft.base.ui.model.UiState
 import ru.kvmsoft.features.study.api.model.StudiesDomain
 import ru.kvmsoft.features.study.api.model.StudyDomain
 import ru.kvmsoft.features.study.api.model.StudyProfessionDomain
@@ -101,47 +103,51 @@ object Mapper {
         )
     }
 
-    fun mapToStudiesItems(studies: List<StudyDomain>):List<StudyItem>{
-        val items = HashSet<StudyItem>()
-
-        studies.forEach { item->
-            val tags = HashSet<String>()
-            item.professions.forEach { tag->
-                tags.add(tag.professionName)
-            }
-            items.add(
-                StudyItem(
-                    studyId = item.studyId,
-                    studyName = item.studyName,
-                    studySalePercent = item.studySalePercent,
-                    studyLength = item.studyLength,
-                    studyLengthType = item.studyLengthType,
-                    studyAdditionalText = item.studyAdditionalText,
-                    studyCost = item.studyCost,
-                    studyImageBase64 = item.studyImageBase64,
-                    studyTags = tags.toList(),
-                    studyRefLink = item.studyRefLink,
-                    studyOwner = item.studyOwner
-                )
-            )
-        }
-        return items.toList()
-    }
-
-    private fun mapToStudyChip(sub: StudyProfessionDomain): Chip {
-        return Chip(
-            id = sub.professionId,
-            name = sub.professionName
-        )
-    }
-
-    fun mapToChips(studiesList: List<StudyDomain>): List<Chip>{
+    fun mapToChips(studiesState: UiState<StudiesItemState>, isAsMode: Boolean): List<Chip>{
         val list = HashSet<Chip>()
-        studiesList.forEach { study->
-            study.professions.forEach {sub->
-                list.add(mapToStudyChip(sub))
+        if (studiesState is UiState.Success){
+            if(isAsMode){
+                studiesState.data?.studies?.filter { it.studyCost == 0 }?.forEach { study->
+                    study.studyTags.forEach { sub->
+                        list.add(Chip(id = study.studyId, name = sub.name))
+                    }
+                }
+            }
+            else{
+                studiesState.data?.studies?.forEach { study->
+                    study.studyTags.forEach { sub->
+                        list.add(sub)
+                    }
+                }
             }
         }
         return list.toList()
+    }
+
+    fun List<StudyDomain>.mapToStudiesItems(): List<StudyItem>{
+        val list = ArrayList<StudyItem>()
+        if(this.isNotEmpty()){
+            this.forEach {  study->
+                val tags = ArrayList<Chip>()
+                tags.clear()
+                study.professions.forEach { sub->
+                    tags.add(Chip(id = sub.professionId, name = sub.professionName))
+                }
+                list.add(StudyItem(
+                    studyId = study.studyId,
+                    studyName = study.studyName,
+                    studySalePercent = study.studySalePercent,
+                    studyLength = study.studyLength,
+                    studyLengthType = study.studyLengthType,
+                    studyAdditionalText = study.studyAdditionalText,
+                    studyCost = study.studyCost,
+                    studyImageBase64 = study.studyImageBase64,
+                    studyTags = tags,
+                    studyRefLink = study.studyRefLink,
+                    studyOwner = study.studyOwner
+                ))
+            }
+        }
+        return list
     }
 }

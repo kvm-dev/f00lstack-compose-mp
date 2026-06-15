@@ -15,7 +15,6 @@ actual class EncryptedDataStore(private val context: Context, private val secure
     val accessTokenKey = stringPreferencesKey("access_token")
     val refreshTokenKey = stringPreferencesKey("refresh_token")
     val professionIdKey = stringPreferencesKey("profession_id")
-
     val mainEventsSliderKey = stringPreferencesKey("main_events_slider")
 
     actual val accessToken: Flow<String> =

@@ -2,6 +2,10 @@ package ru.kvmsoft.features.main.imp.presentation.ui
 
 enum class MainScreenSideEffects {
     NAVIGATE_TO_AUTHORIZATION_ZONE,
+    NAVIGATE_TO_EVENTS_LIST_SCREEN,
+    NAVIGATE_TO_STUDY_LIST_SCREEN,
     NAVIGATE_TO_EVENT_INNER_SCREEN,
-    REFRESH_SCREEN
+    REFRESH_SCREEN,
+    OPEN_CHAT,
+    CLOSE_APP
 }

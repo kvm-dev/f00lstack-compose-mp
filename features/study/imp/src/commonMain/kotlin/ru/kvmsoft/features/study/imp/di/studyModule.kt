@@ -18,6 +18,12 @@ val studyModule = module {
     single<NetworkDataSource> { NetworkDataSource(api = get()) }
     single<StudyRepository> { StudyRepository(networkDataSource = get(), localDataSource = get()) }
     single<GetStudiesUseCase> { GetStudiesUseCaseImp(repository = get()) }
-    single<StudyListScreenInteractor> { StudyListScreenInteractor() }
+    single<StudyListScreenInteractor> {
+        StudyListScreenInteractor(
+            getStudiesUseCase = get(),
+            networkStateUseCase = get(),
+            getAsModeUseCase = get(),
+            browserUtils = get(),
+            getCurrentLanguageUseCase = get()) }
     viewModelOf(::StudyListViewModel)
 }

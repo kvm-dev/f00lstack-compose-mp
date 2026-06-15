@@ -55,8 +55,17 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), e
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            EventsInnerScreenSideEffects.ON_BACK_PRESSED -> {
+            EventsInnerScreenSideEffects.OnBackPressed -> {
                 onClickBack()
+            }
+            EventsInnerScreenSideEffects.CloseApp -> {
+                closeApp()
+            }
+            EventsInnerScreenSideEffects.OpenChat -> {
+                viewModel.openChat()
+            }
+            is EventsInnerScreenSideEffects.JoinToEvent -> {
+                viewModel.joinToEvent(sideEffect.url)
             }
         }
     }
@@ -95,7 +104,7 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), e
                         ScreenHeader(
                             modifier = Modifier,
                             text = "",
-                            onBackClicked = onClickBack
+                            onBackClicked = { viewModel.intentHandler(EventsInnerScreenIntents.BackPressedIntent) }
                         )
                         Row(modifier = Modifier
                             .padding(top = 110.dp, start = 16.dp, end = 16.dp)){
@@ -130,7 +139,7 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), e
                                     text = successState.event.eventDescription)
                                 MainGreenButton(onClick = {
                                     viewModel.intentHandler(EventsInnerScreenIntents.JoinToEventIntent(successState.event.eventRefLink))
-                                }, text = joinToEventButtonText(viewModel.currentLangState.value), modifier = Modifier
+                                }, text = joinToEventButtonText(successState.lang), modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(20.dp))
                             }
@@ -146,9 +155,9 @@ fun EventsInnerScreen(viewModel: EventsInnerScreenViewModel = koinViewModel(), e
                 description = getUnknownErrorDescription(lang = errorState.lang),
                 mainButtonText = getUnknownErrorMainButton(lang = errorState.lang),
                 secondButtonText = getUnknownErrorSecondButton(lang = errorState.lang),
-                actionMain = { closeApp() },
+                actionMain = { viewModel.intentHandler(EventsInnerScreenIntents.CloseApplication) },
                 actionSecond = { viewModel.intentHandler(EventsInnerScreenIntents.OpenChatIntent) },
-                onDismiss = { closeApp() })
+                onDismiss = { viewModel.intentHandler(EventsInnerScreenIntents.CloseApplication) })
         }
     }
 }
