@@ -89,13 +89,6 @@ object Mapper {
             errorMsg = "")
     }
 
-    private fun mapToEventChip(sub: EventSubDomain): Chip {
-        return Chip(
-            id = sub.subId,
-            name = sub.subName
-        )
-    }
-
     fun mapToChips(eventsState: UiState<EventsItemState>, isAsMode: Boolean): List<Chip>{
         val list = HashSet<Chip>()
         if (eventsState is UiState.Success){
@@ -115,28 +108,6 @@ object Mapper {
                 }
         }
         return list.toList()
-    }
-
-    fun mapToEventItems(eventsDomain: EventsDomain?): List<EventItem>{
-        val eventList = ArrayList<EventItem>()
-        eventsDomain?.events?.forEach {event->
-            val tags = ArrayList<Chip>()
-            event.eventSubs.forEach {
-                tags.add(Chip(it.subId, it.subName))
-            }
-            eventList.add(
-                EventItem(
-                    eventId = event.eventId,
-                    eventName = event.eventName,
-                    eventStartDate = event.eventDateStart.timestampToDateString(),
-                    eventImageBase64 = event.eventImageBase64,
-                    eventTags = tags,
-                    eventDescription = event.eventDescription,
-                    eventCost = event.eventCost
-                )
-            )
-        }
-        return eventList
     }
 
     fun List<EventDomain>.mapToEventsItems(): List<EventItem>{

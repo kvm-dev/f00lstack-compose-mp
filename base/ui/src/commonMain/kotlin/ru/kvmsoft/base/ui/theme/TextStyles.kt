@@ -2,6 +2,7 @@ package ru.kvmsoft.base.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontStyle.Companion.Italic
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -119,6 +120,50 @@ object TextStyles {
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         color = InputBorder,
+        textAlign = TextAlign.Center
+    )
+
+    @Composable
+    fun bookTitleStyle() = TextStyle(
+        fontFamily = getFoolStackFontFamily(),
+        fontWeight = FontWeight.Black,
+        fontStyle = Italic,
+        fontSize = 14.sp,
+        color = SimplyBlack,
+        textAlign = TextAlign.Start
+    )
+
+    @Composable
+    fun bookPrice(isOld: Boolean = true): TextStyle{
+        return if(isOld){
+             TextStyle(
+                fontFamily = getFoolStackFontFamily(),
+                fontWeight = FontWeight.Black,
+                fontStyle = Italic,
+                fontSize = 18.sp,
+                color = CostYellow,
+                textAlign = TextAlign.Start
+            )
+        }
+        else{
+            TextStyle(
+                fontFamily = getFoolStackFontFamily(),
+                fontWeight = FontWeight.Black,
+                fontStyle = Italic,
+                fontSize = 18.sp,
+                color = MainGreenLight,
+                textAlign = TextAlign.End
+            )
+        }
+    }
+
+    @Composable
+    fun bookInnerTitleStyle() = TextStyle(
+        fontFamily = getFoolStackFontFamily(),
+        fontWeight = FontWeight.Black,
+        fontStyle = Italic,
+        fontSize = 14.sp,
+        color = SimplyWhite,
         textAlign = TextAlign.Center
     )
 }

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import ru.kvmsoft.base.ui.images.notFoundImageHorizontal
 
 @Composable
-fun ShowNotFoundImageHorizontal(modifier: Modifier? = null) {
+fun ShowNotFoundImageVertical(modifier: Modifier? = null) {
     if(modifier == null){
         Image(
             imageVector = notFoundImageHorizontal,

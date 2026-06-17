@@ -104,7 +104,7 @@ fun StudyListScreen(viewModel: StudyListViewModel = koinViewModel(), onClickBack
             StudiesVerticalSlider(
                 modifier = Modifier,
                 lang = successState.lang,
-                studiesState = successState.studiesState,
+                studiesState = if(!successState.isAsModeEnabled) successState.studiesState else UiState.Empty,
                 chips = Mapper.mapToChips(studiesState = successState.studiesState, isAsMode = successState.isAsModeEnabled),
                 selectedChips = successState.selectedFilters,
                 onClickStudy = {

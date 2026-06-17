@@ -4,7 +4,12 @@ import ru.kvmsoft.base.storage.model.Book
 import ru.kvmsoft.base.storage.model.Books
 import ru.kvmsoft.base.storage.model.ProfessionListItem
 import ru.kvmsoft.base.ui.model.BookItem
+import ru.kvmsoft.base.ui.model.BooksItemState
 import ru.kvmsoft.base.ui.model.Chip
+import ru.kvmsoft.base.ui.model.EventItem
+import ru.kvmsoft.base.ui.model.EventsItemState
+import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.utils.timestampToDateString
 import ru.kvmsoft.features.books.api.model.BookDomain
 import ru.kvmsoft.features.books.api.model.BookProfessionDomain
 import ru.kvmsoft.features.books.api.model.BooksDomain
@@ -84,34 +89,14 @@ object Mapper {
         )
     }
 
-    fun mapToBookItems(booksDomain: BooksDomain?): List<BookItem>{
-        val bookList = ArrayList<BookItem>()
-        booksDomain?.books?.forEach {book->
-            val tags = ArrayList<String>()
-            book.professions.forEach {
-                tags.add(it.professionName)
-            }
-            bookList.add(
-                BookItem(
-                    bookId = book.bookId,
-                    bookName = book.bookName,
-                    bookPrice = book.bookCostWithoutSale,
-                    bookSalePrice = book.bookCostWithSale,
-                    bookImageBase64 = book.bookImageBase64,
-                    bookTags = tags,
-                    bookRefLink = book.bookRefLink
-                )
-            )
-        }
-        return bookList
-    }
-
-    fun mapToChips(bookList: List<BookDomain>): List<Chip>{
+    fun mapToChips(booksState: UiState<BooksItemState>): List<Chip>{
         val list = HashSet<Chip>()
-        bookList.forEach { book->
-            book.professions.forEach {sub->
-                list.add(mapToBookChip(sub))
-            }
+        if (booksState is UiState.Success){
+                booksState.data?.books?.forEach { book->
+                    book.bookTags.forEach { sub->
+                        list.add(sub)
+                    }
+                }
         }
         return list.toList()
     }
@@ -121,5 +106,28 @@ object Mapper {
             id = sub.professionId,
             name = sub.professionName
         )
+    }
+
+    fun List<BookDomain>.mapToBooksItems(): List<BookItem>{
+        val list = ArrayList<BookItem>()
+        if(this.isNotEmpty()){
+            this.forEach {  book->
+                val tags = ArrayList<Chip>()
+                book.professions.forEach { profession->
+                    tags.add(Chip(id = profession.professionId, name = profession.professionName))
+                }
+                list.add(BookItem(
+                    bookId = book.bookId,
+                    bookName = book.bookName,
+                    bookDescription = book.bookDescription,
+                    bookPrice = book.bookCostWithoutSale,
+                    bookSalePrice = book.bookCostWithSale,
+                    bookImageBase64 = book.bookImageBase64,
+                    bookTags = tags,
+                    bookRefLink = book.bookRefLink
+                ))
+            }
+        }
+        return list
     }
 }

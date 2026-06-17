@@ -25,8 +25,9 @@ class BooksApi(private val client: HttpClient) {
 
     suspend fun getVersion(): BooksVersionResponse{
         val result = with(client) {
-            attributes.put(disableAuthKey, true)
-            get("${getBaseUrl()}${BooksEndpoints.getBooksVersion}")
+            get("${getBaseUrl()}${BooksEndpoints.getBooksVersion}"){
+                attributes.put(disableAuthKey, true)
+            }
         }
         return if(result.status == HttpStatusCode.OK) {
             result.body<BooksVersionResponse>()

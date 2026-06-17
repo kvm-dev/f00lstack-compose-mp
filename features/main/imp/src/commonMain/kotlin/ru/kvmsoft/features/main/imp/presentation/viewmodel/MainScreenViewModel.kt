@@ -71,6 +71,10 @@ class MainScreenViewModel(private val interactor: MainScreenInteractor) :
                 postSideEffect(MainScreenSideEffects.NAVIGATE_TO_EVENTS_LIST_SCREEN)
             }
 
+            MainScreenIntents.NavigateToBooksList -> orbitIntent {
+                postSideEffect(MainScreenSideEffects.NAVIGATE_TO_BOOKS_LIST_SCREEN)
+            }
+
             MainScreenIntents.NavigateToStudyList -> orbitIntent {
                 postSideEffect(MainScreenSideEffects.NAVIGATE_TO_STUDY_LIST_SCREEN)
             }

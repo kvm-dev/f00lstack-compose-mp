@@ -305,6 +305,57 @@ fun getBooksSearchPlaceholderText(lang: CurrentLanguageDomain): String {
     }
 }
 
+fun getBooksListScreenTitle(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Литература"
+        CurrentLanguageDomain.EN -> "Books"
+    }
+}
+
+fun getNotFoundBooksText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "В данный момент\nнет подходящей литературы"
+        CurrentLanguageDomain.EN -> "There are no books available at now"
+    }
+}
+
+fun getBuyBookText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Купить"
+        CurrentLanguageDomain.EN -> "Buy"
+    }
+}
+
+fun getBuyBookInnerText(lang: CurrentLanguageDomain, cost: Int): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Купить за $cost ₽"
+        CurrentLanguageDomain.EN -> "Buy for $$cost"
+    }
+}
+
+fun getBookSalePercentText(lang: CurrentLanguageDomain, percent: Int): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "со скидкой до $percent%"
+        CurrentLanguageDomain.EN -> "with discount to $percent%"
+    }
+}
+
+fun getNotFoundWithFiltersOrSearchText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Измени фильтры и/или\nусловия поиска"
+        CurrentLanguageDomain.EN -> "Change filters and/or\nsearch keyword"
+    }
+}
+
+fun getNotFoundWithFiltersText(lang: CurrentLanguageDomain): String {
+    return when (lang) {
+        CurrentLanguageDomain.RU -> "Измени фильтры"
+        CurrentLanguageDomain.EN -> "Change filters"
+    }
+}
+
+
+
 
 //errorTexts
 fun getErrorTextCodeIsAlreadySent() = "Code Is Already Sent"
