@@ -5,9 +5,8 @@ sealed class MainScreenIntents {
     data object OpenChatIntent : MainScreenIntents()
     data object GoToAuthorizationIntent : MainScreenIntents()
     data object NavigateToEventDetailsIntent: MainScreenIntents()
-
     data object NavigateToEventsList: MainScreenIntents()
-
+    data object NavigateToBooksList: MainScreenIntents()
     data object NavigateToStudyList: MainScreenIntents()
     data object UpdateEventsSliderHintStateIntent: MainScreenIntents()
     data object RefreshIntent: MainScreenIntents()

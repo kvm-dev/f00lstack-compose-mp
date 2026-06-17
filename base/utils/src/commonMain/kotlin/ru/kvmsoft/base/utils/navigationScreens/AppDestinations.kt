@@ -16,7 +16,7 @@ sealed class AppDestinations{
     data object BooksList: AppDestinations()
 
     @Serializable
-    data object BooksInner: AppDestinations()
+    data class BooksInner(val bookId: Int = 0): AppDestinations()
 
     @Serializable
     data object EventsList: AppDestinations()

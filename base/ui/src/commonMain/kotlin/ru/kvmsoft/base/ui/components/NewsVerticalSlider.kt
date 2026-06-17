@@ -6,8 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,12 +50,8 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.icons.LogoIcon
-import ru.kvmsoft.base.ui.model.EventItem
 import ru.kvmsoft.base.ui.model.NewsItemState
 import ru.kvmsoft.base.ui.model.UiState
-import ru.kvmsoft.base.ui.res.strings.getCurrencySymbol
-import ru.kvmsoft.base.ui.res.strings.getEventsListScreenTitle
-import ru.kvmsoft.base.ui.res.strings.getFreePay
 import ru.kvmsoft.base.ui.res.strings.getMoreButtonText
 import ru.kvmsoft.base.ui.res.strings.getNewsListScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getNotFoundNewsText
@@ -68,7 +61,6 @@ import ru.kvmsoft.base.ui.utils.ShowNotFoundImageHorizontal
 import ru.kvmsoft.base.ui.utils.decodeBase64ToBitmap
 import ru.kvmsoft.base.ui.utils.timestampToDateString
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -251,7 +243,6 @@ fun NewsVerticalSlider(
                             )
                         }
                     }
-
                     itemsIndexed(newsState.data?.news?.sortedBy { it.newsId } ?: listOf()) { index, news ->
 
                         Card(

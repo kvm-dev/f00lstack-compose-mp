@@ -7,11 +7,8 @@ import ru.kvmsoft.base.utils.model.BaseErrors
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
 sealed class EventsListScreenViewState {
-
     data object LoadingState: EventsListScreenViewState()
-
     data class ErrorState(val lang: CurrentLanguageDomain, val error: BaseErrors?): EventsListScreenViewState()
-
     data class SuccessState(
         val isNetworkAvailable: Boolean,
         val isAsModeEnabled: Boolean,

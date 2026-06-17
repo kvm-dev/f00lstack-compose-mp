@@ -59,7 +59,7 @@ import ru.kvmsoft.features.main.imp.presentation.viewmodel.MainScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel, onNavigationAuthorization: ()->Unit, onclickEvents: ()->Unit, onclickStudy: ()->Unit,  navController: NavController, eventDestination: AppDestinations.EventsInner) {
+fun MainScreen(viewModel: MainScreenViewModel, onNavigationAuthorization: ()->Unit, onClickEvents: ()->Unit, onClickBooks: ()->Unit, onClickStudy: ()->Unit,  navController: NavController, eventDestination: AppDestinations.EventsInner) {
 
     val state by viewModel.collectAsState()
 
@@ -91,10 +91,13 @@ fun MainScreen(viewModel: MainScreenViewModel, onNavigationAuthorization: ()->Un
                 navController.navigate(eventDestination.copy(eventId = eventId.intValue))
             }
             MainScreenSideEffects.NAVIGATE_TO_EVENTS_LIST_SCREEN -> {
-                onclickEvents()
+                onClickEvents()
+            }
+            MainScreenSideEffects.NAVIGATE_TO_BOOKS_LIST_SCREEN -> {
+                onClickBooks()
             }
             MainScreenSideEffects.NAVIGATE_TO_STUDY_LIST_SCREEN -> {
-                onclickStudy()
+                onClickStudy()
             }
             MainScreenSideEffects.REFRESH_SCREEN -> {
                 onRefresh()
@@ -238,7 +241,7 @@ fun MainScreen(viewModel: MainScreenViewModel, onNavigationAuthorization: ()->Un
                             isShowDialog = isShowAchievementDialog
                         )
                         MainScreenSubNavigationBlock(
-                            onClickBooks = {},
+                            onClickBooks = { viewModel.intentHandler(MainScreenIntents.NavigateToBooksList) },
                             onClickStudy = { viewModel.intentHandler(MainScreenIntents.NavigateToStudyList) },
                             onClickEvents = { viewModel.intentHandler(MainScreenIntents.NavigateToEventsList) },
                             lang = (successState.lang))

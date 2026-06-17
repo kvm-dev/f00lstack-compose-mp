@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,9 +59,9 @@ import ru.kvmsoft.base.ui.ComposeResources.Res
 import ru.kvmsoft.base.ui.icons.LogoIcon
 import ru.kvmsoft.base.ui.model.Chip
 import ru.kvmsoft.base.ui.model.StudiesItemState
-import ru.kvmsoft.base.ui.model.StudyItem
 import ru.kvmsoft.base.ui.model.UiState
 import ru.kvmsoft.base.ui.res.strings.getNotFoundStudiesText
+import ru.kvmsoft.base.ui.res.strings.getNotFoundWithFiltersText
 import ru.kvmsoft.base.ui.res.strings.getOkButton
 import ru.kvmsoft.base.ui.res.strings.getStudiesAdvText
 import ru.kvmsoft.base.ui.res.strings.getStudiesListScreenTitle
@@ -187,6 +188,17 @@ fun StudiesVerticalSlider(
                         }
                     }
                 }
+                item {
+                    ShimmerEffect(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp)
+                            .padding(horizontal = 24.dp, vertical = 16.dp)
+                            .background(ShimmerColor1, RoundedCornerShape(24)),
+                        durationMillis = 1000,
+                        cornerRadius = 24
+                    )
+                }
                 items(10) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
@@ -309,82 +321,89 @@ fun StudiesVerticalSlider(
                     item {
                         AdvTextBlock(getStudiesAdvText(lang), modifier = Modifier)
                     }
-                    itemsIndexed(filteredStudies) { _, study ->
-                        Card(
-                            modifier = Modifier
-                                .clickable(enabled = clickEnabled) {
-                                    clickEnabled = false
-                                    onClickStudy(study.studyRefLink)
-                                    scope.launch {
-                                        delay(500)
-                                        clickEnabled = true
+                    if(filteredStudies.isNotEmpty()){
+                        itemsIndexed(filteredStudies) { _, study ->
+                            Card(
+                                modifier = Modifier
+                                    .clickable(enabled = clickEnabled) {
+                                        clickEnabled = false
+                                        onClickStudy(study.studyRefLink)
+                                        scope.launch {
+                                            delay(500)
+                                            clickEnabled = true
+                                        }
                                     }
-                                }
-                                .padding(horizontal = 20.dp, vertical = 18.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.Transparent,
-                            ),
-                        ) {
-                            Column {
-                                if (study.studyImageBase64.isNotEmpty()) {
-                                    val bitmap = remember(study.studyImageBase64) {
-                                        study.studyImageBase64.decodeBase64ToBitmap()
-                                    }
-                                    if (bitmap != null) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(180.dp)
-                                                .clip(RoundedCornerShape(10.dp))
-                                        ) {
-                                            Image(
-                                                contentScale = ContentScale.Crop,
+                                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Transparent,
+                                ),
+                            ) {
+                                Column {
+                                    if (study.studyImageBase64.isNotEmpty()) {
+                                        val bitmap = remember(study.studyImageBase64) {
+                                            study.studyImageBase64.decodeBase64ToBitmap()
+                                        }
+                                        if (bitmap != null) {
+                                            Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .height(180.dp)
-                                                    .clip(RoundedCornerShape(10.dp)),
-                                                bitmap = bitmap,
-                                                contentDescription = study.studyName
-                                            )
-                                            TopStartImageServiceTag(
-                                                text = getStudySalePercentText(lang = lang, percent = study.studySalePercent),
-                                                modifier = Modifier
-                                            )
-                                            if (study.studyAdditionalText.isNotEmpty()) {
-                                                BottomStartImageServiceTag(
-                                                    text = study.studyAdditionalText,
-                                                    modifier = Modifier.align(Alignment.BottomStart)
+                                                    .clip(RoundedCornerShape(10.dp))
+                                            ) {
+                                                Image(
+                                                    contentScale = ContentScale.Crop,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(180.dp)
+                                                        .clip(RoundedCornerShape(10.dp)),
+                                                    bitmap = bitmap,
+                                                    contentDescription = study.studyName
                                                 )
+                                                TopStartImageServiceTag(
+                                                    text = getStudySalePercentText(lang = lang, percent = study.studySalePercent),
+                                                    modifier = Modifier
+                                                )
+                                                if (study.studyAdditionalText.isNotEmpty()) {
+                                                    BottomStartImageServiceTag(
+                                                        text = study.studyAdditionalText,
+                                                        modifier = Modifier.align(Alignment.BottomStart)
+                                                    )
+                                                }
                                             }
+                                        } else {
+                                            ShowNotFoundImageHorizontal()
                                         }
                                     } else {
                                         ShowNotFoundImageHorizontal()
                                     }
-                                } else {
-                                    ShowNotFoundImageHorizontal()
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 10.dp)
-                                        .align(Alignment.End)
-                                ) {
-                                    Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                        Row {
-                                            ServiceTag(
-                                                text = getStudyPeriodText(lang = lang, period = study.studyLength, periodType = study.studyLengthType),
-                                                modifier = Modifier
-                                            )
-                                            Spacer(modifier = Modifier.weight(1f))
-                                            ServiceTag(
-                                                text = getStudyCostMonth(lang = lang, fullPay = study.studyCost, period = study.studyLength, periodType = study.studyLengthType),
-                                                modifier = Modifier
-                                            )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp)
+                                            .align(Alignment.End)
+                                    ) {
+                                        Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
+                                            Row {
+                                                ServiceTag(
+                                                    text = getStudyPeriodText(lang = lang, period = study.studyLength, periodType = study.studyLengthType),
+                                                    modifier = Modifier
+                                                )
+                                                Spacer(modifier = Modifier.weight(1f))
+                                                ServiceTag(
+                                                    text = getStudyCostMonth(lang = lang, fullPay = study.studyCost, period = study.studyLength, periodType = study.studyLengthType),
+                                                    modifier = Modifier
+                                                )
+                                            }
+                                            ServiceTitle(modifier = Modifier, text = study.studyName, textAlign = TextAlign.Start)
                                         }
-                                        ServiceTitle(modifier = Modifier, text = study.studyName, textAlign = TextAlign.Start)
                                     }
                                 }
                             }
+                        }
+                    }
+                    else{
+                        item{
+                            NotFoundItemsBlock(text = getNotFoundWithFiltersText(lang))
                         }
                     }
                 }

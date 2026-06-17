@@ -63,6 +63,7 @@ import ru.kvmsoft.base.ui.res.strings.getCurrencySymbol
 import ru.kvmsoft.base.ui.res.strings.getEventsListScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getFreePay
 import ru.kvmsoft.base.ui.res.strings.getNotFoundEventsText
+import ru.kvmsoft.base.ui.res.strings.getNotFoundWithFiltersText
 import ru.kvmsoft.base.ui.res.strings.getOkButton
 import ru.kvmsoft.base.ui.theme.HeaderMainColorWithTransparent
 import ru.kvmsoft.base.ui.theme.ShimmerColor1
@@ -324,84 +325,91 @@ fun EventsVerticalSlider(
                             )
                         }
                     }
-                    itemsIndexed(filteredEvents) { index, event ->
-                        val cost = remember(event.eventCost, lang) {
-                            if (event.eventCost > 0) {
-                                if(lang == CurrentLanguageDomain.RU){
-                                    "${event.eventCost} ${getCurrencySymbol(lang)}"
+                    if(filteredEvents.isNotEmpty()){
+                        itemsIndexed(filteredEvents) { index, event ->
+                            val cost = remember(event.eventCost, lang) {
+                                if (event.eventCost > 0) {
+                                    if(lang == CurrentLanguageDomain.RU){
+                                        "${event.eventCost} ${getCurrencySymbol(lang)}"
+                                    }
+                                    else{
+                                        "${getCurrencySymbol(lang)}${event.eventCost}"
+                                    }
+                                } else {
+                                    getFreePay(lang)
                                 }
-                                else{
-                                    "${getCurrencySymbol(lang)}${event.eventCost}"
-                                }
-                            } else {
-                                getFreePay(lang)
                             }
-                        }
 
-                        val subTags = remember(event.eventTags) {
-                            event.eventTags.joinToString(separator = "/") { it.name }
-                        }
+                            val subTags = remember(event.eventTags) {
+                                event.eventTags.joinToString(separator = "/") { it.name }
+                            }
 
-                        Card(
-                            modifier = Modifier
-                                .clickable(enabled = clickEnabled) {
-                                    clickEnabled = false
-                                    selectId.value = event.eventId
-                                    onClickEvent()
-                                    scope.launch {
-                                        delay(500)
-                                        clickEnabled = true
+                            Card(
+                                modifier = Modifier
+                                    .clickable(enabled = clickEnabled) {
+                                        clickEnabled = false
+                                        selectId.value = event.eventId
+                                        onClickEvent()
+                                        scope.launch {
+                                            delay(500)
+                                            clickEnabled = true
+                                        }
                                     }
-                                }
-                                .padding(horizontal = 20.dp, vertical = 18.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.Transparent,
-                            ),
-                        ) {
-                            Column {
-                                if (event.eventImageBase64.isNotEmpty()) {
-                                    val bitmap = remember(event.eventImageBase64) {
-                                        event.eventImageBase64.decodeBase64ToBitmap()
-                                    }
-                                    if (bitmap != null) {
-                                        Image(
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(180.dp)
-                                                .clip(RoundedCornerShape(10.dp)),
-                                            bitmap = bitmap,
-                                            contentDescription = event.eventName
-                                        )
+                                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Transparent,
+                                ),
+                            ) {
+                                Column {
+                                    if (event.eventImageBase64.isNotEmpty()) {
+                                        val bitmap = remember(event.eventImageBase64) {
+                                            event.eventImageBase64.decodeBase64ToBitmap()
+                                        }
+                                        if (bitmap != null) {
+                                            Image(
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(180.dp)
+                                                    .clip(RoundedCornerShape(10.dp)),
+                                                bitmap = bitmap,
+                                                contentDescription = event.eventName
+                                            )
+                                        } else {
+                                            ShowNotFoundImageHorizontal()
+                                        }
                                     } else {
                                         ShowNotFoundImageHorizontal()
                                     }
-                                } else {
-                                    ShowNotFoundImageHorizontal()
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 10.dp)
-                                        .align(Alignment.End)
-                                ) {
-                                    Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                        ServiceTag(subTags, modifier = Modifier)
-                                        ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
-                                    }
-                                    Column {
-                                        ServiceSubLabel(
-                                            isYellow = false,
-                                            text = event.eventStartDate,
-                                            modifier = Modifier.align(Alignment.End)
-                                        )
-                                        ServiceText(
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            text = cost
-                                        )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp)
+                                            .align(Alignment.End)
+                                    ) {
+                                        Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
+                                            ServiceTag(subTags, modifier = Modifier)
+                                            ServiceTitle(modifier = Modifier, text = event.eventName, textAlign = TextAlign.Start)
+                                        }
+                                        Column {
+                                            ServiceSubLabel(
+                                                isYellow = false,
+                                                text = event.eventStartDate,
+                                                modifier = Modifier.align(Alignment.End)
+                                            )
+                                            ServiceText(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                text = cost
+                                            )
+                                        }
                                     }
                                 }
                             }
+                        }
+                    }
+                    else{
+                        item{
+                            NotFoundItemsBlock(text = getNotFoundWithFiltersText(lang))
                         }
                     }
                 }

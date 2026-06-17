@@ -20,8 +20,20 @@ val booksModule = module {
     single<NetworkDataSource> { NetworkDataSource(api = get()) }
     single<BooksRepository> { BooksRepository(localDataSource = get(), networkDataSource = get()) }
     single<GetBooksUseCase> { GetBooksUseCaseImp(repository = get()) }
-    single<BooksListScreenInteractor> { BooksListScreenInteractor() }
-    single<BooksInnerScreenInteractor> { BooksInnerScreenInteractor() }
+    single<BooksListScreenInteractor> { BooksListScreenInteractor(
+        getBooksUseCase = get(),
+        networkStateUseCase = get(),
+        getAsModeUseCase = get(),
+        browserUtils = get(),
+        getCurrentLanguageUseCase = get()
+    )
+    }
+    single<BooksInnerScreenInteractor> { BooksInnerScreenInteractor(
+        getBooksUseCase = get(),
+        browserUtils = get(),
+        getCurrentLanguageUseCase = get()
+    )
+    }
     viewModelOf(::BooksListScreenViewModel)
     viewModelOf(::BooksInnerScreenViewModel)
 }

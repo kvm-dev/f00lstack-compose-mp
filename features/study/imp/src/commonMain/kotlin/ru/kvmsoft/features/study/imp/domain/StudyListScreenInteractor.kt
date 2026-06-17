@@ -38,7 +38,6 @@ class StudyListScreenInteractor(
                 val filtersList = HashSet<String>()
                 studiesResult.studies.forEach { study->
                     study.professions.forEach { sub->
-                        println("курс ${study.studyName} ${sub.professionName}")
                         filtersList.add(sub.professionName)
                     }
                 }

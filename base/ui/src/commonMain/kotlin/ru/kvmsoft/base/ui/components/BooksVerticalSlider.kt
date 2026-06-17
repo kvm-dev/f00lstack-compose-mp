@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -61,15 +63,18 @@ import ru.kvmsoft.base.ui.icons.LogoIcon
 import ru.kvmsoft.base.ui.model.BooksItemState
 import ru.kvmsoft.base.ui.model.Chip
 import ru.kvmsoft.base.ui.model.UiState
+import ru.kvmsoft.base.ui.res.strings.getBooksListScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getBooksSearchPlaceholderText
+import ru.kvmsoft.base.ui.res.strings.getBuyBookText
 import ru.kvmsoft.base.ui.res.strings.getCurrencySymbol
-import ru.kvmsoft.base.ui.res.strings.getEventsListScreenTitle
 import ru.kvmsoft.base.ui.res.strings.getFreePay
-import ru.kvmsoft.base.ui.res.strings.getNotFoundEventsText
+import ru.kvmsoft.base.ui.res.strings.getNotFoundBooksText
+import ru.kvmsoft.base.ui.res.strings.getNotFoundWithFiltersOrSearchText
 import ru.kvmsoft.base.ui.res.strings.getOkButton
 import ru.kvmsoft.base.ui.theme.HeaderMainColorWithTransparent
 import ru.kvmsoft.base.ui.theme.ShimmerColor1
-import ru.kvmsoft.base.ui.utils.ShowNotFoundImageHorizontal
+import ru.kvmsoft.base.ui.theme.SimplyWhite
+import ru.kvmsoft.base.ui.utils.ShowNotFoundImageVertical
 import ru.kvmsoft.base.ui.utils.decodeBase64ToBitmap
 import ru.kvmsoft.features.language.api.model.CurrentLanguageDomain
 
@@ -87,12 +92,14 @@ fun BooksVerticalSlider(
     subscribeClick: ()-> Unit,
     searchKeyWord: MutableState<String>,
     selectId: MutableState<Int>,
+    currentBookLink: MutableState<String>,
     selectedChip: MutableState<String>,
     onclickChip: () -> Unit,
     isRefreshing: Boolean,
     isConnectionAvailable: Boolean,
     onRefresh: ()->Unit,
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    buyBook: () -> Unit
 ) {
     var clickEnabled by remember { mutableStateOf(true) }
     val state = rememberPullToRefreshState()
@@ -101,7 +108,7 @@ fun BooksVerticalSlider(
             val backdrop = rememberLayerBackdrop()
             val composition by rememberLottieComposition {
                 LottieCompositionSpec.JsonString(
-                    Res.readBytes("files/calendar-animation.json").decodeToString()
+                    Res.readBytes("files/books-animation.json").decodeToString()
                 )
             }
             Box(
@@ -136,7 +143,7 @@ fun BooksVerticalSlider(
                             contentDescription = ""
                         )
 
-                        ErrorTitleText(text = getNotFoundEventsText(lang), modifier = Modifier.padding(top = 12.dp))
+                        ErrorTitleText(text = getNotFoundBooksText(lang), modifier = Modifier.padding(top = 12.dp))
 
                         MainYellowButton(
                             text = getOkButton(),
@@ -146,13 +153,13 @@ fun BooksVerticalSlider(
                             modifier = Modifier
                                 .width(200.dp)
                                 .padding(top = 48.dp))
-
                     }
                 }
             }
         }
         UiState.Loading -> {
-            LazyColumn(
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(
                     top = 60.dp,
                     bottom = 10.dp
@@ -175,10 +182,10 @@ fun BooksVerticalSlider(
                         .background(HeaderMainColorWithTransparent)) {
                         ScreenHeader(
                             modifier = Modifier,
-                            text = getEventsListScreenTitle(lang = lang),
+                            text = getBooksListScreenTitle(lang = lang),
                             onBackClicked = onClickBack
                         )
-                        LazyRow(Modifier.padding(top = 24.dp, bottom = 10.dp)) {
+                        LazyRow(Modifier.padding(top = 16.dp, bottom = 10.dp)) {
                             items(10) {
                                 ShimmerEffect(
                                     modifier = Modifier
@@ -191,91 +198,54 @@ fun BooksVerticalSlider(
                                 )
                             }
                         }
-                    }
-                }
-                items(10) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)) {
                         ShimmerEffect(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(180.dp)
-                                .padding(top = 18.dp)
-                                .background(ShimmerColor1, RoundedCornerShape(10)),
+                                .height(60.dp)
+                                .padding(start = 8.dp, end = 8.dp, top = 10.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
                             durationMillis = 1000,
-                            cornerRadius = 10
+                            cornerRadius = 16
                         )
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp)
-                        ) {
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(120.dp, 16.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(22.dp)
-                            )
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(80.dp, 24.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(30)),
-                                durationMillis = 1000,
-                                cornerRadius = 30
-                            )
-                        }
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp)
-                        ) {
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(200.dp, 22.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(22.dp)
-                            )
-                            ShimmerEffect(
-                                modifier = Modifier
-                                    .size(30.dp, 18.dp)
-                                    .background(ShimmerColor1, RoundedCornerShape(16)),
-                                durationMillis = 1000,
-                                cornerRadius = 16
-                            )
-                        }
                     }
+                }
+                item(
+                    span = { GridItemSpan(maxLineSpan) }
+                ) {
+                    ShimmerEffect(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp)
+                            .padding(24.dp)
+                            .background(ShimmerColor1, RoundedCornerShape(24)),
+                        durationMillis = 1000,
+                        cornerRadius = 24
+                    )
+                }
+                items(10) {
+                    ShimmerEffect(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(310.dp)
+                                .padding(top = 18.dp, start = 16.dp, end = 16.dp)
+                                .background(ShimmerColor1, RoundedCornerShape(16)),
+                            durationMillis = 1000,
+                            cornerRadius = 16
+                    )
                 }
             }
         }
 
         is UiState.Success -> {
             val scope = rememberCoroutineScope()
-            val filteredBooks = remember(booksState, selectedChips, isAsActive) {
-                val allBooks = booksState.data?.events ?: emptyList()
+            val filteredBooks = remember(booksState, selectedChips) {
+                val allBooks = booksState.data?.books ?: emptyList()
                 val activeChips = selectedChips.filter { it.isNotEmpty() }
 
                 if (activeChips.isEmpty()) {
                     emptyList()
                 } else {
-                    allBooks.filter { book ->
-                        val matchesActivity = !isAsActive
-                        matchesActivity && book.bookTags.any { tag ->
-                            activeChips.any { chip -> tag.name.contains(chip, ignoreCase = true) }
-                        }
-                    }.sortedBy { it.bookId }
+                    allBooks.sortedBy { it.bookId }
                 }
             }
 
@@ -311,7 +281,8 @@ fun BooksVerticalSlider(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh
             ) {
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(
                         top = 20.dp,
                         bottom = 10.dp
@@ -325,7 +296,7 @@ fun BooksVerticalSlider(
                         ) {
                             ScreenHeader(
                                 modifier = Modifier,
-                                text = getEventsListScreenTitle(lang = lang),
+                                text = getBooksListScreenTitle(lang = lang),
                                 onBackClicked = onClickBack
                             )
                             ChipSelector(
@@ -342,81 +313,129 @@ fun BooksVerticalSlider(
                             )
                         }
                     }
-                    itemsIndexed(keywordWithFilteredBooks) { index, book ->
-                        val defaultCost = remember(book.bookPrice, lang) {
-                            if (book.bookPrice > 0) {
-                                if(lang == CurrentLanguageDomain.RU){
-                                    "${book.bookPrice} ${getCurrencySymbol(lang)}"
-                                }
-                                else{
-                                    "${getCurrencySymbol(lang)}${book.bookPrice}"
-                                }
-                            } else {
-                                getFreePay(lang)
-                            }
-                        }
-
-                        val saleCost = remember(book.bookSalePrice, lang) {
-                            if (book.bookSalePrice > 0) {
-                                if(lang == CurrentLanguageDomain.RU){
-                                    "${book.bookSalePrice} ${getCurrencySymbol(lang)}"
-                                }
-                                else{
-                                    "${getCurrencySymbol(lang)}${book.bookSalePrice}"
-                                }
-                            } else {
-                                ""
-                            }
-                        }
-
-                        Card(
-                            modifier = Modifier
-                                .clickable(enabled = clickEnabled) {
-                                    clickEnabled = false
-                                    selectId.value = book.bookId
-                                    onClickBook()
-                                    scope.launch {
-                                        delay(500)
-                                        clickEnabled = true
-                                    }
-                                }
-                                .padding(horizontal = 20.dp, vertical = 18.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.Transparent,
-                            ),
+                    if(!isAsActive){
+                        item(
+                            span = { GridItemSpan(maxLineSpan) }
                         ) {
-                            Column {
-                                if (book.bookImageBase64.isNotEmpty()) {
-                                    val bitmap = remember(book.bookImageBase64) {
-                                        book.bookImageBase64.decodeBase64ToBitmap()
+                            AdvTextBlock(text = subscribeText, modifier = Modifier, onClick = subscribeClick)
+                        }
+                    }
+                    if(keywordWithFilteredBooks.isNotEmpty()){
+                        itemsIndexed(keywordWithFilteredBooks) { index, book ->
+                            val defaultCost = remember(book.bookPrice, lang) {
+                                if (book.bookPrice > 0) {
+                                    if(lang == CurrentLanguageDomain.RU){
+                                        "${book.bookPrice} ${getCurrencySymbol(lang)}"
                                     }
-                                    if (bitmap != null) {
-                                        Image(
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(180.dp)
-                                                .clip(RoundedCornerShape(10.dp)),
-                                            bitmap = bitmap,
-                                            contentDescription = book.bookName
-                                        )
-                                    } else {
-                                        ShowNotFoundImageHorizontal()
+                                    else{
+                                        "${getCurrencySymbol(lang)}${book.bookPrice}"
                                     }
                                 } else {
-                                    ShowNotFoundImageHorizontal()
+                                    getFreePay(lang)
                                 }
-                                Row(
+                            }
+
+                            val saleCost = remember(book.bookSalePrice, lang) {
+                                if (book.bookSalePrice > 0) {
+                                    if(lang == CurrentLanguageDomain.RU){
+                                        "${book.bookSalePrice} ${getCurrencySymbol(lang)}"
+                                    }
+                                    else{
+                                        "${getCurrencySymbol(lang)}${book.bookSalePrice}"
+                                    }
+                                } else {
+                                    ""
+                                }
+                            }
+
+                            Card(
+                                modifier = Modifier
+                                    .clickable(enabled = clickEnabled) {
+                                        clickEnabled = false
+                                        selectId.value = book.bookId
+                                        if(!isAsActive){
+                                            onClickBook()
+                                        }
+                                        scope.launch {
+                                            delay(500)
+                                            clickEnabled = true
+                                        }
+                                    }
+                                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Transparent,
+                                ),
+                            ) {
+                                Column(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 10.dp)
-                                        .align(Alignment.End)
-                                ) {
-                                    Column(modifier = Modifier.weight(2F).padding(end = 2.dp)) {
-                                        ServiceTitle(modifier = Modifier, text = book.bookName, textAlign = TextAlign.Start)
+                                        .background(shape = RoundedCornerShape(16.dp), color = SimplyWhite)) {
+                                    if (book.bookImageBase64.isNotEmpty()) {
+                                        val bitmap = remember(book.bookImageBase64) {
+                                            book.bookImageBase64.decodeBase64ToBitmap()
+                                        }
+                                        if (bitmap != null) {
+                                            Image(
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clip(RoundedCornerShape(10.dp)),
+                                                bitmap = bitmap,
+                                                contentDescription = book.bookName
+                                            )
+                                        } else {
+                                            ShowNotFoundImageVertical()
+                                        }
+                                    } else {
+                                        ShowNotFoundImageVertical()
+                                    }
+                                    BookTitle(
+                                        text = book.bookName,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.
+                                        padding(horizontal = 10.dp))
+                                    if(!isAsActive){
+                                        if(book.bookSalePrice>0 && book.bookPrice>book.bookSalePrice){
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(top = 10.dp)
+                                                    .align(Alignment.End)
+                                            ) {
+                                                BookPrice(
+                                                    strikethrough = true,
+                                                    text = defaultCost,
+                                                    modifier = Modifier,
+                                                    textAlign = TextAlign.Start)
+                                                Spacer(modifier = Modifier.weight(1f))
+                                                BookPrice(
+                                                    oldPrice = false,
+                                                    text = saleCost,
+                                                    modifier = Modifier,
+                                                    textAlign = TextAlign.End)
+                                            }
+                                        }
+                                        else{
+                                            BookPrice(
+                                                text = defaultCost,
+                                                modifier = Modifier,
+                                                textAlign = TextAlign.Start)
+                                        }
+                                        MainGreenButton(onClick = {
+                                            currentBookLink.value = book.bookRefLink
+                                            buyBook()
+                                        }, getBuyBookText(lang), modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 6.dp, end = 6.dp, bottom = 6.dp, top = 12.dp))
                                     }
                                 }
                             }
+                        }
+                    }
+                    else{
+                        item(
+                            span = { GridItemSpan(maxLineSpan) }
+                        ) {
+                            NotFoundItemsBlock(text = getNotFoundWithFiltersOrSearchText(lang))
                         }
                     }
                 }

@@ -51,6 +51,8 @@ import ru.kvmsoft.base.ui.utils.NoRippleConfiguration
 import ru.kvmsoft.base.utils.navigationScreens.AppDestinations
 import ru.kvmsoft.base.utils.navigationScreens.getLabel
 import ru.kvmsoft.features.authorization.imp.presentation.ui.AuthorizationScreen
+import ru.kvmsoft.features.books.imp.presentation.ui.BooksInnerScreen
+import ru.kvmsoft.features.books.imp.presentation.ui.BooksListScreen
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsInnerScreen
 import ru.kvmsoft.features.events.imp.presentation.ui.EventsListScreen
 import ru.kvmsoft.features.interview.imp.presentation.ui.InterviewListScreen
@@ -189,10 +191,13 @@ fun NavigationApp(langIsRus: Boolean) {
                     },
                     navController = navController,
                     eventDestination = AppDestinations.EventsInner(),
-                    onclickEvents = {
+                    onClickEvents = {
                         navController.navigate(route = AppDestinations.EventsList)
                     },
-                    onclickStudy = {
+                    onClickBooks = {
+                        navController.navigate(route = AppDestinations.BooksList)
+                    },
+                    onClickStudy = {
                         navController.navigate(route = AppDestinations.StudyList)
                     }
                 )
@@ -280,6 +285,19 @@ fun NavigationApp(langIsRus: Boolean) {
             composable<AppDestinations.StudyList> {
                 StudyListScreen(onClickBack = { navController.popBackStack() }
                 )
+            }
+            composable<AppDestinations.BooksList> {
+                BooksListScreen(
+                    navController = navController,
+                    bookDestination = AppDestinations.BooksInner(),
+                    onClickBack = { navController.popBackStack() }
+                )
+            }
+            composable<AppDestinations.BooksInner> {
+                    backStackEntry ->
+                val bookId = backStackEntry.toRoute<AppDestinations.BooksInner>().bookId
+                BooksInnerScreen(onClickBack = { navController.popBackStack() },
+                    bookId = bookId)
             }
         }
     }
